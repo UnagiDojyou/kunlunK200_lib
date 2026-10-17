@@ -164,7 +164,8 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
     select(id); fn.id = id;
     if (type == 3) {
         const char * mode=std::getenv("KUNLUN_GEMV");
-        bool fused=mode && std::strcmp(mode,"fused") == 0 && n <= INT_MAX/8/batch;
+        bool packed=(!mode || std::strcmp(mode,"auto") == 0) ? batch <= 8 : std::strcmp(mode,"fused") == 0;
+        bool fused=packed && n <= INT_MAX/8/batch;
         if (fused) {
             if (!fn.combine) fn.combine=new Kernel::Impl{};
             load_kernel(*fn.combine,"kunlun-combine",id);
@@ -399,5 +400,5 @@ void rms_norm(Kernel & kernel, int id, void * y, const void * input, int width, 
 }
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.1.0"; }
+const char * version() { return "0.2.0"; }
 } // namespace kunlun

@@ -37,3 +37,7 @@ The FP32 RMS reduction uses 32 CL cores for partial sums, followed by a second k
 Device RMS normalization requires finite positive epsilon. The GGML adapter leaves zero, negative and nonfinite epsilon to CPU evaluation; the direct low-level API rejects these parameters before launching a kernel. This avoids a device divide-by-zero for a zero row with zero epsilon. Model tests use the model-provided positive epsilon.
 
 Device SET_ROWS accepts element-aligned, ordered non-overlapping destination row/head regions and disjoint input/index storage. The adapter routes other layouts to the CPU implementation. Read-only source/index strides may contain gaps or broadcasts. This conservative domain preserves sequential semantics for overlapping destinations.
+
+## Measured default dispatch (0.2)
+
+The fixed 8192-token corpus gates at context 256 and 1024 permit packed FC as the default through batch 8. Larger batches retain two FCs because batch 32 regressed in the independent benchmark. `KUNLUN_GEMV=legacy` always selects two FCs; `fused` explicitly tests the packed path at larger batches; `auto` uses the measured default. The retained residual and row scale do not remove the existing approximation from Q4_0 to rowwise INT8. Release 0.2 adds the device row-update and parallel reduction APIs while preserving SONAME 0 for older consumers.
