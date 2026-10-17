@@ -1,5 +1,7 @@
 # KunlunK200: KL1 device library and benchmarks
 
+Fork repository: [kunlunK200_lib](https://github.com/UnagiDojyou/kunlunK200_lib).
+
 A fork of [sam6321/KunlunK200](https://github.com/sam6321/KunlunK200), extended with an independent C++ library. It can be used without GGML, llama.cpp, or model files. The original guide is [README.upstream.md](README.upstream.md).
 
 ## Responsibilities
@@ -57,7 +59,7 @@ bench="$HOME/.local/kunlun/bin/k200-bench"
 "$guard" --name rms --seconds 60 -- "$bench" rms
 ```
 
-`k200-bench OP FORMAT PD K N BATCH` checks every output against a CPU reference. Formats are `f32`, `f16`, `q4_0`, `i8`; operations also include `memory`, `add`, `multiply`, `silu`, `rms`, `scale`. Default dimensions are 256, 65, 4, including an output-row tail. The memory test checks H2D, D2D, P2P and D2H. Original benchmarks are built as `k200-gemm-bench`, `k200-int4-bench`, `k200-pipe-bench`, `k200-smoke` and `k200-vvadd`. Their native kernel experiments retain their original documented command-line options; they are not part of the public ABI.
+`k200-bench OP FORMAT PD K N BATCH` checks every output against a CPU reference. Formats are `f32`, `f16`, `q4_0`, `i8`; operations also include `pipeline`, `memory`, `add`, `multiply`, `silu`, `rms`, `scale`. `pipeline` alternates matrix multiplication and in-place SILU with the same Kernel instance and checks the combined output. Default dimensions are 256, 65, 4, including an output-row tail. The memory test checks H2D, D2D, P2P and D2H. Original benchmarks are built as `k200-gemm-bench`, `k200-int4-bench`, `k200-pipe-bench`, `k200-smoke` and `k200-vvadd`. Their native kernel experiments retain their original documented command-line options; they are not part of the public ABI.
 
 Never continue running after the temperature guard creates `THERMAL_ABORT`. Kernel errors also require stopping clients and checking both PD states. The driver fork documents the card-wide reset procedure. No reset is performed automatically by this library.
 

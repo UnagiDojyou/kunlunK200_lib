@@ -44,7 +44,8 @@ int main(int argc, char ** argv) {
     int batch=argc > 6 ? std::atoi(argv[6]) : 4;
     kunlun::require(id >= 0 && id < 2 && k > 0 && k <= 16384 && k%32 == 0 && n > 0 && n <= 32768 && batch > 0 && batch <= 32);
     if (op == "memory") return memory(id);
-    if (op != "matmul") {
+    bool pipeline=op == "pipeline";
+    if (op != "matmul" && !pipeline) {
         int count=k*batch;
         std::vector<float> a(count),b(k),y(count),gold(count);
         for(int j=0;j<count;++j) a[j]=std::sin(j*.021f);
@@ -55,7 +56,7 @@ int main(int argc, char ** argv) {
         else if(op == "silu") kind=kunlun::ElementwiseOp::silu;
         else if(op == "rms") kind=kunlun::ElementwiseOp::rms_norm;
         else if(op == "scale") kind=kunlun::ElementwiseOp::scale;
-        else { std::fprintf(stderr,"operation: matmul|memory|add|multiply|silu|rms|scale\n"); return 2; }
+        else { std::fprintf(stderr,"operation: matmul|pipeline|memory|add|multiply|silu|rms|scale\n"); return 2; }
         float parameter=op == "scale" ? .75f : 1e-5f;
         for(int r=0;r<batch;++r) {
             double sum=0; for(int j=0;j<k;++j) sum+=double(a[r*k+j])*a[r*k+j];
@@ -109,6 +110,7 @@ int main(int argc, char ** argv) {
             type == kunlun::WeightType::rowwise_i8 ? kunlun::packed_i8_scales(dw.data(),k,n) : nullptr,
             type == kunlun::WeightType::rowwise_i8 ? kunlun::packed_i8_maxima(dw.data(),k,n) : nullptr);
         kunlun::select(id); kunlun::check(kunlun::wait());
+        if (pipeline) kunlun::elementwise(kernel,id,dy.data(),dy.data(),dy.data(),n*batch,n,n*batch,kunlun::ElementwiseOp::silu);
     };
     run(); run();
     auto start=std::chrono::steady_clock::now();
@@ -118,11 +120,12 @@ int main(int argc, char ** argv) {
     double error=0,energy=0,max_abs=0; bool ok=true;
     for(int b=0;b<batch;++b) for(int r=0;r<n;++r) {
         double gold=0; for(int j=0;j<k;++j) gold+=double(w[(size_t)r*k+j])*x[b*k+j];
+        if (pipeline) gold=gold/(1+std::exp(-gold));
         double diff=y[b*n+r]-gold;
         double tol=type == kunlun::WeightType::rowwise_i8 ? .02 : .001;
         ok=ok && std::isfinite(y[b*n+r]) && std::abs(diff) <= tol*(1+std::abs(gold));
         max_abs=std::max(max_abs,std::abs(diff)); error+=diff*diff; energy+=gold*gold;
     }
-    std::printf("matmul format=%s pd=%d k=%d n=%d batch=%d ms=%.6f max_abs=%g nmse=%g %s\n",format.c_str(),id,k,n,batch,ms,max_abs,error/std::max(energy,1e-30),ok ? "PASS" : "FAIL");
+    std::printf("%s format=%s pd=%d k=%d n=%d batch=%d ms=%.6f max_abs=%g nmse=%g %s\n",op.c_str(),format.c_str(),id,k,n,batch,ms,max_abs,error/std::max(energy,1e-30),ok ? "PASS" : "FAIL");
     return ok ? 0 : 1;
 }

@@ -11,7 +11,10 @@ run() {
 }
 for pd in 0 1; do
     run "library-memory-$pd" "$bench" memory f32 "$pd"
-    for type in f32 f16 q4_0 i8; do run "library-matmul-$type-$pd" "$bench" matmul "$type" "$pd" 256 65 4; done
+    for type in f32 f16 q4_0 i8; do
+        run "library-matmul-$type-$pd" "$bench" matmul "$type" "$pd" 256 65 4
+        run "library-pipeline-$type-$pd" "$bench" pipeline "$type" "$pd" 256 65 4
+    done
     for op in add multiply silu rms scale; do run "library-$op-$pd" "$bench" "$op" f32 "$pd"; done
 done
 run library-gemv-q4 "$bench" matmul q4_0 0 4096 4096 1

@@ -44,6 +44,7 @@ int device_count(int * n) {
 void select(int id) { require(id >= 0 && id < 2); check(xpu_set_device(id)); }
 int wait() { return xpu_wait(); }
 int copy(void * dst, const void * src, size_t bytes, CopyKind kind) {
+    require(kind == host_to_device || kind == device_to_host || kind == device_to_device);
     auto direction = kind == host_to_device ? XPU_HOST_TO_DEVICE : kind == device_to_host ? XPU_DEVICE_TO_HOST : XPU_DEVICE_TO_DEVICE;
     return xpu_memcpy(dst, src, bytes, direction);
 }
@@ -95,6 +96,7 @@ void upload_i8_rows(int id, void * weights, int k, int n, int first, int count, 
     check(xpu_wait());
 }
 struct Kernel::Impl {
+    Impl * elementwise = nullptr;
     int id = -1;
     void * alias_input = nullptr;
     size_t alias_input_size = 0;
@@ -168,21 +170,25 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    auto & p=*impl_;
-    if (p.id >= 0) {
-        select(p.id); check(xpu_wait());
-        if (p.vendor) xdnn::destroy_context(p.vendor);
-        release(p.id,p.quant,p.quant_size);
-        release(p.id,p.correction,p.correction_size);
-        release(p.id,p.input_max,512);
-        release(p.id,p.alias_input,p.alias_input_size);
-        if (p.code) check(xpu_free(p.code));
+    for (auto * state : {impl_->elementwise,impl_}) {
+        if (!state) continue;
+        auto & p=*state;
+        if (p.id >= 0) {
+            select(p.id); check(xpu_wait());
+            if (p.vendor) xdnn::destroy_context(p.vendor);
+            release(p.id,p.quant,p.quant_size);
+            release(p.id,p.correction,p.correction_size);
+            release(p.id,p.input_max,512);
+            release(p.id,p.alias_input,p.alias_input_size);
+            if (p.code) check(xpu_free(p.code));
+        }
+        delete state;
     }
-    delete impl_;
 }
 void matmul(Kernel & kernel, int id, void * y, const void * w, const void * x,
             int k, int n, int batch, WeightType type, const float * scales, const float * maximum, int tile) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
+    require(type == WeightType::f32 || type == WeightType::f16 || type == WeightType::q4_0 || type == WeightType::rowwise_i8);
     require(k > 0 && k <= 16384 && k%32 == 0 && n > 0 && batch > 0 && n <= INT_MAX/batch && k <= INT_MAX/batch);
     require((size_t)n*batch <= INT_MAX/4 && (size_t)k*batch <= INT_MAX/4);
     size_t row_bytes=type == WeightType::f32 ? (size_t)k*4 : type == WeightType::f16 ? (size_t)k*2 : type == WeightType::q4_0 ? (size_t)k/32*18 : (size_t)k;
@@ -198,7 +204,9 @@ void elementwise(Kernel & kernel, int id, void * y, const void * a, const void *
     require(y && a && b && n > 0 && n <= INT_MAX/4 && width > 0 && width <= 16384 && n%width == 0);
     require(op >= 0 && op <= 4 && (bn == n || bn == width));
     require(kernel.impl_->id == -1 || kernel.impl_->id == id);
-    auto & fn=*kernel.impl_;
+    kernel.impl_->id=id;
+    if (!kernel.impl_->elementwise) kernel.impl_->elementwise=new Kernel::Impl{};
+    auto & fn=*kernel.impl_->elementwise;
     select(id); load_kernel(fn,"kunlun-elementwise",id);
     if (op == 3 && y == a) {
         size_t bytes=(size_t)n*4;
