@@ -1,0 +1,22 @@
+#include "xpu/kernel/cluster_header.h"
+
+__global__ void kunlun_combine(float * y, const float * products, const float * scales,
+                               const float * maximum0, const float * maximum1, int n, int batch) {
+    __local__ float primary[128];
+    __local__ float residual[128];
+    __local__ float weights[128];
+    __local__ float output[128];
+    __local__ float scalar[8];
+    GM2LM(maximum0,scalar,4);float scale0=scalar[0]/127.0f;
+    GM2LM(maximum1,scalar,4);float scale1=scalar[0]/127.0f;
+    int tid=cluster_id()*core_num()+core_id();
+    int threads=cluster_num()*core_num();
+    for (int col=0;col<batch;++col) for (int base=tid*128;base<n;base+=threads*128) {
+        int len=n-base; if (len>128) len=128;
+        GM2LM(products+col*n+base,primary,len*4);
+        GM2LM(products+(batch+col)*n+base,residual,len*4);
+        GM2LM(scales+base,weights,len*4);
+        for (int j=0;j<len;++j) output[j]=(primary[j]*scale0+residual[j]*scale1)*weights[j];
+        LM2GM(output,y+col*n+base,len*4);
+    }
+}

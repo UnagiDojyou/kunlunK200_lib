@@ -102,6 +102,7 @@ struct Kernel::Impl {
     Impl * set_rows = nullptr;
     Impl * rms_partial = nullptr;
     Impl * rms_output = nullptr;
+    Impl * combine = nullptr;
     void * scratch = nullptr;
     size_t scratch_size = 0;
     int id = -1;
@@ -129,15 +130,40 @@ void load_kernel(Kernel::Impl & k, const char * name, int id) {
     // These kernels run on cluster SIMD cores, not the SD/CDNN engines.
     check(xpu_create_cl_func(&k.fn, (uint64_t)(uintptr_t)k.code, bytes.size(), 0, 0, 0, k.symbol.c_str(), true));
 }
+void combine_mv(Kernel::Impl & parent, int id, void * y, const void * products,
+                 const float * scales, int n, int batch) {
+    auto & fn=*parent.combine;
+    select(id);
+    const void * maximum0=parent.input_max;
+    const void * maximum1=(char *)parent.input_max+256;
+    size_t offset=0;
+    for (const void * arg : {(const void *)&y,(const void *)&products,(const void *)&scales,(const void *)&maximum0,(const void *)&maximum1}) {
+        check(xpu_launch_argument_set(arg,8,offset)); offset+=8;
+    }
+    for (const int * arg : {&n,&batch}) { check(xpu_launch_argument_set(arg,4,offset)); offset+=4; }
+    check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn));
+}
+
 void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void * x, int k, int n, int batch, int type, const float * row_scales, const float * weight_max, int tile) {
     select(id); fn.id = id;
     if (type == 3) {
+        const char * mode=std::getenv("KUNLUN_GEMV");
+        bool fused=mode && std::strcmp(mode,"fused") == 0 && n <= INT_MAX/8/batch;
+        if (fused) {
+            if (!fn.combine) fn.combine=new Kernel::Impl{};
+            load_kernel(*fn.combine,"kunlun-combine",id);
+        }
         if (!fn.vendor) { fn.vendor=xdnn::create_context(); require(fn.vendor); fn.vendor->set_ncluster(4); }
         {
             size_t count = (size_t)k*batch, stride = aligned(count), qs = 2*stride, ys = (size_t)n*batch*4;
+            size_t cs=fused ? 2*ys : ys, correction_offset=fused ? count : stride;
             if (fn.quant_size < qs) { release(id,fn.quant,fn.quant_size); fn.quant=allocate(id,qs); fn.quant_size=qs; }
-            if (fn.correction_size < ys) { release(id,fn.correction,fn.correction_size); fn.correction=allocate(id,ys); fn.correction_size=ys; }
-            if (!fn.input_max) fn.input_max=allocate(id,512);
+            if (fn.correction_size < cs) { release(id,fn.correction,fn.correction_size); fn.correction=allocate(id,cs); fn.correction_size=cs; }
+            if (!fn.input_max) {
+                fn.input_max=allocate(id,1024); require(fn.input_max);
+                float raw[6]={127,127,127,127,127,127};
+                check(xpu_memcpy((char *)fn.input_max+512,raw,sizeof(raw),XPU_HOST_TO_DEVICE)); check(xpu_wait());
+            }
             require(fn.quant && fn.correction && fn.input_max);
             std::vector<float> input(count), residual(count);
             std::vector<int8_t> quant(qs);
@@ -154,17 +180,22 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
             if (max1 == 0) max1=1;
             for (size_t j=0;j<count;++j) {
                 float value=residual[j]*(127/max1);
-                quant[stride+j]=(int8_t)std::max(-127,std::min(127,(int)(value+(value >= 0 ? .5f : -.5f))));
+                quant[correction_offset+j]=(int8_t)std::max(-127,std::min(127,(int)(value+(value >= 0 ? .5f : -.5f))));
             }
             float m0[6],m1[6]; std::fill_n(m0,6,max0); std::fill_n(m1,6,max1);
             check(xpu_memcpy(fn.quant,quant.data(),qs,XPU_HOST_TO_DEVICE));
             check(xpu_memcpy(fn.input_max,m0,sizeof(m0),XPU_HOST_TO_DEVICE));
             check(xpu_memcpy((char *)fn.input_max+256,m1,sizeof(m1),XPU_HOST_TO_DEVICE)); check(xpu_wait());
+            if (fused) {
+                check(xdnn::fc<int8_t,int8_t,float,int8_t>(fn.vendor,(const int8_t *)fn.quant,(const int8_t *)w,(float *)fn.correction,2*batch,n,k,false,true,(const float *)((char *)fn.input_max+512),weight_max,nullptr));
+                combine_mv(fn,id,y,fn.correction,row_scales,n,batch);
+            } else {
             check(xdnn::fc<int8_t,int8_t,float,int8_t>(fn.vendor,(const int8_t *)fn.quant,(const int8_t *)w,(float *)y,batch,n,k,false,true,(const float *)fn.input_max,weight_max,nullptr));
             check(xdnn::fc<int8_t,int8_t,float,int8_t>(fn.vendor,(const int8_t *)fn.quant+stride,(const int8_t *)w,(float *)fn.correction,batch,n,k,false,true,(const float *)((char *)fn.input_max+256),weight_max,nullptr));
             check(xdnn::add<float>(fn.vendor,(const float *)y,(const float *)fn.correction,(float *)y,n*batch));
+            }
         }
-        check(xdnn::broadcast_mul<float>(fn.vendor,(const float *)y,row_scales,(float *)y,{batch,n},{1,n}));
+        if (!fused) check(xdnn::broadcast_mul<float>(fn.vendor,(const float *)y,row_scales,(float *)y,{batch,n},{1,n}));
         ++matmuls[id]; return;
     }
     load_kernel(fn, "kunlun-matvec", id);
@@ -177,7 +208,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -185,7 +216,7 @@ Kernel::~Kernel() {
             if (p.vendor) xdnn::destroy_context(p.vendor);
             release(p.id,p.quant,p.quant_size);
             release(p.id,p.correction,p.correction_size);
-            release(p.id,p.input_max,512);
+            release(p.id,p.input_max,1024);
             release(p.id,p.alias_input,p.alias_input_size);
             release(p.id,p.scratch,p.scratch_size);
             if (p.code) check(xpu_free(p.code));
