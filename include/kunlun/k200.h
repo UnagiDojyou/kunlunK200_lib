@@ -93,13 +93,16 @@ void copy_rows(Kernel &, int device, void * dst, const void * src,
                int width, int rows, int dst_stride, int dst_offset);
 
 // Indexed F16 updates. Strides are bytes; source/index elements are 2/4 and 4/8 bytes.
+// Requires element-aligned strides and non-overlapping destination rows/head regions.
+// Source/index storage must not overlap the destination.
 // Returns false for an invalid index; valid updates may already have completed.
 bool set_rows_f16(Kernel &, int device, void * dst, size_t dst_bytes,
                   const void * src, size_t src_bytes, const void * indices, size_t index_bytes,
                   const SetRowsLayout &);
 
 // FP32 two-stage reduction, width 256..16384 in multiples of 32, up to 32 rows.
-// Identical input/output pointers are supported. Completes before returning.
+// Requires finite positive epsilon. Identical input/output pointers are supported.
+// Completes before returning.
 void rms_norm(Kernel &, int device, void * y, const void * x, int width, int rows, float epsilon);
 
 struct Statistics {

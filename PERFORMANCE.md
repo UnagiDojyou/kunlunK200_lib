@@ -31,3 +31,9 @@ The FP32 RMS reduction uses 32 CL cores for partial sums, followed by a second k
 ## Packed primary/residual FC candidate
 
 `KUNLUN_GEMV=fused` submits primary and residual INT8 activation rows as a single doubled batch. One FC produces raw integer dot products; a CL kernel applies each component scale and the row weight scale. Both components and all row scales remain present. The original two-FC implementation stays available with `KUNLUN_GEMV=legacy` and remains the default pending complete model gates. Floating-point scaling order changes the result slightly. The fixed-corpus evaluation records the added error separately from the original rowwise INT8 approximation to Q4_0. `k200-fused-bench` compares the direct block-scaled Q4 implementation, two FCs and packed FC, including weight allocation bytes. Larger batches can favor the original path. Weight storage remains rowwise INT8; this candidate improves reuse and does not solve compressed-weight capacity.
+
+## RMS parameter domain
+
+Device RMS normalization requires finite positive epsilon. The GGML adapter leaves zero, negative and nonfinite epsilon to CPU evaluation; the direct low-level API rejects these parameters before launching a kernel. This avoids a device divide-by-zero for a zero row with zero epsilon. Model tests use the model-provided positive epsilon.
+
+Device SET_ROWS accepts element-aligned, ordered non-overlapping destination row/head regions and disjoint input/index storage. The adapter routes other layouts to the CPU implementation. Read-only source/index strides may contain gaps or broadcasts. This conservative domain preserves sequential semantics for overlapping destinations.

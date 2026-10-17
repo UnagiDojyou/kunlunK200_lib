@@ -258,10 +258,11 @@ void elementwise(Kernel & kernel, int id, void * y, const void * a, const void *
     int op=(int)operation;
     require(y && a && b && n > 0 && n <= INT_MAX/4 && width > 0 && width <= 16384 && n%width == 0);
     require(op >= 0 && op <= 4 && (bn == n || bn == width));
+    if (op == 3) require(std::isfinite(parameter) && parameter > 0);
     require(kernel.impl_->id == -1 || kernel.impl_->id == id);
     kernel.impl_->id=id;
     const char * rms_mode=std::getenv("KUNLUN_RMS_NORM");
-    if (op == 3 && width >= 256 && width <= 16384 && width%32 == 0 && n%width == 0 && n/width <= 32 && std::isfinite(parameter) && parameter >= 0 &&
+    if (op == 3 && width >= 256 && width <= 16384 && width%32 == 0 && n%width == 0 && n/width <= 32 && std::isfinite(parameter) && parameter > 0 &&
         !(rms_mode && std::strcmp(rms_mode,"legacy") == 0) &&
         ((width >= 512 && n/width <= 16) || (rms_mode && std::strcmp(rms_mode,"parallel") == 0))) {
         rms_norm(kernel,id,y,a,width,n/width,parameter); return;
@@ -328,6 +329,18 @@ bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
     size_t ds=(size_t)p.width*2+(size_t)(p.destination_rows-1)*p.destination_stride[0]+(size_t)(p.dim2-1)*p.destination_stride[1]+(size_t)(p.dim3-1)*p.destination_stride[2];
     size_t is=(size_t)(p.rows-1)*p.index_stride[0]+(size_t)(p.index_extent[0]-1)*p.index_stride[1]+(size_t)(p.index_extent[1]-1)*p.index_stride[2]+p.index_bytes;
     require(ss <= src_bytes && ds <= dst_bytes && is <= index_bytes && ss <= INT_MAX && ds <= INT_MAX && is <= INT_MAX);
+    for (int stride : p.source_stride) require(stride%p.source_bytes == 0);
+    for (int stride : p.index_stride) require(stride%p.index_bytes == 0);
+    for (int stride : p.destination_stride) require(stride%2 == 0);
+    size_t row_span=(size_t)(p.destination_rows-1)*p.destination_stride[0]+(size_t)p.width*2;
+    size_t head_span=(size_t)(p.dim2-1)*p.destination_stride[1]+row_span;
+    require((size_t)p.destination_stride[0] >= (size_t)p.width*2);
+    require(p.dim2 == 1 || (size_t)p.destination_stride[1] >= row_span);
+    require(p.dim3 == 1 || (size_t)p.destination_stride[2] >= head_span);
+    uintptr_t da=(uintptr_t)dst,sa=(uintptr_t)src,ia=(uintptr_t)indices;
+    require(da%2 == 0 && sa%p.source_bytes == 0 && ia%p.index_bytes == 0);
+    require(da+ds >= da && sa+ss >= sa && ia+is >= ia);
+    require((da+ds <= sa || sa+ss <= da) && (da+ds <= ia || ia+is <= da));
     if (p.cache_features) {
         require(p.width == 1 && p.dim2 == 1 && p.dim3 == 1 && p.cache_features > 0 && p.cache_features%8 == 0);
         require(p.cache_tokens > 0 && p.cache_tokens <= 32 && p.cache_stride > 0);
@@ -358,7 +371,7 @@ bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
 void rms_norm(Kernel & kernel, int id, void * y, const void * input, int width, int rows, float epsilon) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     require(y && input && width >= 256 && width <= 16384 && width%32 == 0 && rows > 0 && rows <= 32);
-    require(std::isfinite(epsilon) && epsilon >= 0);
+    require(std::isfinite(epsilon) && epsilon > 0);
     require(kernel.impl_->id == -1 || kernel.impl_->id == id); kernel.impl_->id=id;
     if (!kernel.impl_->rms_partial) kernel.impl_->rms_partial=new Kernel::Impl{};
     if (!kernel.impl_->rms_output) kernel.impl_->rms_output=new Kernel::Impl{};
