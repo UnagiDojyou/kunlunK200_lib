@@ -1,0 +1,79 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+
+static __device__ float half_to_float(unsigned short h) {
+    unsigned int e = (h >> 10) & 31;
+    unsigned int m = h & 1023;
+    unsigned int sign = (unsigned int)(h & 32768) << 16;
+    union { unsigned int u; float f; } v;
+    if (e == 0) {
+        if (m == 0) { v.u = sign; return v.f; }
+        int shift = 0;
+        while ((m & 1024) == 0) { m <<= 1; ++shift; }
+        v.u = sign | ((113 - shift) << 23) | ((m & 1023) << 13);
+    } else {
+        v.u = sign | ((e == 31 ? 255 : e + 112) << 23) | (m << 13);
+    }
+    return v.f;
+}
+
+static __device__ _global_ptr_ const unsigned char * byte_offset(_global_ptr_ const unsigned char * p, unsigned int offset) {
+    return (_global_ptr_ const unsigned char *)((long long)p + (unsigned long long)offset);
+}
+
+__global__ void kunlun_matvec(float * y, const unsigned char * w, const float * x,
+                              int k, int n, int batch, int type, int tile_blocks) {
+    __local__ float xv[512];
+    __local__ unsigned char wb[2048];
+    __local__ float q[32];
+    __local__ float prod[8];
+    __local__ float acc[8];
+    __local__ float values[16];
+    __local__ float out;
+    int tid = cluster_id() * core_num() + core_id();
+    int step = cluster_num() * core_num();
+    for (int j = 0; j < 16; ++j) values[j] = (float)j - 8.0f;
+    int row_bytes = type == 2 ? (k >> 5) * 18 : k * (type == 1 ? 2 : 4);
+    for (int col = 0; col < batch; ++col) {
+        for (int row = tid; row < n; row += step) {
+            float sum = 0;
+            for (int base = 0; base < k; base += 32 * tile_blocks) {
+                int count = k - base;
+                if (count > 32 * tile_blocks) count = 32 * tile_blocks;
+                unsigned int xoff = ((unsigned int)col * k + base) * 4;
+                _global_ptr_ const float * xp = (_global_ptr_ const float *)byte_offset((_global_ptr_ const unsigned char *)x, xoff);
+                GM2LM(xp, xv, count * 4);
+                int off = type == 2 ? (base >> 5) * 18 : base * (type == 1 ? 2 : 4);
+                int bytes = type == 2 ? (count >> 5) * 18 : count * (type == 1 ? 2 : 4);
+                GM2LM(byte_offset(w, (unsigned int)row * row_bytes + off), wb, bytes);
+                for (int b = 0; b < (count >> 5); ++b) {
+                    float d = 1;
+                    if (type == 2) {
+                        const unsigned char * p = wb + b * 18;
+                        d = half_to_float(*(const unsigned short *)p);
+                        for (int j = 0; j < 16; ++j) {
+                            int lo = (int)p[2 + j] & 15;
+                            int hi = (int)p[2 + j] >> 4;
+                            q[j] = tile_blocks == 1 ? (float)lo - 8.0f : values[lo];
+                            q[j + 16] = tile_blocks == 1 ? (float)hi - 8.0f : values[hi];
+                        }
+                    } else if (type == 1) {
+                        for (int j = 0; j < 32; ++j) q[j] = half_to_float(((unsigned short *)wb)[b * 32 + j]);
+                    } else {
+                        for (int j = 0; j < 32; ++j) q[j] = ((float *)wb)[b * 32 + j];
+                    }
+                    _x256_vvmul_ls(q, xv + b * 32, acc);
+                    for (int j = 8; j < 32; j += 8) {
+                        _x256_vvmul_ls(q + j, xv + b * 32 + j, prod);
+                        _x256_vvadd_ls(acc, prod, acc);
+                    }
+                    float s = 0;
+                    for (int j = 0; j < 8; ++j) s += acc[j];
+                    sum += d * s;
+                }
+            }
+            out = sum;
+            LM2GM(&out, y + col * n + row, 4);
+        }
+    }
+}

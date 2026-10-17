@@ -5,7 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$ROOT/.." && pwd)"
 XRE="${XRE:-/usr/local/xpu-4.33.0}"
-XDNN="${XDNN:-$REPO/third_party/xdnn}"
+XDNN="${XDNN:?set XDNN to the external KL1 XDNN directory}"
 export PATH="$XRE/bin:$XRE/tools:$PATH"
 export LD_LIBRARY_PATH="$XRE/lib64:$XDNN/so${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 XPU_SMI="${XPU_SMI:-$XRE/bin/xpu_smi}"

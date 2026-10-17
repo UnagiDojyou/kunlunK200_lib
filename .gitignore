@@ -9,3 +9,21 @@ build/
 *.kind
 *.s
 !third_party/**/*.s
+
+# SDKs, models and machine-local output are external to the source repository.
+/third_party/xdnn/
+/external/
+/install/
+/build*/
+/local-results/
+/bench/k200_gemm_bench
+/bench/k200_int4_bench
+/bench/k200_pipe_bench
+/setup/k200-smoke
+/examples/vvadd_host
+*.gguf
+*.log
+*.jsonl
+THERMAL_ABORT
+__pycache__/
+*.py[cod]

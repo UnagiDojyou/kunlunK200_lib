@@ -3,7 +3,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 REPO="$(cd "$ROOT/.." && pwd)"
 XRE="${XRE:-/usr/local/xpu-4.33.0}"
-XDNN="${XDNN:-$REPO/third_party/xdnn}"
+XDNN="${XDNN:?set XDNN to the external KL1 XDNN directory}"
 libdir="$XRE/lib64"
 [[ -d "$libdir" ]] || libdir="$XRE/lib"
 

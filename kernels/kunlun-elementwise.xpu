@@ -1,0 +1,55 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+#include "xpu/kernel/math.h"
+
+__global__ void kunlun_elementwise(float * y, const float * a, const float * b,
+                                  int n, int width, int bn, int op, float eps) {
+    __local__ float av[256];
+    __local__ float bv[256];
+    __local__ float ov[256];
+    __local__ float scalar[64];
+    int tid = cluster_id() * core_num() + core_id();
+    int threads = cluster_num() * core_num();
+    if (op == 3) {
+        for (int row = tid; row * width < n; row += threads) {
+            float sum = 0;
+            for (int base = 0; base < width; base += 256) {
+                int len = width - base; if (len > 256) len = 256;
+                GM2LM(a + row * width + base, av, len * 4);
+                for (int j = 0; j < len; ++j) sum += av[j] * av[j];
+            }
+            float scale = 1.0f / sqrt(sum / width + eps);
+            for (int base = 0; base < width; base += 256) {
+                int len = width - base; if (len > 256) len = 256;
+                GM2LM(a + row * width + base, av, len * 4);
+                for (int j = 0; j < len; ++j) ov[j] = av[j] * scale;
+                LM2GM(ov, y + row * width + base, len * 4);
+            }
+        }
+        return;
+    }
+    for (int base = tid * 256; base < n; base += threads * 256) {
+        int len = n - base; if (len > 256) len = 256;
+        GM2LM(a + base, av, len * 4);
+        if (op == 0 || op == 1) {
+            if (bn == n) GM2LM(b + base, bv, len * 4);
+            else {
+                int offset = base;
+                while (offset >= bn) offset -= bn;
+                for (int j = 0; j < len; ++j) {
+                    // DMA destinations must stay aligned in local memory.
+                    GM2LM(b + offset, scalar, 4);
+                    bv[j] = scalar[0];
+                    if (++offset == bn) offset = 0;
+                }
+            }
+        }
+        for (int j = 0; j < len; ++j) {
+            if (op == 0) ov[j] = av[j] + bv[j];
+            if (op == 1) ov[j] = av[j] * bv[j];
+            if (op == 2) ov[j] = av[j] / (1.0f + expf(-av[j]));
+            if (op == 4) ov[j] = av[j] * eps;
+        }
+        LM2GM(ov, y + base, len * 4);
+    }
+}

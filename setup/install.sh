@@ -29,6 +29,8 @@ if [[ -e "$KUNLUN_SYSFS" && "$SKIP_MODULE" -eq 0 ]]; then
   exit 1
 fi
 
+test -f "${XDNN:?set XDNN to external KL1 XDNN}/so/libxpuapi.so"
+
 sha256() { sha256sum "$1" | awk '{print $1}'; }
 
 need_tarball() {
@@ -133,7 +135,7 @@ fi
 
 echo "==> host tools"
 export XRE="$PREFIX/xpu-4.33.0"
-export XDNN="$ROOT/third_party/xdnn"
+export XDNN="${XDNN:?set XDNN to the external KL1 XDNN directory}"
 bash "$ROOT/clock/compile.sh"
 bash "$ROOT/bench/compile.sh"
 $SUDO cp "$ROOT/clock/k200-pll" "$ROOT/setup/k200-smoke" "$PREFIX/xpu-4.33.0/bin/" 2>/dev/null || \

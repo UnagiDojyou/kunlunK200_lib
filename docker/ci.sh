@@ -9,6 +9,8 @@ bash "$ROOT/docker/fetch-ci.sh" "$VENDOR"
 docker build -t k200-setup -f "$ROOT/docker/Dockerfile" "$ROOT"
 docker run --rm \
   -v "$VENDOR:/vendor:ro" \
+  -v "${XDNN:?set XDNN to external KL1 XDNN}:/xdnn:ro" \
+  -e XDNN=/xdnn \
   -v "$ROOT:/src" \
   -e XRE_TARBALL=/vendor/xre-ubuntu_2004_x86_64_4.33.tar.gz \
   -e XPU_SDK_TARBALL=/vendor/xpu_sdk_v2.0.0.61.tar.gz \

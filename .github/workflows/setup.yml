@@ -1,28 +1,18 @@
-name: setup
+name: source-checks
 
-on:
-  push:
-  pull_request:
+on: [push, pull_request]
 
 jobs:
-  userspace:
-    runs-on: ubuntu-22.04
-    timeout-minutes: 45
+  source:
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-
-      - name: Cache vendor archives
-        uses: actions/cache@v4
-        with:
-          path: .ci-vendor
-          key: k200-xre-4.33-xpu-sdk-2.0.0.61
-
-      - name: Shell syntax
+      - name: Shell and Python syntax
+        shell: bash
         run: |
-          shopt -s nullglob
-          for f in setup/*.sh clock/*.sh bench/*.sh bench/profiles/*.sh docker/*.sh; do
-            bash -n "$f"
-          done
-
-      - name: Install and compile inside Ubuntu 22.04
-        run: bash docker/ci.sh
+          find setup clock bench docker cmake tools -type f -name '*.sh' -print0 | xargs -0 -r -n1 bash -n
+          python3 -m py_compile tools/thermal-guard.py
+      - name: Public headers do not require SDK headers
+        run: g++ -std=c++14 -fsyntax-only -Iinclude examples/library/memory.cpp
+      - name: Hardware test instructions
+        run: echo 'Build with external XRE/XDNN/XTDK, then run tools/verify.sh on K200 with the thermal guard.'

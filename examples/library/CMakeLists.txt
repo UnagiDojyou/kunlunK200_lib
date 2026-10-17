@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.22)
+project(kunlun_consumer LANGUAGES CXX)
+find_package(KunlunK200 0.1 CONFIG REQUIRED)
+add_executable(kunlun-consumer memory.cpp)
+target_link_libraries(kunlun-consumer PRIVATE KunlunK200::kunlunk200)
