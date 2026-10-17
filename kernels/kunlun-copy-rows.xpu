@@ -1,0 +1,16 @@
+#include "xpu/kernel/cluster_header.h"
+
+__global__ void kunlun_copy_rows(float * dst, const float * src,
+                                int width, int rows, int stride, int offset) {
+    __local__ float tile[256];
+    int tid = cluster_id() * core_num() + core_id();
+    int threads = cluster_num() * core_num();
+    for (int row = 0; row < rows; ++row) {
+        for (int base = tid * 256; base < width; base += threads * 256) {
+            int len = width - base;
+            if (len > 256) len = 256;
+            GM2LM(src + row * width + base, tile, len * 4);
+            LM2GM(tile, dst + row * stride + offset + base, len * 4);
+        }
+    }
+}

@@ -50,6 +50,7 @@ private:
                        WeightType, const float *, const float *, int);
     friend void elementwise(Kernel &, int, void *, const void *, const void *, int, int,
                             int, ElementwiseOp, float);
+    friend void copy_rows(Kernel &, int, void *, const void *, int, int, int, int);
 };
 
 size_t aligned(size_t bytes);
@@ -70,6 +71,11 @@ void matmul(Kernel &, int device, void * y, const void * w, const void * x,
             const float * scales = nullptr, const float * maxima = nullptr, int tile = 16);
 void elementwise(Kernel &, int device, void * y, const void * a, const void * b,
                  int count, int width, int b_count, ElementwiseOp op, float parameter = 0);
+
+// Copy contiguous F32 rows into a strided device output. Pointers must not overlap.
+// Stride and offset are in F32 elements. Submits work; wait() completes it.
+void copy_rows(Kernel &, int device, void * dst, const void * src,
+               int width, int rows, int dst_stride, int dst_offset);
 
 struct Statistics {
     size_t matmuls[2];

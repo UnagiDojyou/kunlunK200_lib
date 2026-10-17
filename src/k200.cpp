@@ -97,6 +97,7 @@ void upload_i8_rows(int id, void * weights, int k, int n, int first, int count, 
 }
 struct Kernel::Impl {
     Impl * elementwise = nullptr;
+    Impl * copy_rows = nullptr;
     int id = -1;
     void * alias_input = nullptr;
     size_t alias_input_size = 0;
@@ -170,7 +171,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->copy_rows,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -208,21 +209,50 @@ void elementwise(Kernel & kernel, int id, void * y, const void * a, const void *
     if (!kernel.impl_->elementwise) kernel.impl_->elementwise=new Kernel::Impl{};
     auto & fn=*kernel.impl_->elementwise;
     select(id); load_kernel(fn,"kunlun-elementwise",id);
-    if (op == 3 && y == a) {
-        size_t bytes=(size_t)n*4;
+    if (y == a || y == b) {
+        size_t bytes=(size_t)(y == a ? n : bn)*4;
         if (fn.alias_input_size < bytes) {
             release(id,fn.alias_input,fn.alias_input_size);
             fn.alias_input=allocate(id,bytes); fn.alias_input_size=bytes;
         }
         require(fn.alias_input);
-        check(xpu_memcpy(fn.alias_input,a,bytes,XPU_DEVICE_TO_DEVICE)); check(xpu_wait());
-        a=fn.alias_input;
+        const char * mode=std::getenv("KUNLUN_ALIAS_COPY");
+        if (mode && std::string(mode) == "legacy") {
+            check(xpu_memcpy(fn.alias_input,y,bytes,XPU_DEVICE_TO_DEVICE));
+        } else {
+            copy_rows(kernel,id,fn.alias_input,y,bytes/4,1,bytes/4,0);
+        }
+        check(xpu_wait());
+        if (b == y) b=fn.alias_input;
+        if (a == y) a=fn.alias_input;
     }
     size_t offset=0;
     for (const void * arg : {(const void *)&y,(const void *)&a,(const void *)&b}) { check(xpu_launch_argument_set(arg,8,offset)); offset+=8; }
     for (const int * arg : {&n,&width,&bn,&op}) { check(xpu_launch_argument_set(arg,4,offset)); offset+=4; }
     check(xpu_launch_argument_set(&parameter,4,offset));
     check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn)); check(xpu_wait());
+}
+void copy_rows(Kernel & kernel, int id, void * dst, const void * src,
+               int width, int rows, int stride, int column) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    require(dst && src && dst != src && width > 0 && rows > 0 && stride >= width);
+    require(column >= 0 && column <= stride-width && rows <= INT_MAX/4/stride);
+    uintptr_t d=(uintptr_t)dst, s=(uintptr_t)src;
+    size_t db=((size_t)(rows-1)*stride+column+width)*4, sb=(size_t)rows*width*4;
+    require(d+db >= d && s+sb >= s && (d+db <= s || s+sb <= d));
+    require(kernel.impl_->id == -1 || kernel.impl_->id == id);
+    kernel.impl_->id=id;
+    if (!kernel.impl_->copy_rows) kernel.impl_->copy_rows=new Kernel::Impl{};
+    auto & fn=*kernel.impl_->copy_rows;
+    select(id); load_kernel(fn,"kunlun-copy-rows",id);
+    size_t offset=0;
+    for (const void * arg : {(const void *)&dst,(const void *)&src}) {
+        check(xpu_launch_argument_set(arg,8,offset)); offset+=8;
+    }
+    for (const int * arg : {&width,&rows,&stride,&column}) {
+        check(xpu_launch_argument_set(arg,4,offset)); offset+=4;
+    }
+    check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn));
 }
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
 const char * version() { return "0.1.0"; }
