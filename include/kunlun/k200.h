@@ -9,6 +9,8 @@ namespace kunlun {
 // The runtime device selection and launch arguments are process global.
 std::recursive_mutex & runtime_mutex();
 void check(int status);
+// Optional borrowed tensor name; dimensions are copied. Clear after graph execution.
+void diagnostic_tensor(const char * name, const int64_t * dimensions = nullptr);
 void require(bool condition);
 int device_count(int * count);
 void select(int device);

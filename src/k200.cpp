@@ -20,6 +20,14 @@ namespace {
 std::recursive_mutex mutex;
 std::atomic<size_t> allocated[2];
 std::atomic<size_t> matmuls[2], peer_copies, peer_bytes;
+thread_local int diagnostic_device=-1;
+thread_local const char * diagnostic_name=nullptr;
+thread_local int64_t diagnostic_shape[4]={};
+void diagnostic_print() {
+    std::fprintf(stderr,"Kunlun context: pd=%d tensor=%s shape=[%lld,%lld,%lld,%lld]\n",diagnostic_device,diagnostic_name?diagnostic_name:"<outside graph>",
+        (long long)diagnostic_shape[0],(long long)diagnostic_shape[1],(long long)diagnostic_shape[2],(long long)diagnostic_shape[3]);
+    std::fflush(stderr);
+}
 void library_anchor() {}
 std::string kernel_directory() {
     if (const char * path = std::getenv("KUNLUN_KERNEL_DIR")) return path;
@@ -32,17 +40,25 @@ std::string kernel_directory() {
 }
 }
 std::recursive_mutex & runtime_mutex() { return mutex; }
+void diagnostic_tensor(const char * name, const int64_t * dimensions) {
+    diagnostic_name=name;for(int i=0;i<4;++i)diagnostic_shape[i]=dimensions?dimensions[i]:0;
+}
+
 void check(int rc) {
-    if (rc) { std::fprintf(stderr, "Kunlun runtime error %d\n", rc); std::abort(); }
+    if (rc) { diagnostic_print(); std::fprintf(stderr, "Kunlun runtime error %d\n", rc); std::fflush(stderr); std::abort(); }
 }
 void require(bool ok) {
-    if (!ok) { std::fprintf(stderr, "Kunlun invalid argument or unavailable resource\n"); std::abort(); }
+    if (!ok) { diagnostic_print(); std::fprintf(stderr, "Kunlun invalid argument or unavailable resource\n"); std::fflush(stderr); std::abort(); }
 }
+static inline void check_at(int status,const char *file,int line,const char *api) {
+    if(status){std::fprintf(stderr,"Kunlun failure: api=%s file=%s line=%d status=%d\n",api,file,line,status);check(status);}
+}
+#define check(...) check_at((__VA_ARGS__),__FILE__,__LINE__,#__VA_ARGS__)
 int device_count(int * n) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     return xpu_device_count(n);
 }
-void select(int id) { require(id >= 0 && id < 2); check(xpu_set_device(id)); }
+void select(int id) { diagnostic_device=id; require(id >= 0 && id < 2); check(xpu_set_device(id)); }
 int wait() { return xpu_wait(); }
 int copy(void * dst, const void * src, size_t bytes, CopyKind kind) {
     require(kind == host_to_device || kind == device_to_host || kind == device_to_device);
