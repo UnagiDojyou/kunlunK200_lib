@@ -37,6 +37,17 @@ private:
 enum class WeightType { f32 = 0, f16 = 1, q4_0 = 2, rowwise_i8 = 3 };
 enum class ElementwiseOp { add = 0, multiply = 1, silu = 2, rms_norm = 3, scale = 4 };
 
+struct SetRowsLayout {
+    int width, rows, dim2, dim3;
+    int source_stride[4];
+    int destination_stride[3];
+    int index_stride[3];
+    int index_extent[2];
+    int source_bytes, index_bytes, destination_rows;
+    // Optional validated contiguous cache mapping; all zero selects generic indices.
+    int cache_features, cache_tokens, cache_stride;
+};
+
 class Kernel {
 public:
     Kernel();
@@ -51,6 +62,7 @@ private:
     friend void elementwise(Kernel &, int, void *, const void *, const void *, int, int,
                             int, ElementwiseOp, float);
     friend void copy_rows(Kernel &, int, void *, const void *, int, int, int, int);
+    friend bool set_rows_f16(Kernel &, int, void *, size_t, const void *, size_t, const void *, size_t, const SetRowsLayout &);
 };
 
 size_t aligned(size_t bytes);
@@ -76,6 +88,12 @@ void elementwise(Kernel &, int device, void * y, const void * a, const void * b,
 // Stride and offset are in F32 elements. Submits work; wait() completes it.
 void copy_rows(Kernel &, int device, void * dst, const void * src,
                int width, int rows, int dst_stride, int dst_offset);
+
+// Indexed F16 updates. Strides are bytes; source/index elements are 2/4 and 4/8 bytes.
+// Returns false for an invalid index; valid updates may already have completed.
+bool set_rows_f16(Kernel &, int device, void * dst, size_t dst_bytes,
+                  const void * src, size_t src_bytes, const void * indices, size_t index_bytes,
+                  const SetRowsLayout &);
 
 struct Statistics {
     size_t matmuls[2];

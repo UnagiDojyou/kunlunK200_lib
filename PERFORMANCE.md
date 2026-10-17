@@ -19,3 +19,7 @@ Build `k200-alias-bench` and `k200-data-bench` for independent CPU comparisons.
 The alias benchmark checks 100 repetitions, both input aliases, full-size inputs
 and vector broadcasting. The copy benchmark checks every output value and guard
 region, then reports the median and range of five groups of 20 completed copies.
+
+## Indexed F16 cache updates
+
+`set_rows_f16` writes indexed F32/F16 source values directly into strided F16 storage. Byte strides, I32/I64 indices, independent broadcast dimensions and IEEE round-to-nearest conversion are explicit in `SetRowsLayout`. All index ranges are checked on device before writing their elements. The GGML adapter validates indices and handles duplicates with the CPU reference. A validated contiguous transposed-cache pattern permits an eight-feature tile and token-run writes; the generic stride kernel remains available. `k200-set-rows-bench` compares entire destination storage, including untouched padding, against the compiler F16 reference.

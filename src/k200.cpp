@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <string>
 #include <vector>
@@ -98,6 +99,9 @@ void upload_i8_rows(int id, void * weights, int k, int n, int first, int count, 
 struct Kernel::Impl {
     Impl * elementwise = nullptr;
     Impl * copy_rows = nullptr;
+    Impl * set_rows = nullptr;
+    void * scratch = nullptr;
+    size_t scratch_size = 0;
     int id = -1;
     void * alias_input = nullptr;
     size_t alias_input_size = 0;
@@ -171,7 +175,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->copy_rows,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->copy_rows,impl_->set_rows,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -181,6 +185,7 @@ Kernel::~Kernel() {
             release(p.id,p.correction,p.correction_size);
             release(p.id,p.input_max,512);
             release(p.id,p.alias_input,p.alias_input_size);
+            release(p.id,p.scratch,p.scratch_size);
             if (p.code) check(xpu_free(p.code));
         }
         delete state;
@@ -254,6 +259,47 @@ void copy_rows(Kernel & kernel, int id, void * dst, const void * src,
     }
     check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn));
 }
+bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
+                  const void * src, size_t src_bytes, const void * indices, size_t index_bytes,
+                  const SetRowsLayout & p) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    require(dst && src && indices && dst != src && p.width > 0 && p.rows > 0 && p.dim2 > 0 && p.dim3 > 0);
+    require(p.destination_rows > 0 && (p.source_bytes == 2 || p.source_bytes == 4) && (p.index_bytes == 4 || p.index_bytes == 8));
+    require(p.index_extent[0] > 0 && p.index_extent[1] > 0 && p.dim2%p.index_extent[0] == 0 && p.dim3%p.index_extent[1] == 0);
+    for (int stride : p.source_stride) require(stride > 0);
+    for (int stride : p.destination_stride) require(stride > 0);
+    for (int stride : p.index_stride) require(stride > 0);
+    size_t ss=(size_t)(p.width-1)*p.source_stride[0]+(size_t)(p.rows-1)*p.source_stride[1]+(size_t)(p.dim2-1)*p.source_stride[2]+(size_t)(p.dim3-1)*p.source_stride[3]+p.source_bytes;
+    size_t ds=(size_t)p.width*2+(size_t)(p.destination_rows-1)*p.destination_stride[0]+(size_t)(p.dim2-1)*p.destination_stride[1]+(size_t)(p.dim3-1)*p.destination_stride[2];
+    size_t is=(size_t)(p.rows-1)*p.index_stride[0]+(size_t)(p.index_extent[0]-1)*p.index_stride[1]+(size_t)(p.index_extent[1]-1)*p.index_stride[2]+p.index_bytes;
+    require(ss <= src_bytes && ds <= dst_bytes && is <= index_bytes && ss <= INT_MAX && ds <= INT_MAX && is <= INT_MAX);
+    if (p.cache_features) {
+        require(p.width == 1 && p.dim2 == 1 && p.dim3 == 1 && p.cache_features > 0 && p.cache_features%8 == 0);
+        require(p.cache_tokens > 0 && p.cache_tokens <= 32 && p.cache_stride > 0);
+        require((int64_t)p.cache_features*p.cache_tokens == p.rows && (int64_t)p.cache_features*p.cache_stride == p.destination_rows);
+        require(p.source_stride[1] == p.source_bytes && p.index_stride[0] == p.index_bytes && p.destination_stride[0] == 2);
+    } else require(p.cache_tokens == 0 && p.cache_stride == 0);
+    require(kernel.impl_->id == -1 || kernel.impl_->id == id); kernel.impl_->id=id;
+    if (!kernel.impl_->set_rows) kernel.impl_->set_rows=new Kernel::Impl{};
+    auto & fn=*kernel.impl_->set_rows;
+    select(id); load_kernel(fn,"kunlun-set-rows",id);
+    if (!fn.scratch) { fn.scratch=allocate(id,512); fn.scratch_size=512; }
+    require(fn.scratch);
+    static_assert(sizeof(SetRowsLayout)==22*4,"SetRowsLayout layout");
+    int config[128]={}; std::memcpy(config,&p,sizeof(p));
+    check(xpu_memcpy(fn.scratch,config,sizeof(config),XPU_HOST_TO_DEVICE)); check(xpu_wait());
+    void * descriptor=fn.scratch;
+    void * status=(char *)fn.scratch+256;
+    size_t offset=0;
+    for (const void * arg : {(const void *)&dst,(const void *)&src,(const void *)&indices,(const void *)&descriptor,(const void *)&status}) {
+        check(xpu_launch_argument_set(arg,8,offset)); offset+=8;
+    }
+    check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn)); check(xpu_wait());
+    int invalid=0;
+    check(xpu_memcpy(&invalid,status,4,XPU_DEVICE_TO_HOST)); check(xpu_wait());
+    return invalid == 0;
+}
+
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
 const char * version() { return "0.1.0"; }
 } // namespace kunlun

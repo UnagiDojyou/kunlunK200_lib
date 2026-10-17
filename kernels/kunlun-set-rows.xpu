@@ -1,0 +1,111 @@
+#include "xpu/kernel/cluster_header.h"
+
+static __device__ unsigned short to_half(float value) {
+    union { float f; unsigned int u; } bits;
+    bits.f=value;
+    unsigned int sign=(bits.u>>16)&0x8000, mantissa=bits.u&0x7fffff;
+    int exponent=((bits.u>>23)&255)-112;
+    if (exponent==143) return sign|0x7c00|(mantissa ? ((mantissa>>13)|0x200) : 0);
+    if (exponent>=31) return sign|0x7c00;
+    if (exponent<=0) {
+        if (exponent < -10) return sign;
+        unsigned int m=mantissa|0x800000;
+        int shift=14-exponent;
+        return sign|((m+((1u<<(shift-1))-1)+((m>>shift)&1))>>shift);
+    }
+    mantissa+=0xfff+((mantissa>>13)&1);
+    if (mantissa&0x800000) { mantissa=0; ++exponent; }
+    if (exponent>=31) return sign|0x7c00;
+    return sign|(exponent<<10)|(mantissa>>13);
+}
+
+__global__ void kunlun_set_rows(unsigned char * dst, const unsigned char * src,
+                                const unsigned char * indices, const int * config, int * status) {
+    __local__ int p[24];
+    __local__ int ids[64];
+    __local__ float values[128];
+    __local__ unsigned short halves[128];
+    __local__ unsigned int scalar[8];
+    __local__ unsigned short output[16];
+    __local__ int error[8];
+    __local__ float cache_values[256];
+    __local__ unsigned short cache_halves[512];
+    __local__ unsigned short cache_output[256];
+    GM2LM(config,p,22*4);
+    error[0]=1;
+    int tid=cluster_id()*core_num()+core_id();
+    int threads=cluster_num()*core_num();
+    if (p[19] > 0 && p[20] > 1) {
+        GM2LM(indices,ids,p[17]);
+        int start=ids[0];
+        if (start < 0 || start+p[20] > p[21] || (p[17]==8 && ids[1]!=0)) { LM2GM(error,status,4); return; }
+        for (int base=tid*8;base<p[19];base+=threads*8) {
+            bool valid=true;
+            for (int token=0;token<p[20];++token) {
+                int first=token*p[19]+base;
+                GM2LM(indices+first*p[17],ids,8*p[17]);
+                for (int j=0;j<8;++j) {
+                    int target=p[17]==8 ? ids[j*2] : ids[j];
+                    if (target != (base+j)*p[21]+start+token || (p[17]==8 && ids[j*2+1]!=0)) valid=false;
+                }
+                if (p[16]==4) GM2LM(src+first*4,cache_values+token*8,8*4);
+                else GM2LM(src+first*2,cache_halves+token*16,8*2);
+            }
+            if (!valid) { LM2GM(error,status,4); continue; }
+            for (int j=0;j<8;++j) {
+                for (int token=0;token<p[20];++token)
+                    cache_output[j*32+token]=p[16]==4 ? to_half(cache_values[token*8+j]) : cache_halves[token*16+j];
+                LM2GM(cache_output+j*32,dst+((base+j)*p[21]+start)*2,p[20]*2);
+            }
+        }
+        return;
+    }
+    // The transposed V view is a contiguous input with one F16 per indexed row.
+    if (p[0]==1 && p[2]==1 && p[3]==1 && p[5]==p[16] && p[11]==p[17]) {
+        for (int base=tid*32;base<p[1];base+=threads*32) {
+            int len=p[1]-base; if (len>32) len=32;
+            GM2LM(indices+base*p[17],ids,len*p[17]);
+            if (p[16]==4) GM2LM(src+base*4,values,len*4);
+            else GM2LM(src+base*2,halves,len*2);
+            for (int j=0;j<len;++j) {
+                int target=p[17]==8 ? ids[j*2] : ids[j];
+                if (target<0 || target>=p[18] || (p[17]==8 && ids[j*2+1]!=0)) {
+                    LM2GM(error,status,4); continue;
+                }
+                output[0]=p[16]==4 ? to_half(values[j]) : halves[j];
+                LM2GM(output,dst+target*p[8],2);
+            }
+        }
+        return;
+    }
+    for (int i3=0;i3<p[3];++i3) for (int i2=0;i2<p[2];++i2) {
+        int j2=i2,j3=i3;
+        while (j2>=p[14]) j2-=p[14];
+        while (j3>=p[15]) j3-=p[15];
+        for (int row=0;row<p[1];++row) {
+            GM2LM(indices+row*p[11]+j2*p[12]+j3*p[13],ids,p[17]);
+            int target=ids[0];
+            if (target<0 || target>=p[18] || (p[17]==8 && ids[1]!=0)) {
+                LM2GM(error,status,4); continue;
+            }
+            int input=row*p[5]+i2*p[6]+i3*p[7];
+            int dest=target*p[8]+i2*p[9]+i3*p[10];
+            for (int base=tid*128;base<p[0];base+=threads*128) {
+                int len=p[0]-base; if (len>128) len=128;
+                if (p[4]==p[16]) {
+                    if (p[16]==4) {
+                        GM2LM(src+input+base*4,values,len*4);
+                        for (int j=0;j<len;++j) halves[j]=to_half(values[j]);
+                    } else GM2LM(src+input+base*2,halves,len*2);
+                } else {
+                    for (int j=0;j<len;++j) {
+                        GM2LM(src+input+(base+j)*p[4],scalar,p[16]);
+                        union { unsigned int u; float f; } value; value.u=scalar[0];
+                        halves[j]=p[16]==4 ? to_half(value.f) : scalar[0]&65535;
+                    }
+                }
+                LM2GM(halves,dst+dest+base*2,len*2);
+            }
+        }
+    }
+}
