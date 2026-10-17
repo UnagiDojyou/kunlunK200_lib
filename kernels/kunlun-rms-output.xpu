@@ -1,0 +1,22 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/math.h"
+
+__global__ void kunlun_rms_output(float * y, const float * x, const float * partials,
+                                  int width, int rows, float epsilon) {
+    __local__ float values[128];
+    __local__ float output[128];
+    __local__ float sums[32];
+    int tid=cluster_id()*core_num()+core_id();
+    int threads=cluster_num()*core_num();
+    for (int row=0;row<rows;++row) {
+        GM2LM(partials+row*threads,sums,threads*4);
+        float sum=0; for (int j=0;j<threads;++j) sum+=sums[j];
+        float scale=1.0f/sqrt(sum/width+epsilon);
+        for (int base=tid*128;base<width;base+=threads*128) {
+            int len=width-base; if (len>128) len=128;
+            GM2LM(x+row*width+base,values,len*4);
+            for (int j=0;j<len;++j) output[j]=values[j]*scale;
+            LM2GM(output,y+row*width+base,len*4);
+        }
+    }
+}

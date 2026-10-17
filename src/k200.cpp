@@ -100,6 +100,8 @@ struct Kernel::Impl {
     Impl * elementwise = nullptr;
     Impl * copy_rows = nullptr;
     Impl * set_rows = nullptr;
+    Impl * rms_partial = nullptr;
+    Impl * rms_output = nullptr;
     void * scratch = nullptr;
     size_t scratch_size = 0;
     int id = -1;
@@ -175,7 +177,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->copy_rows,impl_->set_rows,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -211,6 +213,12 @@ void elementwise(Kernel & kernel, int id, void * y, const void * a, const void *
     require(op >= 0 && op <= 4 && (bn == n || bn == width));
     require(kernel.impl_->id == -1 || kernel.impl_->id == id);
     kernel.impl_->id=id;
+    const char * rms_mode=std::getenv("KUNLUN_RMS_NORM");
+    if (op == 3 && width >= 256 && width <= 16384 && width%32 == 0 && n%width == 0 && n/width <= 32 && std::isfinite(parameter) && parameter >= 0 &&
+        !(rms_mode && std::strcmp(rms_mode,"legacy") == 0) &&
+        ((width >= 512 && n/width <= 16) || (rms_mode && std::strcmp(rms_mode,"parallel") == 0))) {
+        rms_norm(kernel,id,y,a,width,n/width,parameter); return;
+    }
     if (!kernel.impl_->elementwise) kernel.impl_->elementwise=new Kernel::Impl{};
     auto & fn=*kernel.impl_->elementwise;
     select(id); load_kernel(fn,"kunlun-elementwise",id);
@@ -298,6 +306,36 @@ bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
     int invalid=0;
     check(xpu_memcpy(&invalid,status,4,XPU_DEVICE_TO_HOST)); check(xpu_wait());
     return invalid == 0;
+}
+
+void rms_norm(Kernel & kernel, int id, void * y, const void * input, int width, int rows, float epsilon) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    require(y && input && width >= 256 && width <= 16384 && width%32 == 0 && rows > 0 && rows <= 32);
+    require(std::isfinite(epsilon) && epsilon >= 0);
+    require(kernel.impl_->id == -1 || kernel.impl_->id == id); kernel.impl_->id=id;
+    if (!kernel.impl_->rms_partial) kernel.impl_->rms_partial=new Kernel::Impl{};
+    if (!kernel.impl_->rms_output) kernel.impl_->rms_output=new Kernel::Impl{};
+    auto & first=*kernel.impl_->rms_partial; auto & second=*kernel.impl_->rms_output;
+    select(id); load_kernel(first,"kunlun-rms-partial",id); load_kernel(second,"kunlun-rms-output",id);
+    size_t bytes=(size_t)width*rows*4, ps=(size_t)rows*32*4;
+    if (first.scratch_size < ps) { release(id,first.scratch,first.scratch_size); first.scratch=allocate(id,ps); first.scratch_size=ps; }
+    require(first.scratch);
+    const void * x=input;
+    if (y == input) {
+        if (first.alias_input_size < bytes) { release(id,first.alias_input,first.alias_input_size); first.alias_input=allocate(id,bytes); first.alias_input_size=bytes; }
+        require(first.alias_input);
+        copy_rows(kernel,id,first.alias_input,input,width*rows,1,width*rows,0); check(xpu_wait()); x=first.alias_input;
+    }
+    void * partials=first.scratch;
+    size_t offset=0;
+    for (const void * arg : {(const void *)&x,(const void *)&partials}) { check(xpu_launch_argument_set(arg,8,offset)); offset+=8; }
+    for (const int * arg : {&width,&rows}) { check(xpu_launch_argument_set(arg,4,offset)); offset+=4; }
+    check(xpu_launch_config(4,8)); check(xpu_launch_async(first.fn)); check(xpu_wait());
+    offset=0;
+    for (const void * arg : {(const void *)&y,(const void *)&x,(const void *)&partials}) { check(xpu_launch_argument_set(arg,8,offset)); offset+=8; }
+    for (const int * arg : {&width,&rows}) { check(xpu_launch_argument_set(arg,4,offset)); offset+=4; }
+    check(xpu_launch_argument_set(&epsilon,4,offset));
+    check(xpu_launch_config(4,8)); check(xpu_launch_async(second.fn)); check(xpu_wait());
 }
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }

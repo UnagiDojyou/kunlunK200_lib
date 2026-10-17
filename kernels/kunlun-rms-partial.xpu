@@ -1,0 +1,28 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+
+__global__ void kunlun_rms_partial(const float * x, float * partials, int width, int rows) {
+    __local__ float values[128];
+    __local__ float product[8];
+    __local__ float accum[8];
+    __local__ float result[8];
+    int tid=cluster_id()*core_num()+core_id();
+    int threads=cluster_num()*core_num();
+    for (int row=0;row<rows;++row) {
+        for (int j=0;j<8;++j) accum[j]=0;
+        float tail=0;
+        for (int base=tid*128;base<width;base+=threads*128) {
+            int len=width-base; if (len>128) len=128;
+            GM2LM(x+row*width+base,values,len*4);
+            int j=0;
+            for (;j+8<=len;j+=8) {
+                _x256_vvmul_ls(values+j,values+j,product);
+                _x256_vvadd_ls(accum,product,accum);
+            }
+            for (;j<len;++j) tail+=values[j]*values[j];
+        }
+        for (int j=0;j<8;++j) tail+=accum[j];
+        result[0]=tail;
+        LM2GM(result,partials+row*threads+tid,4);
+    }
+}

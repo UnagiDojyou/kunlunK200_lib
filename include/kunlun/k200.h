@@ -63,6 +63,7 @@ private:
                             int, ElementwiseOp, float);
     friend void copy_rows(Kernel &, int, void *, const void *, int, int, int, int);
     friend bool set_rows_f16(Kernel &, int, void *, size_t, const void *, size_t, const void *, size_t, const SetRowsLayout &);
+    friend void rms_norm(Kernel &, int, void *, const void *, int, int, float);
 };
 
 size_t aligned(size_t bytes);
@@ -94,6 +95,10 @@ void copy_rows(Kernel &, int device, void * dst, const void * src,
 bool set_rows_f16(Kernel &, int device, void * dst, size_t dst_bytes,
                   const void * src, size_t src_bytes, const void * indices, size_t index_bytes,
                   const SetRowsLayout &);
+
+// FP32 two-stage reduction, width 256..16384 in multiples of 32, up to 32 rows.
+// Identical input/output pointers are supported. Completes before returning.
+void rms_norm(Kernel &, int device, void * y, const void * x, int width, int rows, float epsilon);
 
 struct Statistics {
     size_t matmuls[2];
