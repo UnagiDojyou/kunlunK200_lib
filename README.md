@@ -66,3 +66,7 @@ Never continue running after the temperature guard creates `THERMAL_ABORT`. Kern
 ## Source and binary policy
 
 New source is covered by the existing MIT license. Vendor components retain their own terms; see [THIRD_PARTY.md](THIRD_PARTY.md). SDKs, model files, logs and builds are external. This fork removes the formerly tracked XDNN payload from its current tree; upstream Git history still contains those files. The upstream ancestry is intentionally preserved.
+
+## Native Q4_0 (opt-in)
+
+Version 0.3 adds a standalone native Q4_0 API without changing existing matmul defaults. See [native Q4 API, constraints, benchmarks and source provenance](docs/native-q4.md). Native preserves Q4 weights at approximately 4.5 bpw; CDNN remains faster in the measured B1 cases.
