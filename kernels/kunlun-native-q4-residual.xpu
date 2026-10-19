@@ -1,0 +1,21 @@
+#include "native-q4/quant.h"
+__global__ void quant_residual_compact_64(int8_t *quant,float *parameters,const float *residual,
+                              const unsigned int *peaks0,const unsigned int *peaks1,int k){
+ __local__ __attribute__((aligned(64))) float x[NEXT_CHUNK],scaled[NEXT_CHUNK],params[16];
+ __local__ __attribute__((aligned(64))) unsigned int maxima0[NEXT_PEAKS],maxima1[NEXT_PEAKS];
+ __local__ __attribute__((aligned(64))) int8_t qout[NEXT_CHUNK*2];
+ int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),chunks=(k+NEXT_CHUNK-1)/NEXT_CHUNK;
+ // The same workspace is reused for different K values. Clear the moving zero tail on XPU.
+ if(tid<16){for(int j=0;j<64;++j)qout[j]=0;LM2GM(qout,quant+(long long)k*4+tid*64,64);}
+ GM2LM(peaks0,maxima0,((chunks+15)/16)*64);GM2LM(peaks1,maxima1,((chunks+15)/16)*64);
+ float maximum0=next_max(maxima0,chunks),maximum1=next_max(maxima1,chunks),inverse=127.f/maximum1;
+ if(tid==0){for(int j=0;j<16;++j)params[j]=0;params[0]=maximum0/127.f;params[1]=maximum1/127.f;params[2]=maximum0;params[3]=maximum1;LM2GM(params,parameters,64);}
+ for(int c=tid;c<chunks;c+=step){
+  for(int j=0;j<NEXT_CHUNK*2;++j)qout[j]=0;
+  int start=c*NEXT_CHUNK,count=k-start;if(count>NEXT_CHUNK)count=NEXT_CHUNK;
+  GM2LM(residual+start,x,count*4);
+  for(int j=0;j<count;j+=8)_x256_svmul_ls(inverse,x+j,scaled+j);
+  for(int j=0;j<count;++j)qout[(j/32)*64+j%32]=(int8_t)next_round(scaled[j]);
+  LM2GM(qout,quant+(long long)k*2+(long long)start*2,count*2);
+ }
+}

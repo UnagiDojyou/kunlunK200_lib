@@ -1,0 +1,27 @@
+#include "q4-device.h"
+#include "xpu/kernel/simd.h"
+// B1: coalesce eight K blocks of both partials and unchanged FP16 scales.
+// All DMA targets are 64-byte-aligned bases; tail copies are bounds checked by host.
+__global__ void q4_sum_partial(float *out,const float *partial,const unsigned short *scales,
+                              int k,int n,int batch,int first,int rows,int mode) {
+    if(batch!=1)return;
+    __local__ __attribute__((aligned(64))) float v[256],sum[32],d[32],prod[8];
+    __local__ __attribute__((aligned(64))) unsigned short h[256];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),blocks=mode==2?(k/32+7)/8:k/32;
+    for(int tile=tid;tile<rows/32;tile+=step){
+        for(int r=0;r<32;++r)sum[r]=0;
+        for(int base=0;base<blocks;base+=8){
+            int count=blocks-base;if(count>8)count=8;
+            GM2LM(partial+((long long)tile*blocks+base)*32,v,count*128);
+            if(mode==0){GM2LM(scales+((long long)(first/32+tile)*blocks+base)*32,h,count*64);}
+            for(int b=0;b<count;++b){
+                if(mode==0){for(int r=0;r<32;++r)d[r]=q4_half(h[b*32+r]);}
+                for(int r=0;r<32;r+=8){
+                    if(mode){_x256_vvadd_ls(sum+r,v+b*32+r,sum+r);}
+                    else{_x256_vvmul_ls(v+b*32+r,d+r,prod);_x256_vvadd_ls(sum+r,prod,sum+r);}
+                }
+            }
+        }
+        LM2GM(sum,out+first+tile*32,128);
+    }
+}

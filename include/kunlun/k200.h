@@ -105,6 +105,37 @@ bool set_rows_f16(Kernel &, int device, void * dst, size_t dst_bytes,
 // Completes before returning.
 void rms_norm(Kernel &, int device, void * y, const void * x, int width, int rows, float epsilon);
 
+// Native layout keeps the original Q4_0 values and FP16 block scales. N is padded to 32.
+bool native_q4_layout_supported(int k, int n);
+size_t native_q4_size(int k, int n);
+bool pack_native_q4(void * destination, size_t bytes, const void * q4, int k, int n);
+void upload_native_q4(int device, void * weights, const void * q4, int k, int n);
+enum class InputType { f32, f16 };
+// Empty string means the accelerated SD path is supported. The CL fallback accepts
+// all valid native layouts, batch >= 1, and F32/F16 input. No CPU activation copy.
+const char * native_q4_reason(int k, int n, int batch, InputType type);
+struct NativeQ4Statistics {
+    size_t accelerated, fallback;
+    size_t hbm_workspace_bytes, l3_workspace_bytes;
+};
+class NativeQ4Workspace {
+public:
+    NativeQ4Workspace();
+    ~NativeQ4Workspace();
+    NativeQ4Workspace(const NativeQ4Workspace &) = delete;
+    NativeQ4Workspace & operator=(const NativeQ4Workspace &) = delete;
+    NativeQ4Statistics statistics() const;
+    struct Impl;
+private:
+    Impl * impl_;
+    friend bool native_q4_matmul(NativeQ4Workspace &, int, void *, const void *, const void *, int, int, int, InputType);
+};
+// Completes before returning under runtime_mutex; the workspace is bound to one PD.
+// Returns true for SD, false for exact CL fallback. Device errors remain fail-fast.
+// weights/input/output must not overlap. SD requires 64-byte-aligned pointers.
+bool native_q4_matmul(NativeQ4Workspace &, int device, void * y, const void * weights,
+                      const void * input, int k, int n, int batch = 1, InputType type = InputType::f32);
+
 struct Statistics {
     size_t matmuls[2];
     size_t peer_copies, peer_bytes;

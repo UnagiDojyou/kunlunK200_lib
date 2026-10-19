@@ -1,0 +1,13 @@
+#define NEXT_DS_PAIRS 4
+#define NEXT_MIN_CLEAR 1
+#define NEXT_A_2D 1
+#define NEXT_PASS 0
+#define NEXT_HOIST 0
+#define NEXT_DEVICE_SCALE 1
+#define NEXT_COMPACT 1
+#define Q4_PIPE_ENTRY next_bulk_n64_2d
+#define Q4_PANEL_WIDTH 16
+#define Q4_PIPE_GUARD (batch!=1 || fold || !pipelined)
+#define Q4_PIPE_WINDOW 16
+#define Q4_GROUPED_DS 1
+#include "native-q4/pipeline.h"

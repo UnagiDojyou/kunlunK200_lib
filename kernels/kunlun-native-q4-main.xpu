@@ -1,0 +1,22 @@
+#include "native-q4/quant.h"
+__global__ void quant_main_compact_64(int8_t *quant,float *residual,unsigned int *res_peaks,
+                          const void *input,const unsigned int *peaks,int k,int dtype){
+ __local__ __attribute__((aligned(64))) float x[NEXT_CHUNK],scaled[NEXT_CHUNK];
+ __local__ __attribute__((aligned(64))) unsigned int maxima[NEXT_PEAKS];
+ __local__ __attribute__((aligned(64))) unsigned short halves[NEXT_CHUNK];
+ __local__ __attribute__((aligned(64))) int8_t qout[NEXT_CHUNK*2];
+ int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),chunks=(k+NEXT_CHUNK-1)/NEXT_CHUNK;
+ GM2LM(peaks,maxima,((chunks+15)/16)*64);float maximum=next_max(maxima,chunks),scale=maximum/127.f,inverse=127.f/maximum;
+ for(int c=tid;c<chunks;c+=step){
+  for(int j=0;j<NEXT_CHUNK*2;++j)qout[j]=0;
+  int start=c*NEXT_CHUNK,count=k-start;if(count>NEXT_CHUNK)count=NEXT_CHUNK;
+  if(!dtype){GM2LM((_global_ptr_ const float *)input+start,x,count*4);}
+  else{GM2LM((_global_ptr_ const unsigned short *)input+start,halves,count*2);for(int j=0;j<count;++j)x[j]=q4_half(halves[j]);}
+  for(int j=0;j<count;j+=8)_x256_svmul_ls(inverse,x+j,scaled+j);
+  for(int j=0;j<count;++j){int q=next_round(scaled[j]);qout[(j/32)*64+j%32]=(int8_t)q;scaled[j]=(float)q;}
+  for(int j=0;j<count;j+=8){_x256_svmul_ls(scale,scaled+j,scaled+j);_x256_vvsub_ls(x+j,scaled+j,x+j);}
+  unsigned int m=0;for(int j=0;j<count;++j){unsigned int u=next_bits(x[j])&0x7fffffff;if(u>m)m=u;}
+  maxima[0]=m;LM2GM(maxima,res_peaks+c,4);LM2GM(x,residual+start,count*4);
+  LM2GM(qout,quant+(long long)start*2,count*2);
+ }
+}

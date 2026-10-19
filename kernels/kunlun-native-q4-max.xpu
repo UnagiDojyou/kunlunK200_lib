@@ -1,0 +1,18 @@
+#include "native-q4/quant.h"
+__global__ void quant_max_64(unsigned int *peaks,const void *input,int k,int dtype){
+ __local__ __attribute__((aligned(64))) unsigned int words[NEXT_CHUNK];
+ __local__ __attribute__((aligned(64))) unsigned short halves[NEXT_CHUNK];
+ int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),chunks=(k+NEXT_CHUNK-1)/NEXT_CHUNK;
+ for(int c=tid;c<chunks;c+=step){
+  int start=c*NEXT_CHUNK,count=k-start;if(count>NEXT_CHUNK)count=NEXT_CHUNK;unsigned int m=0;
+  if(!dtype){
+   GM2LM((_global_ptr_ const float *)input+start,words,count*4);
+   for(int j=0;j<count;++j){unsigned int u=words[j]&0x7fffffff;if(u>m)m=u;}
+  }else{
+   GM2LM((_global_ptr_ const unsigned short *)input+start,halves,count*2);
+   for(int j=0;j<count;++j){unsigned int u=halves[j]&0x7fff;if(u>m)m=u;}
+   m=next_bits(q4_half(m));
+  }
+  words[0]=m;LM2GM(words,peaks+c,4);
+ }
+}

@@ -13,6 +13,7 @@
 #include <vector>
 #include <dlfcn.h>
 #include <limits.h>
+#include <memory>
 
 namespace kunlun {
 namespace xdnn = baidu::xpu::api;
@@ -131,7 +132,7 @@ struct Kernel::Impl {
     void * quant = nullptr, * correction = nullptr, * input_max = nullptr;
     size_t quant_size = 0, correction_size = 0;
 };
-void load_kernel(Kernel::Impl & k, const char * name, int id) {
+void load_kernel(Kernel::Impl & k, const char * name, int id, bool sd = false) {
     if (k.fn) return;
     select(id); k.id = id;
     std::string path = kernel_directory() + "/" + name;
@@ -143,8 +144,8 @@ void load_kernel(Kernel::Impl & k, const char * name, int id) {
     bytes.resize(((bytes.size() + 255) & ~size_t(255)) + 256, 0);
     check(xpu_malloc(&k.code, bytes.size()));
     check(xpu_memcpy(k.code, bytes.data(), bytes.size(), XPU_HOST_TO_DEVICE)); check(xpu_wait());
-    // These kernels run on cluster SIMD cores, not the SD/CDNN engines.
-    check(xpu_create_cl_func(&k.fn, (uint64_t)(uintptr_t)k.code, bytes.size(), 0, 0, 0, k.symbol.c_str(), true));
+    if (sd) check(xpu_create_sd_func(&k.fn, (uint64_t)(uintptr_t)k.code, bytes.size(), 0, 0, 0, k.symbol.c_str(), true));
+    else check(xpu_create_cl_func(&k.fn, (uint64_t)(uintptr_t)k.code, bytes.size(), 0, 0, 0, k.symbol.c_str(), true));
 }
 void combine_mv(Kernel::Impl & parent, int id, void * y, const void * products,
                  const float * scales, int n, int batch) {
@@ -399,6 +400,141 @@ void rms_norm(Kernel & kernel, int id, void * y, const void * input, int width, 
     check(xpu_launch_config(4,8)); check(xpu_launch_async(second.fn)); check(xpu_wait());
 }
 
+namespace {
+struct NativeL3 {
+    int id;
+    void * pointer = nullptr;
+    size_t bytes = 0;
+    explicit NativeL3(int device): id(device) {}
+    ~NativeL3() {
+        std::lock_guard<std::recursive_mutex> lock(mutex);
+        if (pointer) { select(id); check(xpu_wait()); check(xpu_free(pointer)); }
+    }
+    bool reserve(size_t size) {
+        if (bytes >= size) return true;
+        select(id); check(xpu_wait());
+        if (pointer) { check(xpu_free(pointer)); pointer=nullptr; bytes=0; }
+        int status=xpu_malloc(&pointer,size,XPU_MEM_L3);
+        if (status) {
+            pointer=nullptr;
+            if (status != XPUERR_NOMEM && status != -XPUERR_NOMEM && status != XPUERR_NOSUPPORT && status != -XPUERR_NOSUPPORT) check(status);
+            return false;
+        }
+        require(pointer && ((uintptr_t)pointer&255) == 0); bytes=size; return true;
+    }
+};
+std::weak_ptr<NativeL3> native_l3[2];
+struct NativeArgument { const void * value; size_t size; };
+template<class T> NativeArgument native_arg(const T & value) { return {&value,sizeof(T)}; }
+void native_launch(Kernel::Impl & program, std::initializer_list<NativeArgument> args, int cores) {
+    size_t offset=0;
+    for (auto arg : args) { check(xpu_launch_argument_set(arg.value,arg.size,offset)); offset+=arg.size; }
+    check(xpu_launch_config(4,cores)); check(xpu_launch_async(program.fn));
+}
+void native_reserve(std::unique_ptr<Buffer> & buffer, int id, size_t size) {
+    if (!buffer || buffer->size() < size) { check(xpu_wait()); buffer.reset(new Buffer(id,size)); }
+}
+}
+struct NativeQ4Workspace::Impl {
+    int id = -1;
+    Kernel::Impl maximum, main, residual, compute, compute_n32, sum, fallback;
+    std::unique_ptr<Buffer> quant, rest, peaks0, peaks1, parameters, hbm_partial;
+    std::shared_ptr<NativeL3> l3;
+    size_t accelerated = 0, fallbacks = 0;
+    bool l3_unavailable = false;
+};
+NativeQ4Workspace::NativeQ4Workspace(): impl_(new Impl{}) {}
+NativeQ4Workspace::~NativeQ4Workspace() {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto & s=*impl_;
+    if (s.id >= 0) {
+        select(s.id); check(xpu_wait());
+        for (auto * program : {&s.maximum,&s.main,&s.residual,&s.compute,&s.compute_n32,&s.sum,&s.fallback}) {
+            if (program->code) check(xpu_free(program->code));
+        }
+    }
+    delete impl_;
+}
+NativeQ4Statistics NativeQ4Workspace::statistics() const {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto & s=*impl_; size_t hbm=0;
+    for (auto * b : {s.quant.get(),s.rest.get(),s.peaks0.get(),s.peaks1.get(),s.parameters.get(),s.hbm_partial.get()})
+        if (b) hbm+=b->size();
+    return {s.accelerated,s.fallbacks,hbm,s.l3 ? s.l3->bytes : 0};
+}
+const char * native_q4_reason(int k, int n, int batch, InputType type) {
+    if (!native_q4_layout_supported(k,n)) return "K/N/layout capacity";
+    if (type != InputType::f32 && type != InputType::f16) return "input type";
+    if (batch != 1) return "batch != 1";
+    if (n%128) return "rows not divisible by 128 (N64 requires 256)";
+    if ((size_t)n*(k/32)*4 > 16*1024*1024) return "partial capacity";
+    return "";
+}
+bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const void * weights,
+                      const void * input, int k, int n, int batch, InputType type) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    require(id >= 0 && id < 2 && native_q4_layout_supported(k,n));
+    require(type == InputType::f32 || type == InputType::f16);
+    require(batch > 0 && (size_t)n*batch <= INT_MAX/4 && (size_t)k*batch <= INT_MAX/4);
+    require(y && weights && input);
+    uintptr_t yp=(uintptr_t)y, wp=(uintptr_t)weights, xp=(uintptr_t)input;
+    size_t ys=(size_t)n*batch*4, ws=native_q4_size(k,n), xs=(size_t)k*batch*(type == InputType::f16 ? 2 : 4);
+    require(yp%4 == 0 && wp%256 == 0 && xp%(type == InputType::f16 ? 2 : 4) == 0);
+    require(yp+ys >= yp && wp+ws >= wp && xp+xs >= xp);
+    require((yp+ys <= wp || wp+ws <= yp) && (yp+ys <= xp || xp+xs <= yp) && (wp+ws <= xp || xp+xs <= wp));
+    auto & s=*workspace.impl_; require(s.id == -1 || s.id == id); s.id=id;
+    select(id);
+    size_t payload=aligned((((size_t)n+31)&~size_t(31))*k/2);
+    const void * scales=(const char *)weights+payload;
+    int dtype=type == InputType::f16 ? 1 : 0;
+    if (*native_q4_reason(k,n,batch,type) || (yp|xp)&63) {
+        load_kernel(s.fallback,"kunlun-native-q4-fallback",id);
+        native_launch(s.fallback,{native_arg(y),native_arg(weights),native_arg(scales),native_arg(input),
+            native_arg(k),native_arg(n),native_arg(batch),native_arg(dtype)},8);
+        check(xpu_wait()); ++s.fallbacks; ++matmuls[id]; return false;
+    }
+    // All five launches finish before releasing runtime_mutex. SDK L3 allocations
+    // own disjoint ranges; shared native scratch is never live across another call.
+    load_kernel(s.maximum,"kunlun-native-q4-max",id);
+    load_kernel(s.main,"kunlun-native-q4-main",id);
+    load_kernel(s.residual,"kunlun-native-q4-residual",id);
+    auto & compute=n%256 ? s.compute_n32 : s.compute;
+    load_kernel(compute,n%256 ? "kunlun-native-q4-n32" : "kunlun-native-q4",id,true);
+    load_kernel(s.sum,"kunlun-native-q4-sum",id);
+    size_t quant_size=(size_t)4*k+1024, partial_size=(size_t)n*(k/32)*4;
+    if (!s.quant || s.quant->size() < quant_size) {
+        native_reserve(s.quant,id,quant_size);
+        std::vector<char> zero(quant_size,0);
+        check(xpu_memcpy(s.quant->data(),zero.data(),zero.size(),XPU_HOST_TO_DEVICE)); check(xpu_wait());
+    }
+    native_reserve(s.rest,id,(size_t)k*4);
+    native_reserve(s.peaks0,id,2048); native_reserve(s.peaks1,id,2048); native_reserve(s.parameters,id,64);
+    if (!s.l3) {
+        s.l3=native_l3[id].lock();
+        if (!s.l3) { s.l3=std::make_shared<NativeL3>(id); native_l3[id]=s.l3; }
+    }
+    void * partial=nullptr;
+    if (!s.l3_unavailable && s.l3->reserve(partial_size)) partial=s.l3->pointer;
+    else {
+        if (!s.l3_unavailable) std::fprintf(stderr,"Kunlun native Q4 PD%d: L3 unavailable; using HBM partials (%zu bytes)\n",id,partial_size);
+        s.l3_unavailable=true;
+        native_reserve(s.hbm_partial,id,partial_size); partial=s.hbm_partial->data();
+    }
+    void * q=s.quant->data(), * rest=s.rest->data(), * p0=s.peaks0->data(), * p1=s.peaks1->data(), * params=s.parameters->data();
+    native_launch(s.maximum,{native_arg(p0),native_arg(input),native_arg(k),native_arg(dtype)},16);
+    native_launch(s.main,{native_arg(q),native_arg(rest),native_arg(p1),native_arg(input),native_arg(p0),native_arg(k),native_arg(dtype)},16);
+    native_launch(s.residual,{native_arg(q),native_arg(params),native_arg(rest),native_arg(p0),native_arg(p1),native_arg(k)},16);
+    check(xpu_wait());
+    int first=0, components=2, bits=8, pipelined=1, fold=0, mode=1; float a0=1,a1=1,a2=1;
+    native_launch(compute,{native_arg(partial),native_arg(weights),native_arg(q),native_arg(k),native_arg(n),
+        native_arg(batch),native_arg(first),native_arg(n),native_arg(components),native_arg(bits),native_arg(a0),
+        native_arg(a1),native_arg(a2),native_arg(pipelined),native_arg(scales),native_arg(fold),native_arg(params)},8);
+    check(xpu_wait());
+    native_launch(s.sum,{native_arg(y),native_arg(partial),native_arg(scales),native_arg(k),native_arg(n),
+        native_arg(batch),native_arg(first),native_arg(n),native_arg(mode)},16);
+    check(xpu_wait()); ++s.accelerated; ++matmuls[id]; return true;
+}
+
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.2.0"; }
+const char * version() { return "0.3.0"; }
 } // namespace kunlun
