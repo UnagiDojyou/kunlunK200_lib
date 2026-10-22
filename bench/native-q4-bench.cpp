@@ -14,7 +14,7 @@ int main(int argc,char **argv) {
     }
     std::string mode=argv[1],dtype=argv[6]; int pd=std::atoi(argv[2]),k=std::atoi(argv[3]),n=std::atoi(argv[4]),batch=std::atoi(argv[5]),pattern=std::atoi(argv[7]),trials=std::atoi(argv[8]);
     require(mode=="native" || mode=="direct" || mode=="cdnn" || mode=="cpu");
-    require(kunlun::native_q4_layout_supported(k,n) && batch>=1 && batch<=256 && (mode!="native" || batch<=32) && trials>=1 && trials<=50 && (dtype=="f32" || dtype=="f16"));
+    require(kunlun::native_q4_layout_supported(k,n) && batch>=1 && batch<=256 && trials>=1 && trials<=50 && (dtype=="f32" || dtype=="f16"));
     auto begin=Clock::now(); Weights w(k,n); auto x=input(k,batch,pattern);
     if(const char * file=std::getenv("KUNLUN_Q4_ACTIVATION_FILE")){std::ifstream in(file,std::ios::binary);in.read((char*)x.data(),x.size()*4);require(in.good());}
     std::vector<unsigned short> hx(x.size());
