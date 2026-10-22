@@ -70,3 +70,7 @@ New source is covered by the existing MIT license. Vendor components retain thei
 ## Native Q4_0 (opt-in)
 
 Version 0.3 adds a standalone native Q4_0 API without changing existing matmul defaults. See [native Q4 API, constraints, benchmarks and source provenance](docs/native-q4.md). Native preserves Q4 weights at approximately 4.5 bpw; CDNN remains faster in the measured B1 cases.
+
+## Optional common Q4_0 matrices
+
+Version 0.4 adds a typed, versioned common-F weight handle for GEMV and SD GEMM. Existing APIs and defaults are preserved. See [the ABI, ownership and dispatch guide](docs/common-q4.md) for build commands, limitations, diagnostics and the independent broadcast opt-in.
