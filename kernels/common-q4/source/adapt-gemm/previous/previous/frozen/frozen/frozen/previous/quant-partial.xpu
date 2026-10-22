@@ -1,0 +1,12 @@
+#include "quant-chunks.h"
+__global__ void quant_partial(unsigned int* peaks,const void* input,int m,int kp,int dtype){
+    __local__ __attribute__((aligned(64))) float x[64];
+    __local__ __attribute__((aligned(64))) unsigned short h[64];
+    __local__ __attribute__((aligned(64))) unsigned int word[16];
+    int chunks=kp/64,stride=(chunks+15)/16*16,tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    for(int t=tid;t<m*chunks;t+=step){int row=t/chunks,chunk=t%chunks;
+        read_activation(input,row,chunk*64,kp,dtype,x,h);unsigned int mx=0;
+        for(int j=0;j<64;++j){unsigned int u=bits(x[j])&0x7fffffff;if(u>mx)mx=u;}
+        word[0]=mx;LM2GM(word,peaks+row*stride+chunk,4);
+    }
+}

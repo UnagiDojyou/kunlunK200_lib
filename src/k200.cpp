@@ -14,6 +14,8 @@
 #include <dlfcn.h>
 #include <limits.h>
 #include <memory>
+#include <chrono>
+#include <stdexcept>
 
 namespace kunlun {
 namespace xdnn = baidu::xpu::api;
@@ -142,6 +144,7 @@ void load_kernel(Kernel::Impl & k, const char * name, int id, bool sd = false) {
     require(!bytes.empty() && !k.symbol.empty());
     // Keep the final return away from the instruction fetch boundary.
     bytes.resize(((bytes.size() + 255) & ~size_t(255)) + 256, 0);
+    require(bytes.size() <= 16384);
     check(xpu_malloc(&k.code, bytes.size()));
     check(xpu_memcpy(k.code, bytes.data(), bytes.size(), XPU_HOST_TO_DEVICE)); check(xpu_wait());
     if (sd) check(xpu_create_sd_func(&k.fn, (uint64_t)(uintptr_t)k.code, bytes.size(), 0, 0, 0, k.symbol.c_str(), true));
@@ -535,6 +538,8 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
     check(xpu_wait()); ++s.accelerated; ++matmuls[id]; return true;
 }
 
+#include "q4-common.inc"
+
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.3.0"; }
+const char * version() { return "0.4.0"; }
 } // namespace kunlun

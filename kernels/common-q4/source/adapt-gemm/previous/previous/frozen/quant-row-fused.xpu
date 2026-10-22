@@ -1,0 +1,22 @@
+#include "frozen/frozen/previous/quant-chunks.h"
+// Row scales, primary component only. Modes 0=D4 packed, 1=A8 row.
+__global__ void quant_row(int8_t* q,float* params,const void* input,const unsigned int* peaks,int m,int kp,int dtype,int mode){
+    __local__ __attribute__((aligned(64))) float x[128],scaled[128],p[16];
+    __local__ __attribute__((aligned(64))) unsigned short h[128];
+    __local__ __attribute__((aligned(64))) unsigned int maxima[PEAKS];
+    __local__ __attribute__((aligned(64))) int8_t result[128];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),mp=mode?(m+31)/32*32:(m+63)/64*64;
+    int chunk=mode?64:128,chunks=kp/chunk,peak_stride=((kp/64+15)/16)*16;
+    for(int t=tid;t<mp*chunks;t+=step){int row=t/chunks,base=t%chunks*chunk;float scale=1.f;
+        if(row<m){
+            GM2LM(peaks+row*peak_stride,maxima,peak_stride*4);float mx=peak_value(maxima,kp/64),range=mode?127.f:7.f;scale=mx/range;
+            if(!dtype){GM2LM((_global_ptr_ const float*)input+(long long)row*kp+base,x,chunk*4);}
+            else{GM2LM((_global_ptr_ const unsigned short*)input+(long long)row*kp+base,h,chunk*2);for(int j=0;j<chunk;++j)x[j]=half_value(h[j]);}
+            for(int j=0;j<chunk;j+=8)_x256_svmul_ls(range/mx,x+j,scaled+j);
+            for(int j=0;j<chunk;++j){int v=round_quant(scaled[j]);if(!mode){if(v>7)v=7;if(v<-7)v=-7;}result[j]=(int8_t)v;}
+        }else{for(int j=0;j<chunk;++j)result[j]=0;}
+        if(mode){LM2GM(result,q+(long long)row*kp+base,64);}
+        else{for(int j=0;j<64;++j)result[j]=(int8_t)((result[2*j]&15)|((result[2*j+1]&15)<<4));LM2GM(result,q+(long long)row*(kp/2)+base/2,64);}
+        if(base==0){for(int j=0;j<16;++j)p[j]=scale;LM2GM(p,params+row*16,64);}
+    }
+}

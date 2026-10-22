@@ -1,0 +1,6 @@
+#define FOLD_LANES 0
+#define GEMM_PROFILE 0
+#define A_BLOCK 1024
+#define FUSE_BANKS 1
+#define DIRECT_FIRST 1
+#include "m8-kernel.h"

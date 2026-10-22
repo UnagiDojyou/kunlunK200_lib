@@ -1,0 +1,3 @@
+#define COMMON_LAYOUT 1
+#define COMMON_SCALE 1
+#include "../../adapt-m8/combined.xpu"

@@ -1,0 +1,33 @@
+#include "q4-device.h"
+#include "xpu/kernel/simd.h"
+
+// Exact Q4 arithmetic on the resident native layout, including N32 tails and batches.
+__global__ void kunlun_common_q4_fallback(float *out,const unsigned char *weights,
+    const unsigned short *scales,const void *input,int k,int n,int batch,int dtype) {
+    __local__ __attribute__((aligned(64))) unsigned char panel[512];
+    __local__ __attribute__((aligned(64))) unsigned short scale[32],halves[32];
+    __local__ __attribute__((aligned(64))) float x[32],q[32],acc[8],prod[8],sum[32];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    for(int col=0;col<batch;++col) for(int tile=tid;tile<(n+31)/32;tile+=step) {
+        for(int r=0;r<32;++r)sum[r]=0;
+        int rows=n-tile*32;if(rows>32)rows=32;
+        for(int b=0;b<k/32;++b) {
+            long long block=(long long)tile*(k/32)+b;
+            GM2LM(weights+block*512,panel,512);GM2LM(scales+(long long)b*n+tile*32,scale,64);
+            if(dtype){
+                GM2LM((_global_ptr_ const unsigned short *)input+(long long)col*k+b*32,halves,64);
+                for(int j=0;j<32;++j)x[j]=q4_half(halves[j]);
+            }else{GM2LM((_global_ptr_ const float *)input+(long long)col*k+b*32,x,128);}
+            for(int r=0;r<rows;++r) {
+                for(int j=0;j<16;++j) {
+                    unsigned int v=panel[((r%16)*16+(r/16)*8+j/2)*2+j%2];int lo=v&15,hi=v>>4;
+                    q[j*2]=(float)(lo>=8?lo-16:lo);q[j*2+1]=(float)(hi>=8?hi-16:hi);
+                }
+                _x256_vvmul_ls(q,x,acc);
+                for(int j=8;j<32;j+=8){_x256_vvmul_ls(q+j,x+j,prod);_x256_vvadd_ls(acc,prod,acc);}
+                float v=0;for(int j=0;j<8;++j)v+=acc[j];sum[r]+=q4_half(scale[r])*v;
+            }
+        }
+        LM2GM(sum,out+(long long)col*n+tile*32,rows*4);
+    }
+}

@@ -136,6 +136,58 @@ private:
 bool native_q4_matmul(NativeQ4Workspace &, int device, void * y, const void * weights,
                       const void * input, int k, int n, int batch = 1, InputType type = InputType::f32);
 
+// Common Q4 ABI v1. Separate type prevents legacy native layout dispatch.
+struct CommonQ4Info {
+    uint32_t abi_version, quant_type, layout, scale_order;
+    int k, n, kp, np, device;
+    size_t scale_offset, payload_bytes;
+};
+bool common_q4_supported(int k, int n);
+size_t common_q4_size(int k, int n);
+struct CommonQ4WeightStatistics { size_t uploads, upload_bytes; double pack_ms, upload_ms; };
+class CommonQ4Weight {
+public:
+    // Borrowed storage must be 256-byte aligned and outlive this handle and calls.
+    // Null storage allocates an owned Buffer. No upload occurs in a forward call.
+    CommonQ4Weight(int device, int k, int n, void * storage = nullptr, size_t bytes = 0);
+    ~CommonQ4Weight();
+    CommonQ4Weight(const CommonQ4Weight &) = delete;
+    CommonQ4Weight & operator=(const CommonQ4Weight &) = delete;
+    CommonQ4Info info() const;
+    CommonQ4WeightStatistics statistics() const;
+    void * data() const;
+    void upload(const void * q4, size_t bytes);
+    struct Impl;
+private:
+    Impl * impl_;
+    friend void common_q4_matmul(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const void *, int, InputType);
+};
+struct CommonQ4Statistics {
+    // GEMV, Combined, Wide, Rows64, Rows128, Combo2, Combo4, exact CL.
+    size_t paths[8], calls, chunks;
+    size_t hbm_workspace_bytes, l3_workspace_bytes, slice_bytes;
+};
+struct CommonQ4Quantization { const void * values; const void * scales; int rows, kp, components; };
+class CommonQ4Workspace {
+public:
+    CommonQ4Workspace();
+    ~CommonQ4Workspace();
+    CommonQ4Workspace(const CommonQ4Workspace &) = delete;
+    CommonQ4Workspace & operator=(const CommonQ4Workspace &) = delete;
+    CommonQ4Statistics statistics() const;
+    // Borrowed device buffers, valid until the next call or workspace destruction.
+    CommonQ4Quantization quantization() const;
+    struct Impl;
+private:
+    Impl * impl_;
+    friend void common_q4_matmul(CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const void *, int, InputType);
+};
+// Contiguous X[M,K], Y[M,N]. Synchronous under runtime_mutex, one workspace/PD.
+// M>1 uses Row A8, M=1 uses two-component A8. Original weight scales are exact.
+// Invalid type, PD ownership, overlap or element alignment is rejected before launch.
+void common_q4_matmul(CommonQ4Workspace &, int device, void * y, const CommonQ4Weight &,
+                       const void * input, int m, InputType type = InputType::f32);
+
 struct Statistics {
     size_t matmuls[2];
     size_t peer_copies, peer_bytes;

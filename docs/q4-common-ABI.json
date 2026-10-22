@@ -1,0 +1,21 @@
+{
+  "name": "K200_Q4_0_MICRO32_BANK16_KMAJOR",
+  "abi_version": 1,
+  "quant_type": 2,
+  "endianness": "little",
+  "layout": 1,
+  "scale_order": 1,
+  "weight_alignment": 256,
+  "scale_alignment": 256,
+  "N_padding": 256,
+  "K_padding": "512 if K<512 else 256",
+  "weight_bytes": "Np*Kp/2",
+  "scale_bytes": "Np*Kp/16",
+  "scale_offset": "Np*Kp/2",
+  "payload_bytes": "Np*Kp*9/16",
+  "persistent_header_bytes": 0,
+  "metadata_location": "host handle",
+  "signed_q": "GGUF nibble minus 8; packed two-complement adjacent K",
+  "scale": "original FP16 bits",
+  "device_ownership": "PD0 or PD1; share ownership and retain lease through completion"
+}

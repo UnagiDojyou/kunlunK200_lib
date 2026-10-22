@@ -14,8 +14,10 @@ int main(int argc,char **argv) {
     }
     std::string mode=argv[1],dtype=argv[6]; int pd=std::atoi(argv[2]),k=std::atoi(argv[3]),n=std::atoi(argv[4]),batch=std::atoi(argv[5]),pattern=std::atoi(argv[7]),trials=std::atoi(argv[8]);
     require(mode=="native" || mode=="direct" || mode=="cdnn" || mode=="cpu");
-    require(kunlun::native_q4_layout_supported(k,n) && batch>=1 && batch<=32 && trials>=1 && trials<=50 && (dtype=="f32" || dtype=="f16"));
-    auto begin=Clock::now(); Weights w(k,n); auto x=input(k,batch,pattern); std::vector<unsigned short> hx(x.size());
+    require(kunlun::native_q4_layout_supported(k,n) && batch>=1 && batch<=256 && (mode!="native" || batch<=32) && trials>=1 && trials<=50 && (dtype=="f32" || dtype=="f16"));
+    auto begin=Clock::now(); Weights w(k,n); auto x=input(k,batch,pattern);
+    if(const char * file=std::getenv("KUNLUN_Q4_ACTIVATION_FILE")){std::ifstream in(file,std::ios::binary);in.read((char*)x.data(),x.size()*4);require(in.good());}
+    std::vector<unsigned short> hx(x.size());
     if (dtype=="f16") for (size_t j=0;j<x.size();++j) { _Float16 h=(_Float16)x[j];std::memcpy(&hx[j],&h,2);x[j]=(float)h; }
     auto t=Clock::now(); auto gold=reference(w.decoded,x,k,n,batch); double cpu_ms=ms(t),fixture_ms=ms(begin);
     if (mode=="cpu") {
@@ -57,7 +59,8 @@ int main(int argc,char **argv) {
         if(mode!="native") { kunlun::select(pd);kunlun::check(kunlun::wait()); }
     };
     t=Clock::now(); run();double cold_ms=ms(t);
-    for(int i=0;i<3;++i)run();
+    int warmup=std::getenv("KUNLUN_Q4_WARMUP")?std::atoi(std::getenv("KUNLUN_Q4_WARMUP")):3;require(warmup>=0 && warmup<=10);
+    for(int i=0;i<warmup;++i)run();
     setenv("K200_PROFILE_PHASE","steady",1);
     std::vector<double> times;
     for(int i=0;i<trials;++i){t=Clock::now();run();double elapsed=ms(t);times.push_back(elapsed);std::printf("TRIAL index=%d ms=%.9f\n",i,elapsed);}

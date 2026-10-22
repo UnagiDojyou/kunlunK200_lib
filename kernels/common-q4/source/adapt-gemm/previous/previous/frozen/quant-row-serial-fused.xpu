@@ -1,0 +1,25 @@
+#include "frozen/frozen/previous/cl-common.h"
+// Single component, two input passes, no residual or inter-chunk peak reread.
+__global__ void quant_row_serial(int8_t* q,float* params,const void* input,int m,int kp,int dtype){
+    __local__ __attribute__((aligned(64))) float x[64],scaled[64],p[16];
+    __local__ __attribute__((aligned(64))) unsigned short h[64];
+    __local__ __attribute__((aligned(64))) int8_t result[64];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),mp=(m+31)/32*32;
+    for(int row=tid;row<mp;row+=step){
+        unsigned int maximum=0;
+        for(int base=0;base<kp;base+=64){
+            if(!dtype){GM2LM((_global_ptr_ const float*)input+(long long)row*kp+base,x,256);}
+            else{GM2LM((_global_ptr_ const unsigned short*)input+(long long)row*kp+base,h,128);for(int j=0;j<64;++j)x[j]=half_value(h[j]);}
+            for(int j=0;j<64;++j){unsigned int u=bits(x[j])&0x7fffffff;if(u>maximum)maximum=u;}
+        }
+        float mx=maximum?from_bits(maximum):1.f,scale=mx/127.f,inv=127.f/mx;
+        for(int base=0;base<kp;base+=64){
+            if(!dtype){GM2LM((_global_ptr_ const float*)input+(long long)row*kp+base,x,256);}
+            else{GM2LM((_global_ptr_ const unsigned short*)input+(long long)row*kp+base,h,128);for(int j=0;j<64;++j)x[j]=half_value(h[j]);}
+            for(int j=0;j<64;j+=8)_x256_svmul_ls(inv,x+j,scaled+j);
+            for(int j=0;j<64;++j)result[j]=(int8_t)round_quant(scaled[j]);
+            LM2GM(result,q+(long long)row*kp+base,64);
+        }
+        for(int j=0;j<16;++j)p[j]=scale;LM2GM(p,params+row*16,64);
+    }
+}

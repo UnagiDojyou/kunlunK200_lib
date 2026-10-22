@@ -1,0 +1,13 @@
+#include "previous/previous/frozen/frozen/frozen/previous/cl-common.h"
+__global__ void join_slices(float* out,const float* parts,const float* scale,int m,int np,int splits,unsigned int* stats){
+    __local__ __attribute__((aligned(64))) float x[128],sum[128],params[16];
+    __local__ __attribute__((aligned(64))) unsigned int clocks[4];
+    int tid=cluster_id()*core_num()+core_id(),stride=cluster_num()*core_num();unsigned int begin=(unsigned int)get_clock();int count=0;
+    for(int t=tid;t<m*(np/128);t+=stride){int row=t/(np/128),col=t%(np/128)*128;
+        GM2LM(parts+(long long)row*np+col,sum,512);
+        for(int s=1;s<splits;++s){GM2LM(parts+((long long)s*m+row)*np+col,x,512);for(int j=0;j<128;j+=8)_x256_vvadd_ls(sum+j,x+j,sum+j);}
+        GM2LM(scale+row*16,params,64);for(int j=0;j<128;j+=8)_x256_svmul_ls(params[0],sum+j,sum+j);
+        LM2GM(sum,out+(long long)row*np+col,512);count+=128;
+    }
+    clocks[0]=(unsigned int)get_clock()-begin;clocks[1]=count;clocks[2]=splits;clocks[3]=0;LM2GM(clocks,stats+1024+tid*4,16);
+}

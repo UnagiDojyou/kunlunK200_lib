@@ -1,0 +1,218 @@
+{
+  "kernels/common-q4/source/adapt-gemv/bench/kernels/cdnn_ref.h": {
+    "source": "source/adapt-gemv/bench/kernels/cdnn_ref.h",
+    "source_sha256": "f541ab15db9521e93768434f4406e0d846b57e79a114bd8d7bbde780fb7737be"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/activation-stage.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/activation-stage.h",
+    "source_sha256": "d79c11cffa0d743b1034d6bda8b8800f23f68da8cd3016d15b751e8a9ebef08d"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/weight_dma-dual16-normal-38ba6b5b.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/weight_dma-dual16-normal-38ba6b5b.h",
+    "source_sha256": "dda5444dce3e03d889e214c9ed22a48bc720554f7e88a9b39f513da40e4c8de7"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/weight_ds-dual16-normal-65ea075b.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/weight_ds-dual16-normal-65ea075b.h",
+    "source_sha256": "4ac79058e435683e2e44a6538d6ad41b30bc249aeb6bb934871a7f23ef80d3d1"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/weight_dma_second-dual16-normal-a8574bc2.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/weight_dma_second-dual16-normal-a8574bc2.h",
+    "source_sha256": "82f7a4cac9d8313cf6d16b758c495947cb22f69fae66e4aec0a5b286b5ec6cbd"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/weight_ds_second-dual16-normal-cca2785d.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/weight_ds_second-dual16-normal-cca2785d.h",
+    "source_sha256": "555cf23bfea51e807334ac308ae181d9cc32369302b8298302af0c6d6cc5bc89"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/mac_group-batch16-normal-584ec4a6.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/mac_group-batch16-normal-584ec4a6.h",
+    "source_sha256": "aab1ddc1d716b0f00081474dca5d6aa0f2581aecddf1481fac190496440747ca"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/scale_dma-dual16-normal-0119e532.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/scale_dma-dual16-normal-0119e532.h",
+    "source_sha256": "43bb8fb5c6d803cf370131e043baa3f348dd9d73910e56b39add16b339ea95d4"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/scale_ds-dual16-normal-d68effc0.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/scale_ds-dual16-normal-d68effc0.h",
+    "source_sha256": "44ab841eb50f92d5a88abbe3b950eec308a5793ceffd35a18142af98f29721a7"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/ew_group-base-normal-9c3f8f1a.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/ew_group-base-normal-9c3f8f1a.h",
+    "source_sha256": "8c961c8650590e3481c2a9d344916088942accabfbf048b863bf7535160ae07b"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/rs_group-base-normal-9099e3a9.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/rs_group-base-normal-9099e3a9.h",
+    "source_sha256": "fea5ab0cd0908b94b424fb755960ccf381b51d5db65b55df1cffc48cdb581221"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/transfers/output_dma-base-normal-124c2a3c.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/transfers/output_dma-base-normal-124c2a3c.h",
+    "source_sha256": "dbc6b8a957bb9702a365dd4cd1404e6ff015b27f64890be24c785eb71c4e81af"
+  },
+  "kernels/common-q4/source/adapt-gemv/experiments/weight-ds/common-normal.h": {
+    "source": "source/adapt-gemv/experiments/weight-ds/common-normal.h",
+    "source_sha256": "afa4e5d3eb8d828caa04df00b9c9599670b602679032c6cc11ad7f9dea7a0538"
+  },
+  "kernels/common-q4/source/generated/F/gemv.xpu": {
+    "source": "source/generated/F/gemv.xpu",
+    "source_sha256": "ec2a76d3324048c4585114b7c9a2f85cd6c4223cd7252715fe96df82941d8a24"
+  },
+  "kernels/common-q4/source/adapt-m8/previous/previous/frozen/frozen/frozen/previous/baseline/reference/cdnn_ref.h": {
+    "source": "source/adapt-m8/previous/previous/frozen/frozen/frozen/previous/baseline/reference/cdnn_ref.h",
+    "source_sha256": "a19f452aa7f10c072e76527fce3532ad2c7c50c286e6e042fe23a417b67549bb"
+  },
+  "kernels/common-q4/source/adapt-m8/previous/previous/frozen/frozen/frozen/previous/baseline/gemm-ops.h": {
+    "source": "source/adapt-m8/previous/previous/frozen/frozen/frozen/previous/baseline/gemm-ops.h",
+    "source_sha256": "8989e8192e40a6948ad04b28bdb43626c03f67678e31ab89637b9ccd11fe451c"
+  },
+  "kernels/common-q4/source/adapt-m8/previous/previous/frozen/frozen/frozen/previous/timing.h": {
+    "source": "source/adapt-m8/previous/previous/frozen/frozen/frozen/previous/timing.h",
+    "source_sha256": "01fd38b0659eef364d0ab378745bd94ce6b51f1eb2a55e2394355ca6f4d92b7c"
+  },
+  "kernels/common-q4/source/adapt-m8/previous/previous/frozen/q4-ops.h": {
+    "source": "source/adapt-m8/previous/previous/frozen/q4-ops.h",
+    "source_sha256": "c839079ee1cc8023bad02eebd41eb878fcccaccade9b2efb94242713db2381bb"
+  },
+  "kernels/common-q4/source/adapt-m8/previous/previous/frozen/q40-lanes-ops.h": {
+    "source": "source/adapt-m8/previous/previous/frozen/q40-lanes-ops.h",
+    "source_sha256": "ea3290d20e4a274f8f3f0ee7934705737e49d0c46f7eb174e2e1123da04da602"
+  },
+  "kernels/common-q4/source/adapt-m8/previous/previous/detail.h": {
+    "source": "source/adapt-m8/previous/previous/detail.h",
+    "source_sha256": "05d56b2c27bad692f3b63f9c5b74ce8e9f83075b43bbb39da459842913d6fd41"
+  },
+  "kernels/common-q4/source/adapt-m8/base-ops.h": {
+    "source": "source/adapt-m8/base-ops.h",
+    "source_sha256": "1e6424d2147c678c47f1cbe418fba5bf16312318aacd90b15972fa815642d3ef"
+  },
+  "kernels/common-q4/source/adapt-m8/m8-ops.h": {
+    "source": "source/adapt-m8/m8-ops.h",
+    "source_sha256": "736f93e9686578f93300f43acba0d6d4f2c156f1154a433c9c54400f0a5176ed"
+  },
+  "kernels/common-q4/common-feed.h": {
+    "source": "common-feed.h",
+    "source_sha256": "54f1a3085b8e815492a918d20591d97ce4f6e60a722186ca69792e18d7866e50"
+  },
+  "kernels/common-q4/source/adapt-m8/m8-kernel.h": {
+    "source": "source/adapt-m8/m8-kernel.h",
+    "source_sha256": "8b3f11ca3b6469ac33561bceacee0b94ff5f695b193fbb1495116c92d31e4c70"
+  },
+  "kernels/common-q4/source/adapt-m8/combined.xpu": {
+    "source": "source/adapt-m8/combined.xpu",
+    "source_sha256": "bcaad6751d78d899c8f85cbf089368164ae0cfe5d5b52f63b7b7359ee4119010"
+  },
+  "kernels/common-q4/source/generated/F/combined.xpu": {
+    "source": "source/generated/F/combined.xpu",
+    "source_sha256": "6c49fdb7e840f20522078ab7f5162cdb80ad2c62810afce9f46b965b991283b1"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/baseline/reference/cdnn_ref.h": {
+    "source": "source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/baseline/reference/cdnn_ref.h",
+    "source_sha256": "a19f452aa7f10c072e76527fce3532ad2c7c50c286e6e042fe23a417b67549bb"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/baseline/gemm-ops.h": {
+    "source": "source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/baseline/gemm-ops.h",
+    "source_sha256": "8989e8192e40a6948ad04b28bdb43626c03f67678e31ab89637b9ccd11fe451c"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/timing.h": {
+    "source": "source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/timing.h",
+    "source_sha256": "01fd38b0659eef364d0ab378745bd94ce6b51f1eb2a55e2394355ca6f4d92b7c"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/q4-ops.h": {
+    "source": "source/adapt-gemm/previous/previous/frozen/q4-ops.h",
+    "source_sha256": "c839079ee1cc8023bad02eebd41eb878fcccaccade9b2efb94242713db2381bb"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/q40-lanes-ops.h": {
+    "source": "source/adapt-gemm/previous/previous/frozen/q40-lanes-ops.h",
+    "source_sha256": "ea3290d20e4a274f8f3f0ee7934705737e49d0c46f7eb174e2e1123da04da602"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/detail.h": {
+    "source": "source/adapt-gemm/previous/previous/detail.h",
+    "source_sha256": "05d56b2c27bad692f3b63f9c5b74ce8e9f83075b43bbb39da459842913d6fd41"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/optimized-ops.h": {
+    "source": "source/adapt-gemm/previous/previous/optimized-ops.h",
+    "source_sha256": "552812fccb12755e73e1d400b9138927dc7e73bb41201886f7cd11bbf7b64e91"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/optimized-kernel.h": {
+    "source": "source/adapt-gemm/previous/previous/optimized-kernel.h",
+    "source_sha256": "3d5a1a724ea2b945c9c7fdf6dba94550f23cb43cd1c0b329f4a05ee16b4ef850"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/wide.xpu": {
+    "source": "source/adapt-gemm/previous/previous/wide.xpu",
+    "source_sha256": "10cc311550f3af6e317c23dbd278e590d8fc4275716df2ed9c6176d33bf19587"
+  },
+  "kernels/common-q4/source/generated/F/wide.xpu": {
+    "source": "source/generated/F/wide.xpu",
+    "source_sha256": "127c8ca3f9f8c63b30f2cd6ae51c67c00f9e45a5da3e76b45a0640698c75ff93"
+  },
+  "kernels/common-q4/source/adapt-gemm/big-ops.h": {
+    "source": "source/adapt-gemm/big-ops.h",
+    "source_sha256": "a977d80c925dbb5d5331bb6387f9a8dabc0bc6ca98e73c85606622874fa511e3"
+  },
+  "kernels/common-q4/source/adapt-gemm/big-kernel.h": {
+    "source": "source/adapt-gemm/big-kernel.h",
+    "source_sha256": "d617bfff43595a71a1513a30d26e703c74cf29e4b190c9bc3bbc36d7a61e410d"
+  },
+  "kernels/common-q4/source/adapt-gemm/rows64.xpu": {
+    "source": "source/adapt-gemm/rows64.xpu",
+    "source_sha256": "1acacb89095beabad84796e62bd4cdb0fcf0237f0ec4c37d22ed516d8fa5f025"
+  },
+  "kernels/common-q4/source/generated/F/rows64.xpu": {
+    "source": "source/generated/F/rows64.xpu",
+    "source_sha256": "9ad64b4585df37430b4269c880cd0bb0c9646a8a37540f7a1b1776485ad91368"
+  },
+  "kernels/common-q4/source/adapt-gemm/rows128.xpu": {
+    "source": "source/adapt-gemm/rows128.xpu",
+    "source_sha256": "b6c94bd7390b0a8e71064a8997a5bee190e3718c7b632774010a88e1b0487255"
+  },
+  "kernels/common-q4/source/generated/F/rows128.xpu": {
+    "source": "source/generated/F/rows128.xpu",
+    "source_sha256": "0f513606c6481f8fbaa6e84635cbcfd679315ef45e12909f1d2133960a98aece"
+  },
+  "kernels/common-q4/source/adapt-gemm/combo-ops.h": {
+    "source": "source/adapt-gemm/combo-ops.h",
+    "source_sha256": "92e7c6ffb40490f29f2e7a1ba55d46763f4ca49a6a7e157911614a2126c0531d"
+  },
+  "kernels/common-q4/source/adapt-gemm/combo-kernel.h": {
+    "source": "source/adapt-gemm/combo-kernel.h",
+    "source_sha256": "a6e8525e26f661838494694fdec1ba4da2c49d51fb7859c5cd3ee461600e9f10"
+  },
+  "kernels/common-q4/source/adapt-gemm/combo2.xpu": {
+    "source": "source/adapt-gemm/combo2.xpu",
+    "source_sha256": "c0bf3e736b936ae7a78218048b731510d21b504567e1504f61e835314a650f5e"
+  },
+  "kernels/common-q4/source/generated/F/combo2.xpu": {
+    "source": "source/generated/F/combo2.xpu",
+    "source_sha256": "7f45ddd616b8afa91ca2ade269fae59678189d1f99607fbbe3d5d6fd910aa0f8"
+  },
+  "kernels/common-q4/source/adapt-gemm/combo4.xpu": {
+    "source": "source/adapt-gemm/combo4.xpu",
+    "source_sha256": "269c50bf041da052abe4a319110e5f83fe5779d913e8b15ec8522cf7cb0cbf51"
+  },
+  "kernels/common-q4/source/generated/F/combo4.xpu": {
+    "source": "source/generated/F/combo4.xpu",
+    "source_sha256": "7790e438136f2b8a9594daf41f19e0acb5278f55c341d57005bdc3ee8a1bbeae"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/cl-common.h": {
+    "source": "source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/cl-common.h",
+    "source_sha256": "fd71c8200181dec087620a288d57e56586aa700e7d55238e779abc04b8f89414"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/quant-chunks.h": {
+    "source": "source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/quant-chunks.h",
+    "source_sha256": "d36a4f969fbe61c8dc0ac7fee8866a3e821b3915dcff1383bee1d111e83c29f5"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/quant-partial.xpu": {
+    "source": "source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/quant-partial.xpu",
+    "source_sha256": "005d5b65195adb9501ae45d9fedacef59dc9085829c60ae42a6a6678cc6a1dc8"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/quant-row-fused.xpu": {
+    "source": "source/adapt-gemm/previous/previous/frozen/quant-row-fused.xpu",
+    "source_sha256": "89f189d68a67efa6743827d8bc3640cdb21caf8fd9a3ede8623cf91ee5850e56"
+  },
+  "kernels/common-q4/source/adapt-gemm/previous/previous/frozen/quant-row-serial-fused.xpu": {
+    "source": "source/adapt-gemm/previous/previous/frozen/quant-row-serial-fused.xpu",
+    "source_sha256": "862e4b6e9b576367383fd4624c5d9815a2c6ac9947d67b51d4ca2f96d4e0cd39"
+  },
+  "kernels/common-q4/source/adapt-gemm/join-slices.xpu": {
+    "source": "source/adapt-gemm/join-slices.xpu",
+    "source_sha256": "d4adc89b87fdc39919d600b906de166a8fbf8e906aa2923381f5439d32e58298"
+  }
+}

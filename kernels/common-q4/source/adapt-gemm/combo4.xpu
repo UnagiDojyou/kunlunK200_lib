@@ -1,0 +1,6 @@
+#define TILE_M 128
+#define SCALE_COMPACT 1
+#define EW_FUSED 1
+#define K_PARTS 4
+#define GEMM_PROFILE 0
+#include "combo-kernel.h"

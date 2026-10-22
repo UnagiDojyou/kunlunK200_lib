@@ -1,0 +1,15 @@
+#include "q4-device.h"
+// Device-only row padding/cropping; source and destination do not overlap.
+__global__ void common_q4_rows(void* dst,const void* src,int width,int rows,int src_stride,int dst_stride,int dst_rows,int bytes){
+    __local__ __attribute__((aligned(64))) unsigned char block[256];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    int chunks=(dst_stride+63)/64;
+    for(int task=tid;task<dst_rows*chunks;task+=step){
+        int r=task/chunks,col=(task%chunks)*64,count=dst_stride-col;if(count>64)count=64;
+        for(int j=0;j<256;++j)block[j]=0;
+        int valid=width-col;if(valid>count)valid=count;
+        if(r<rows&&valid>0)GM2LM((_global_ptr_ const unsigned char*)src+((long long)r*src_stride+col)*bytes,block,valid*bytes);
+        if(r<rows && valid>0)for(int j=valid*bytes;j<count*bytes;++j)block[j]=0;
+        LM2GM(block,(_global_ptr_ unsigned char*)dst+((long long)r*dst_stride+col)*bytes,count*bytes);
+    }
+}
