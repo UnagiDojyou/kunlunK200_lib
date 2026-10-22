@@ -65,3 +65,11 @@ For an installed package, use KUNLUN_USE_SYSTEM_LIBRARY=ON, CMAKE_PREFIX_PATH po
 Common-F preserves original W4 values and FP16 block scales. GEMM Row A8 changes activation values; CPU-logit or CDNN quality equivalence is not claimed. The historical 7B Row A8 PPL 6.0438 to 6.1421 is a prior CPU experiment, not a PPL measurement of this integrated mixed PP/TG path. Current evidence separates implementation error from quantization error and measures teacher-forced logits/KL plus independent generation.
 
 Formal legacy compact-2d, standalone dual16 and common-F are different baselines. Common-F GEMV has a known up-to-about-6% SD-body regression against standalone dual16; full LLM TG can differ more because launch, synchronization, CPU attention and F16 KV transfers remain. Common Q4 forward does not read activation back for quantization; other model operations still transfer data. See the Japanese integration report and its raw timing/memory/counter tables before choosing a mode. No default or remote branch is updated by this integration.
+
+## Quantization diagnostic view (0.4)
+
+The diagnostic buffers are device pointers, not activation readbacks. For components=1, values are signed INT8 rows with byte stride kp; FP32 scales have stride 16 floats (64 bytes), and entry row*16 is the row scale. Only the last logical chunk is represented by rows; padding rows are not part of that logical count.
+
+For components=2 (M=1), logical K index j maps to i=(j/32)*64+j%32. The main code is values[i], the residual is values[2*kp+i], and FP32 scales[0]/scales[1] reconstruct their sum. The buffer reserves 4*kp+1024 bytes. components=0 denotes exact CL and has no quantized activation view. These are diagnostic execution formats; they must not be mistaken for the persistent weight ABI.
+
+GPU-to-CPU copies used by validation tools occur after timed execution. Steady transfer claims refer to observed memcpy API calls, excluding launch-argument command traffic and internal HBM/L3 DMA.
