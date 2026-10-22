@@ -1,0 +1,3 @@
+#define KUNLUN_VECTOR_BROADCAST 1
+#define kunlun_elementwise kunlun_elementwise_broadcast
+#include "kunlun-elementwise.xpu"

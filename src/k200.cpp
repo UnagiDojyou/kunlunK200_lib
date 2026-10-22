@@ -117,6 +117,7 @@ void upload_i8_rows(int id, void * weights, int k, int n, int first, int count, 
 }
 struct Kernel::Impl {
     Impl * elementwise = nullptr;
+    Impl * broadcast = nullptr;
     Impl * copy_rows = nullptr;
     Impl * set_rows = nullptr;
     Impl * rms_partial = nullptr;
@@ -229,7 +230,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -272,9 +273,12 @@ void elementwise(Kernel & kernel, int id, void * y, const void * a, const void *
         ((width >= 512 && n/width <= 16) || (rms_mode && std::strcmp(rms_mode,"parallel") == 0))) {
         rms_norm(kernel,id,y,a,width,n/width,parameter); return;
     }
-    if (!kernel.impl_->elementwise) kernel.impl_->elementwise=new Kernel::Impl{};
-    auto & fn=*kernel.impl_->elementwise;
-    select(id); load_kernel(fn,"kunlun-elementwise",id);
+    const char * broadcast_mode=std::getenv("KUNLUN_BROADCAST_VECTOR");
+    bool vector_broadcast=(op == 0 || op == 1) && bn != n && bn%256 == 0 && broadcast_mode && std::strcmp(broadcast_mode,"1") == 0;
+    auto * & program=vector_broadcast ? kernel.impl_->broadcast : kernel.impl_->elementwise;
+    if (!program) program=new Kernel::Impl{};
+    auto & fn=*program;
+    select(id); load_kernel(fn,vector_broadcast ? "kunlun-elementwise-broadcast" : "kunlun-elementwise",id);
     if (y == a || y == b) {
         size_t bytes=(size_t)(y == a ? n : bn)*4;
         if (fn.alias_input_size < bytes) {

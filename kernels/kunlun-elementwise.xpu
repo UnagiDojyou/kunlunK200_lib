@@ -2,6 +2,10 @@
 #include "xpu/kernel/simd.h"
 #include "xpu/kernel/math.h"
 
+#ifndef KUNLUN_VECTOR_BROADCAST
+#define KUNLUN_VECTOR_BROADCAST 0
+#endif
+
 __global__ void kunlun_elementwise(float * y, const float * a, const float * b,
                                   int n, int width, int bn, int op, float eps) {
     __local__ float av[256];
@@ -34,13 +38,20 @@ __global__ void kunlun_elementwise(float * y, const float * a, const float * b,
         if (op == 0 || op == 1) {
             if (bn == n) GM2LM(b + base, bv, len * 4);
             else {
-                int offset = base;
-                while (offset >= bn) offset -= bn;
-                for (int j = 0; j < len; ++j) {
-                    // DMA destinations must stay aligned in local memory.
-                    GM2LM(b + offset, scalar, 4);
-                    bv[j] = scalar[0];
-                    if (++offset == bn) offset = 0;
+#if KUNLUN_VECTOR_BROADCAST
+                if (bn%256 == 0) {
+                    GM2LM(b + base%bn, bv, len*4);
+                } else
+#endif
+                {
+                    int offset = base;
+                    while (offset >= bn) offset -= bn;
+                    for (int j = 0; j < len; ++j) {
+                        // DMA destinations must stay aligned in local memory.
+                        GM2LM(b + offset, scalar, 4);
+                        bv[j] = scalar[0];
+                        if (++offset == bn) offset = 0;
+                    }
                 }
             }
         }
