@@ -31,17 +31,21 @@ int main(int argc,char **argv) {
     p.index_stride[0]=index_bytes*(gapped?2:1);p.index_stride[1]=rows*p.index_stride[0];p.index_stride[2]=p.index_stride[1];
     p.index_extent[0]=p.index_extent[1]=1;
     int features=argc>9?std::atoi(argv[9]):0;
+    const char *start_env=std::getenv("KUNLUN_SET_ROWS_START");
+    int cache_start=start_env?std::atoi(start_env):3;
     if(features) {
         kunlun::require(width==1 && !gapped && rows%features==0 && capacity%features==0);
         p.cache_features=features;p.cache_tokens=rows/features;p.cache_stride=capacity/features;
+        kunlun::require(cache_start>=0 && cache_start<=p.cache_stride-p.cache_tokens);
     }
     size_t src_bytes=(size_t)p.dim3*p.source_stride[3],dst_bytes=(size_t)p.dim3*p.destination_stride[2],idx_bytes=rows*p.index_stride[0];
     size_t guard=gapped?34:32;
     std::vector<unsigned char>src(src_bytes,0x5a),idx(idx_bytes,0x5a),initial(dst_bytes+guard+64,0xa5),gold=initial,actual(initial.size());
     for(int row=0;row<rows;++row) {
-        int64_t target=features?(int64_t)(row%features)*p.cache_stride+3+row/features:capacity-1-row;
-        if(invalid && row==0)target=-1;
-        if(invalid && row==1)target=index_bytes==8?(int64_t(1)<<32):capacity+1;
+        int64_t target=features?(int64_t)(row%features)*p.cache_stride+cache_start+row/features:capacity-1-row;
+        if(invalid==1 && row==0)target=-1;
+        if(invalid==1 && row==1)target=index_bytes==8?(int64_t(1)<<32):capacity+1;
+        if(invalid==2 && row==rows-1)target=index_bytes==8?target+(int64_t(1)<<32):capacity+1;
         std::memcpy(idx.data()+row*p.index_stride[0],&target,index_bytes);
         for(int i3=0;i3<p.dim3;++i3)for(int i2=0;i2<p.dim2;++i2)for(int j=0;j<width;++j) {
             float value=(int((j+row*13+i2*7+i3*11)%257)-128)*.03125f;
@@ -59,6 +63,9 @@ int main(int argc,char **argv) {
             }
         }
     }
+    // Use the same transposed-cache indices when comparing the generic path.
+    bool generic=std::getenv("KUNLUN_SET_ROWS_GENERIC") != nullptr;
+    if(generic)p.cache_features=p.cache_tokens=p.cache_stride=0;
     kunlun::Buffer ds(pd,src.size()),di(pd,idx.size()),dy(pd,initial.size());kunlun::Kernel kernel;
     kunlun::select(pd);
     kunlun::check(kunlun::copy(ds.data(),src.data(),src.size(),kunlun::host_to_device));
@@ -69,7 +76,12 @@ int main(int argc,char **argv) {
     bool expect_valid=!invalid;
     if(valid!=expect_valid){std::fprintf(stderr,"index status mismatch\n");return 1;}
     kunlun::check(kunlun::copy(actual.data(),dy.data(),actual.size(),kunlun::device_to_host));kunlun::check(kunlun::wait());
-    if(actual!=gold){for(size_t j=0;j<gold.size();++j)if(actual[j]!=gold[j]){std::fprintf(stderr,"FAIL byte=%zu got=%u ref=%u\n",j,actual[j],gold[j]);break;}return 1;}
+    // A rejected cache tile may leave valid updates incomplete.
+    if(invalid==2) {
+        for(size_t j=0;j<gold.size();++j)if(actual[j]!=gold[j] && actual[j]!=initial[j]) {
+            std::fprintf(stderr,"invalid cache index corrupted byte=%zu\n",j);return 1;
+        }
+    } else if(actual!=gold){for(size_t j=0;j<gold.size();++j)if(actual[j]!=gold[j]){std::fprintf(stderr,"FAIL byte=%zu got=%u ref=%u\n",j,actual[j],gold[j]);break;}return 1;}
     for(int repeat=0;repeat<10 && !invalid;++repeat) {
         kunlun::check(kunlun::copy(dy.data(),initial.data(),initial.size(),kunlun::host_to_device));kunlun::check(kunlun::wait());
         if(!run())return 1;
@@ -80,5 +92,5 @@ int main(int argc,char **argv) {
     if(!invalid)for(int g=0;g<5;++g){auto start=std::chrono::steady_clock::now();for(int i=0;i<20;++i)if(!run())return 1;
         times.push_back(std::chrono::duration<double,std::milli>(std::chrono::steady_clock::now()-start).count()/20);}
     std::sort(times.begin(),times.end());
-    std::printf("set_rows pd=%d width=%d rows=%d capacity=%d source_bytes=%d index_bytes=%d gapped=%d invalid=%d median_ms=%.6f bitwise_equal=1 PASS\n",pd,width,rows,capacity,source_bytes,index_bytes,gapped,invalid,times.empty()?0:times[2]);
+    std::printf("set_rows pd=%d width=%d rows=%d capacity=%d source_bytes=%d index_bytes=%d gapped=%d invalid=%d median_ms=%.6f min_ms=%.6f max_ms=%.6f generic=%d bitwise_equal=%d PASS\n",pd,width,rows,capacity,source_bytes,index_bytes,gapped,invalid,times.empty()?0:times[2],times.empty()?0:times.front(),times.empty()?0:times.back(),generic,invalid==2?0:1);
 }

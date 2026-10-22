@@ -74,3 +74,5 @@ Version 0.3 adds a standalone native Q4_0 API without changing existing matmul d
 ## Optional common Q4_0 matrices
 
 Version 0.4 adds a typed, versioned common-F weight handle for GEMV and SD GEMM. Existing APIs and defaults are preserved. See [the ABI, ownership and dispatch guide](docs/common-q4.md) for build commands, limitations, diagnostics and the independent broadcast opt-in.
+
+See [F16 indexed cache updates](docs/set-rows.md).

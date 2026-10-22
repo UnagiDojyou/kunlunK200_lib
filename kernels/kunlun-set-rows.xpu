@@ -38,24 +38,28 @@ __global__ void kunlun_set_rows(unsigned char * dst, const unsigned char * src,
     if (p[19] > 0 && p[20] > 1) {
         GM2LM(indices,ids,p[17]);
         int start=ids[0];
-        if (start < 0 || start+p[20] > p[21] || (p[17]==8 && ids[1]!=0)) { LM2GM(error,status,4); return; }
+        if (start < 0 || start > p[21]-p[20] || (p[17]==8 && ids[1]!=0)) { LM2GM(error,status,4); return; }
+        // Each tile writes up to 32 adjacent tokens per feature.
         for (int base=tid*8;base<p[19];base+=threads*8) {
-            bool valid=true;
-            for (int token=0;token<p[20];++token) {
-                int first=token*p[19]+base;
-                GM2LM(indices+first*p[17],ids,8*p[17]);
-                for (int j=0;j<8;++j) {
-                    int target=p[17]==8 ? ids[j*2] : ids[j];
-                    if (target != (base+j)*p[21]+start+token || (p[17]==8 && ids[j*2+1]!=0)) valid=false;
+            for (int first_token=0;first_token<p[20];first_token+=32) {
+                int count=p[20]-first_token; if (count>32) count=32;
+                bool valid=true;
+                for (int token=0;token<count;++token) {
+                    int first=(first_token+token)*p[19]+base;
+                    GM2LM(indices+first*p[17],ids,8*p[17]);
+                    for (int j=0;j<8;++j) {
+                        int target=p[17]==8 ? ids[j*2] : ids[j];
+                        if (target != (base+j)*p[21]+start+first_token+token || (p[17]==8 && ids[j*2+1]!=0)) valid=false;
+                    }
+                    if (p[16]==4) GM2LM(src+first*4,cache_values+token*8,8*4);
+                    else GM2LM(src+first*2,cache_halves+token*16,8*2);
                 }
-                if (p[16]==4) GM2LM(src+first*4,cache_values+token*8,8*4);
-                else GM2LM(src+first*2,cache_halves+token*16,8*2);
-            }
-            if (!valid) { LM2GM(error,status,4); continue; }
-            for (int j=0;j<8;++j) {
-                for (int token=0;token<p[20];++token)
-                    cache_output[j*32+token]=p[16]==4 ? to_half(cache_values[token*8+j]) : cache_halves[token*16+j];
-                LM2GM(cache_output+j*32,dst+((base+j)*p[21]+start)*2,p[20]*2);
+                if (!valid) { LM2GM(error,status,4); continue; }
+                for (int j=0;j<8;++j) {
+                    for (int token=0;token<count;++token)
+                        cache_output[j*32+token]=p[16]==4 ? to_half(cache_values[token*8+j]) : cache_halves[token*16+j];
+                    LM2GM(cache_output+j*32,dst+((base+j)*p[21]+start+first_token)*2,count*2);
+                }
             }
         }
         return;

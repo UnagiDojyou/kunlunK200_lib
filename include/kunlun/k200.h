@@ -46,7 +46,9 @@ struct SetRowsLayout {
     int index_stride[3];
     int index_extent[2];
     int source_bytes, index_bytes, destination_rows;
-    // Optional validated contiguous cache mapping; all zero selects generic indices.
+    // Optional contiguous cache mapping; all zero selects generic indices.
+    // Features are a multiple of 8; 1 <= tokens <= stride (since 0.4.1).
+    // Device validation checks index[token*features+f] == f*stride+start+token.
     int cache_features, cache_tokens, cache_stride;
 };
 

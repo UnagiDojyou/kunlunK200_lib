@@ -352,7 +352,7 @@ bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
     require((da+ds <= sa || sa+ss <= da) && (da+ds <= ia || ia+is <= da));
     if (p.cache_features) {
         require(p.width == 1 && p.dim2 == 1 && p.dim3 == 1 && p.cache_features > 0 && p.cache_features%8 == 0);
-        require(p.cache_tokens > 0 && p.cache_tokens <= 32 && p.cache_stride > 0);
+        require(p.cache_tokens > 0 && p.cache_tokens <= p.cache_stride && p.cache_stride > 0);
         require((int64_t)p.cache_features*p.cache_tokens == p.rows && (int64_t)p.cache_features*p.cache_stride == p.destination_rows);
         require(p.source_stride[1] == p.source_bytes && p.index_stride[0] == p.index_bytes && p.destination_stride[0] == 2);
     } else require(p.cache_tokens == 0 && p.cache_stride == 0);
@@ -545,5 +545,5 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
 #include "q4-common.inc"
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.4.0"; }
+const char * version() { return "0.4.1"; }
 } // namespace kunlun
