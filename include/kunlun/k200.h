@@ -52,6 +52,8 @@ struct SetRowsLayout {
     int cache_features, cache_tokens, cache_stride;
 };
 
+struct SwiGLULayout;
+
 class Kernel {
 public:
     Kernel();
@@ -68,6 +70,7 @@ private:
     friend void copy_rows(Kernel &, int, void *, const void *, int, int, int, int);
     friend bool set_rows_f16(Kernel &, int, void *, size_t, const void *, size_t, const void *, size_t, const SetRowsLayout &);
     friend void rms_norm(Kernel &, int, void *, const void *, int, int, float);
+    friend bool swiglu(Kernel &, int, void *, size_t, const void *, size_t, const void *, size_t, const SwiGLULayout &);
 };
 
 size_t aligned(size_t bytes);
@@ -113,6 +116,21 @@ size_t native_q4_size(int k, int n);
 bool pack_native_q4(void * destination, size_t bytes, const void * q4, int k, int n);
 void upload_native_q4(int device, void * weights, const void * q4, int k, int n);
 enum class InputType { f32, f16 };
+struct SwiGLULayout {
+    int width, rows;
+    int gate_stride, up_stride, output_stride; // Bytes between rows.
+    InputType type;
+};
+// Empty reason means supported. Inner elements must be contiguous F32 or F16.
+const char * swiglu_reason(const SwiGLULayout &);
+// Computes SiLU(gate)*up with F32 intermediates and one final output rounding.
+// Completes before returning. No HBM workspace or host activation transfer.
+// Exact input/output alias is supported with equal row strides; partial alias is not.
+// False means an unsupported layout or pointer contract; no work was submitted.
+bool swiglu(Kernel &, int device, void * y, size_t y_bytes,
+            const void * gate, size_t gate_bytes, const void * up, size_t up_bytes,
+            const SwiGLULayout &);
+
 // Empty string means the accelerated SD path is supported. The CL fallback accepts
 // all valid native layouts, batch >= 1, and F32/F16 input. No CPU activation copy.
 const char * native_q4_reason(int k, int n, int batch, InputType type);

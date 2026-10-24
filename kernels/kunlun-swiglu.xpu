@@ -1,0 +1,47 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/math.h"
+#include "fp16-device.h"
+
+__global__ void kunlun_swiglu(unsigned char *y,const unsigned char *gate,const unsigned char *up,
+                             int width,int rows,int gs,int us,int ys,int type,int tile) {
+    union Tile { float f[256]; unsigned short h[512]; unsigned int bits[256]; };
+    __local__ Tile g,u,out;
+    int bytes=type==0?4:2;
+    int tid=cluster_id()*core_num()+core_id(),threads=cluster_num()*core_num();
+    bool flat=gs==width*bytes && us==width*bytes && ys==width*bytes;
+    int extent=flat?width*rows:width;
+    int chunks=(extent+tile-1)/tile;
+    int tasks=flat?chunks:rows*chunks;
+    for(int task=tid;task<tasks;task+=threads) {
+        int row=flat?0:task/chunks;
+        int base=(flat?task:task%chunks)*tile;
+        int len=extent-base;if(len>tile)len=tile;
+        if(type==0) {
+            GM2LM(gate+row*gs+base*4,g.f,len*4);
+            GM2LM(up+row*us+base*4,u.f,len*4);
+        } else {
+            GM2LM(gate+row*gs+base*2,g.h,len*2);
+            GM2LM(up+row*us+base*2,u.h,len*2);
+            for(int j=len-1;j>=0;--j){g.f[j]=kunlun_from_half(g.h[j]);u.f[j]=kunlun_from_half(u.h[j]);}
+        }
+        for(int j=0;j<len;++j) {
+            unsigned int ga=g.bits[j]&0x7fffffff,ua=u.bits[j]&0x7fffffff;
+            if((ga<0x7f800000) & (ua<0x7f800000))out.f[j]=(g.f[j]/(1.0f+expf(-g.f[j])))*u.f[j];
+            else {
+                unsigned int sign=(g.bits[j]^u.bits[j])&0x80000000;
+                if(ga>0x7f800000 || ua>0x7f800000 || g.bits[j]==0xff800000)out.bits[j]=0x7fc00000;
+                else if(ga==0x7f800000)out.bits[j]=ua==0?0x7fc00000:sign|0x7f800000;
+                else {
+                    union {float f;unsigned int bits;} act;
+                    act.f=g.f[j]/(1.0f+expf(-g.f[j]));
+                    out.bits[j]=(act.bits&0x7fffffff)==0?0x7fc00000:sign|0x7f800000;
+                }
+            }
+        }
+        if(type==0)LM2GM(out.f,y+row*ys+base*4,len*4);
+        else {
+            for(int j=0;j<len;++j)out.h[j]=kunlun_to_half(out.f[j]);
+            LM2GM(out.h,y+row*ys+base*2,len*2);
+        }
+    }
+}

@@ -118,6 +118,7 @@ void upload_i8_rows(int id, void * weights, int k, int n, int first, int count, 
 struct Kernel::Impl {
     Impl * elementwise = nullptr;
     Impl * broadcast = nullptr;
+    Impl * swiglu = nullptr;
     Impl * copy_rows = nullptr;
     Impl * set_rows = nullptr;
     Impl * rms_partial = nullptr;
@@ -230,7 +231,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->swiglu,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -301,6 +302,51 @@ void elementwise(Kernel & kernel, int id, void * y, const void * a, const void *
     for (const int * arg : {&n,&width,&bn,&op}) { check(xpu_launch_argument_set(arg,4,offset)); offset+=4; }
     check(xpu_launch_argument_set(&parameter,4,offset));
     check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn)); check(xpu_wait());
+}
+const char * swiglu_reason(const SwiGLULayout &p) {
+    if(p.type!=InputType::f32 && p.type!=InputType::f16)return "type";
+    int bytes=p.type==InputType::f32?4:2;
+    if(p.width<=0 || p.width>65536 || p.rows<=0 || p.rows>INT_MAX/p.width/bytes)return "shape";
+    for(int stride:{p.gate_stride,p.up_stride,p.output_stride}) {
+        if(stride<p.width*bytes || stride%bytes)return "stride";
+        if((size_t)(p.rows-1)*stride+(size_t)p.width*bytes>INT_MAX)return "byte extent";
+    }
+    return "";
+}
+bool swiglu(Kernel &kernel,int id,void *y,size_t y_bytes,const void *gate,size_t gate_bytes,
+            const void *up,size_t up_bytes,const SwiGLULayout &p) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(*swiglu_reason(p) || id<0 || id>1 || !y || !gate || !up)return false;
+    const int type=p.type==InputType::f32?0:1,bytes=type==0?4:2;
+    uintptr_t yp=(uintptr_t)y,gp=(uintptr_t)gate,uptr=(uintptr_t)up;
+    size_t ys=(size_t)(p.rows-1)*p.output_stride+(size_t)p.width*bytes;
+    size_t gs=(size_t)(p.rows-1)*p.gate_stride+(size_t)p.width*bytes;
+    size_t us=(size_t)(p.rows-1)*p.up_stride+(size_t)p.width*bytes;
+    if(ys>y_bytes || gs>gate_bytes || us>up_bytes || yp%bytes || gp%bytes || uptr%bytes)return false;
+    if(yp+ys<yp || gp+gs<gp || uptr+us<uptr)return false;
+    bool ga=yp==gp && p.output_stride==p.gate_stride;
+    bool ua=yp==uptr && p.output_stride==p.up_stride;
+    // Packed gate/up rows can have overlapping spans but disjoint elements.
+    auto row_disjoint=[&](uintptr_t input,int stride) {
+        size_t delta=yp>input?yp-input:input-yp;
+        return (ga||ua) && stride==p.output_stride && delta>=(size_t)p.width*bytes &&
+            delta<=(size_t)stride-(size_t)p.width*bytes;
+    };
+    if((!ga && yp<gp+gs && gp<yp+ys && !row_disjoint(gp,p.gate_stride)) ||
+       (!ua && yp<uptr+us && uptr<yp+ys && !row_disjoint(uptr,p.up_stride)))return false;
+    if(kernel.impl_->id!=-1 && kernel.impl_->id!=id)return false;
+    kernel.impl_->id=id;
+    if(!kernel.impl_->swiglu)kernel.impl_->swiglu=new Kernel::Impl{};
+    auto &fn=*kernel.impl_->swiglu;select(id);load_kernel(fn,"kunlun-swiglu",id);
+    const int tile=256;
+    size_t offset=0;
+    for(const void *arg:{(const void*)&y,(const void*)&gate,(const void*)&up}) {
+        check(xpu_launch_argument_set(arg,8,offset));offset+=8;
+    }
+    for(const int *arg:{&p.width,&p.rows,&p.gate_stride,&p.up_stride,&p.output_stride,&type,&tile}) {
+        check(xpu_launch_argument_set(arg,4,offset));offset+=4;
+    }
+    check(xpu_launch_config(4,16));check(xpu_launch_async(fn.fn));check(xpu_wait());return true;
 }
 void copy_rows(Kernel & kernel, int id, void * dst, const void * src,
                int width, int rows, int stride, int column) {
@@ -545,5 +591,5 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
 #include "q4-common.inc"
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.4.1"; }
+const char * version() { return "0.5.0"; }
 } // namespace kunlun
