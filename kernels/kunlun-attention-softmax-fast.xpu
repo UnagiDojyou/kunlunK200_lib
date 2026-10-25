@@ -1,0 +1,55 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+#include "xpu/kernel/math.h"
+#include "fp16-device.h"
+#include "attention-config.h"
+// One row per CL core; reuse scaled logits and exponentials in local memory.
+// Keep native exp and the legacy sequential summation order.
+__global__ void kunlun_attention_softmax_fast(unsigned char *y,const unsigned char *x,const unsigned char *mask,const KunlunAttentionConfig *config) {
+    __local__ KunlunAttentionConfig p;GM2LM(config,&p,sizeof(p));
+    __local__ float data[3072],temp[8];
+    union Values{float f[256];unsigned short h[512];};__local__ Values values;
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),rows=p.dims[1]*p.dims[2]*p.dims[3];
+    for(int row=tid;row<rows;row+=step){
+        int q=row%p.dims[1],h=row/p.dims[1]%p.dims[2],batch=row/(p.dims[1]*p.dims[2]);
+        int xo=q*p.a[1]+h*p.a[2]+batch*p.a[3],yo=q*p.y[1]+h*p.y[2]+batch*p.y[3];
+        int mo=q*p.mask[1]+(h%p.mask_ne[2])*p.mask[2]+(batch%p.mask_ne[3])*p.mask[3];
+        float slope=1.0f;
+        if(p.max_bias>0){int nh=1;while(nh*2<=p.dims[2])nh*=2;float b0=pow(2.0f,-p.max_bias/nh),b1=pow(2.0f,-p.max_bias/(2*nh));slope=h<nh?pow(b0,(float)(h+1)):pow(b1,(float)(2*(h-nh)+1));}
+        union{float f;unsigned int u;}mx;mx.u=0xff800000;
+        int first=p.dims[0],last=-1,active=0;
+        for(int base=0;base<p.dims[0];base+=256){
+            int count=p.dims[0]-base;if(count>256)count=256;int padded=(count+7)&~7;
+            if(!p.type_a)GM2LM(x+xo+base*4,data+base,count*4);
+            else{GM2LM(x+xo+base*2,values.h,count*2);for(int j=0;j<count;++j)data[base+j]=kunlun_from_half(values.h[j]);}
+            for(int j=count;j<padded;++j)data[base+j]=0.0f;
+            if(mask){if(!p.type_b)GM2LM(mask+mo+base*4,values.f,count*4);else{GM2LM(mask+mo+base*2,values.h,count*2);for(int j=count-1;j>=0;--j)values.f[j]=kunlun_from_half(values.h[j]);}for(int j=count;j<padded;++j)values.f[j]=0.0f;}
+            for(int j=0;j<padded;j+=8){
+                _x256_svmul_ls(p.scale,data+base+j,data+base+j);
+                if(mask){if(slope==1.0f)_x256_vvadd_ls(data+base+j,values.f+j,data+base+j);else{_x256_svmul_ls(slope,values.f+j,temp);_x256_vvadd_ls(data+base+j,temp,data+base+j);}}
+            }
+            for(int j=0;j<count;++j){union{float f;unsigned int u;}v;v.f=data[base+j];if(v.f>mx.f)mx.f=v.f;if(v.u!=0xff800000){if(first==p.dims[0])first=base+j;last=base+j;++active;}}
+        }
+        float sum=0.0f;
+        if(mx.u==0xff800000){for(int j=0;j<p.dims[0];++j)data[j]=0.0f;}
+        else{
+            for(int j=0;j<first;++j)data[j]=0.0f;for(int j=last+1;j<p.dims[0];++j)data[j]=0.0f;
+            // A dense unmasked interval covers the common causal-mask case.
+            if(active==last-first+1){
+                int j=first;
+                for(;j+7<=last;j+=8){
+                    float e0=expf(data[j]-mx.f),e1=expf(data[j+1]-mx.f),e2=expf(data[j+2]-mx.f),e3=expf(data[j+3]-mx.f);
+                    float e4=expf(data[j+4]-mx.f),e5=expf(data[j+5]-mx.f),e6=expf(data[j+6]-mx.f),e7=expf(data[j+7]-mx.f);
+                    data[j]=e0;data[j+1]=e1;data[j+2]=e2;data[j+3]=e3;data[j+4]=e4;data[j+5]=e5;data[j+6]=e6;data[j+7]=e7;
+                    sum+=e0;sum+=e1;sum+=e2;sum+=e3;sum+=e4;sum+=e5;sum+=e6;sum+=e7;
+                }
+                for(;j<=last;++j){float e=expf(data[j]-mx.f);data[j]=e;sum+=e;}
+            }
+            else{for(int j=first;j<=last;++j){union{float f;unsigned int u;}v;v.f=data[j];float e=v.u==0xff800000?0.0f:expf(v.f-mx.f);data[j]=e;sum+=e;}}
+        }
+        float inv=sum>0?1.0f/sum:0.0f;int padded=(p.dims[0]+7)&~7;
+        for(int j=p.dims[0];j<padded;++j)data[j]=0.0f;
+        for(int j=0;j<padded;j+=8)_x256_svmul_ls(inv,data+j,data+j);
+        for(int base=0;base<p.dims[0];base+=256){int count=p.dims[0]-base;if(count>256)count=256;if(!p.round_b)LM2GM(data+base,y+yo+base*4,count*4);else{for(int j=0;j<count;++j)values.h[j]=kunlun_to_half(data[base+j]);LM2GM(values.h,y+yo+base*2,count*2);}}
+    }
+}

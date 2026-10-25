@@ -1,0 +1,67 @@
+#include "xpu/kernel/sdcdnn_header.h"
+#include "attention-config.h"
+
+// A and B rows have contiguous half elements. DMA performs symmetric INT16 conversion.
+static inline __device__ float load_half(_global_ptr_ const unsigned char *src,int rows,int kk,int stride,int port,float maximum) {
+    if(maximum==0.0f)maximum=1.0f;
+    int engine=port?DMAIN_1:DMAIN_0,bank=port?DMA_L2_1:DMA_L2_0;
+    xfence_lock(engine);
+    dma_cfg(bank|DMA_INT16,DMA_GM|DMA_FP16|highptr(src),maximum);
+    dma_cfg_2d(rows,kk*2,stride);
+    dma_i_2d((void*)0,lowptr(src),kk*2);
+    xfence_unlock(engine);
+    return maximum;
+}
+static inline __device__ void shuffle(int port,int kk,int fullk,int base,int dest,int rows) {
+    int engine=port?DS_1:DS_0;
+    v16i16 *l1=(v16i16*)0;
+    xfence_lock(engine);
+    ds_shuffle_cfg_datatype(DS_INT16);ds_shuffle_cfg_blkx(kk);ds_cfg_output_bank(16);
+    for(int j=0;j<(rows+15)/16;++j)ds_shuffle_batch(&l1[j*fullk+base][0],(short*)0+j*16*kk,kk,dest);
+    xfence_unlock(engine);
+}
+__global__ void kunlun_attention_sdnn(float *y,const unsigned char *a,const unsigned char *b,int k,int n,int m,int ha,int hb,int ba,int bb,int a1,int a2,int a3,int b1,int b2,int b3,const float *maxima,const float *ranges) {
+    if(core_id()!=0)return;
+    KunlunAttentionConfig p;
+    p.k=k;p.n=n;p.m=m;p.heads_a=ha;p.batches_a=ba;p.dims[2]=hb;p.dims[3]=bb;
+    p.a[1]=a1;p.a[2]=a2;p.a[3]=a3;p.b[1]=b1;p.b[2]=b2;p.b[3]=b3;
+    p.y[0]=4;p.y[1]=n*4;p.y[2]=n*m*4;p.y[3]=n*m*hb*4;
+    __local__ float tile_scales[8];
+    // The four-cluster SDK result contains four partial maxima.
+    __local__ float scales[8];GM2LM(maxima,scales,32);for(int i=1;i<4;++i)if(scales[i]>scales[0])scales[0]=scales[i];
+    int heads=p.dims[2],batches=p.dims[3],groups=heads/p.heads_a,bgroups=batches/p.batches_a;
+    int nt=p.n/32,mt=(p.m+31)/32;
+    for(int task=cluster_id();task<p.heads_a*p.batches_a*nt;task+=cluster_num()){
+        int n0=task%nt*32,ha=task/nt%p.heads_a,ba=task/nt/p.heads_a;
+        _global_ptr_ const unsigned char *ap=a+n0*p.a[1]+ha*p.a[2]+ba*p.a[3];
+        for(int k0=0;k0<p.k;k0+=256){
+            int kk=p.k-k0;if(kk>256)kk=256;
+            load_half(ap+k0*2,32,kk,p.a[1],1,scales[0]);
+
+            shuffle(1,kk,p.k,k0,DS_L1W,32);
+        }
+        for(int bg=0;bg<bgroups;++bg)for(int hg=0;hg<groups;++hg)for(int mi=0;mi<mt;++mi){
+            int h=ha*groups+hg,batch=ba*bgroups+bg,m0=mi*32;
+            int rows=p.m-m0;if(rows>32)rows=32;
+            GM2LM(ranges+((batch*heads+h)*mt+mi)*8,tile_scales,32);scales[1]=tile_scales[0];
+            _global_ptr_ const unsigned char *bp=b+m0*p.b[1]+h*p.b[2]+batch*p.b[3];
+            for(int k0=0;k0<p.k;k0+=256){
+                int kk=p.k-k0;if(kk>256)kk=256;
+                load_half(bp+k0*2,rows,kk,p.b[1],0,scales[1]);
+                shuffle(0,kk,kk,0,DS_L1D,rows);
+                xfence_lock(MAC);
+                mm_cfg_stride(1);mm_cfg_dequant_scale(scales[0]*scales[1]*(1.0f/(32767.0f*32767.0f)));mm_cfg_basic_int16(kk,rows);
+                for(int j=0;j<2;++j){
+                    v16f32 *e=(v16f32*)0;v16i16 *d=(v16i16*)0,*w=(v16i16*)0;
+                    if(k0){mm_acc_int16(e+j*rows,d,w+j*p.k+k0);}else{mm_int16(e+j*rows,d,w+j*p.k+k0);}
+                }
+                xfence_unlock(MAC);
+            }
+            v16f32 *e=(v16f32*)0;
+            xfence_lock(EW);ew_cfg_activation_type(EW_NOACT);ew_cfg_coeff_scalar(1.0f,0.0f,0.0f);ew_cfg_findmax(0,0.0f);ew_cfg_stream_size(rows*2);ew_cfg_col_size(16);ew_dsmadd(e,e,e,EW_L2E);xfence_unlock(EW);
+            xfence_lock(RS);rs_row_cfg_stride(1,2);rs_row_cfg_loop(rows);for(int j=0;j<2;++j)rs_row_batch(&e[j][0],&e[j*rows][0],16);xfence_unlock(RS);
+            _global_ptr_ float *out=(_global_ptr_ float*)(( _global_ptr_ unsigned char*)y+n0*p.y[0]+m0*p.y[1]+h*p.y[2]+batch*p.y[3]);
+            xfence_lock(DMAOUT);dma_cfg(DMA_GM|DMA_FP32|highptr(out),DMA_L2R|DMA_FP32,0.0f);dma_cfg_2d(rows,p.y[1],128);dma_o_2d(lowptr(out),e,128);xfence_unlock(DMAOUT);
+        }
+    }
+}

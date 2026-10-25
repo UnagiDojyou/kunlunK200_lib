@@ -1,0 +1,27 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/math.h"
+#include "fp16-device.h"
+#include "attention-config.h"
+// Typed streaming reference: recompute exp rather than store half intermediates.
+__global__ void kunlun_attention_softmax_typed(unsigned char *y,const unsigned char *x,const unsigned char *mask,const KunlunAttentionConfig *config){
+    __local__ KunlunAttentionConfig p;GM2LM(config,&p,sizeof(p));
+    union Values{float f[256];unsigned short h[512];};__local__ Values values,mv;
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),rows=p.dims[1]*p.dims[2]*p.dims[3];
+    for(int row=tid;row<rows;row+=step){
+        int q=row%p.dims[1],h=row/p.dims[1]%p.dims[2],b=row/(p.dims[1]*p.dims[2]);
+        int xo=q*p.a[1]+h*p.a[2]+b*p.a[3],yo=q*p.y[1]+h*p.y[2]+b*p.y[3],mo=q*p.mask[1]+(h%p.mask_ne[2])*p.mask[2]+(b%p.mask_ne[3])*p.mask[3];
+        float slope=1;
+        if(p.max_bias>0){int nh=1;while(nh*2<=p.dims[2])nh*=2;float b0=pow(2.0f,-p.max_bias/nh),b1=pow(2.0f,-p.max_bias/(2*nh));slope=h<nh?pow(b0,(float)(h+1)):pow(b1,(float)(2*(h-nh)+1));}
+        union{float f;unsigned int u;}mx;mx.u=0xff800000;float sum=0;
+        for(int pass=0;pass<3;++pass){
+            float inv=sum>0?1.0f/sum:0;
+            for(int base=0;base<p.dims[0];base+=256){
+                int count=p.dims[0]-base;if(count>256)count=256;
+                if(!p.type_a)GM2LM(x+xo+base*4,values.f,count*4);else{GM2LM(x+xo+base*2,values.h,count*2);for(int j=count-1;j>=0;--j)values.f[j]=kunlun_from_half(values.h[j]);}
+                if(mask){if(!p.type_b)GM2LM(mask+mo+base*4,mv.f,count*4);else{GM2LM(mask+mo+base*2,mv.h,count*2);for(int j=count-1;j>=0;--j)mv.f[j]=kunlun_from_half(mv.h[j]);}}
+                for(int j=0;j<count;++j){union{float f;unsigned int u;}v;v.f=values.f[j]*p.scale+(mask?slope*mv.f[j]:0);if(!pass){if(v.f>mx.f)mx.f=v.f;}else{float e=mx.u==0xff800000 || v.u==0xff800000?0:expf(v.f-mx.f);if(pass==1)sum+=e;else values.f[j]=e*inv;}}
+                if(pass==2){if(!p.round_b)LM2GM(values.f,y+yo+base*4,count*4);else{for(int j=0;j<count;++j)values.h[j]=kunlun_to_half(values.f[j]);LM2GM(values.h,y+yo+base*2,count*2);}}
+            }
+        }
+    }
+}

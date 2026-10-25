@@ -1,0 +1,30 @@
+#include "xpu/kernel/sdcdnn_header.h"
+#include "fp16-device.h"
+#include "attention-config.h"
+
+// Read the completed absolute maximum. Findmax does not provide a retained cast buffer.
+static inline __device__ float range_peak(_global_ptr_ const unsigned char *src,int count,int half){
+ int type=half?DMA_FP16:DMA_FP32,bytes=half?2:4;
+ xfence_lock(DMAIN_0);dma_cfg(DMA_L2_0|type,DMA_GM|type|highptr(src),0.0f);
+ dma_findmax(lowptr(src),count*bytes);xfence_unlock(DMAIN_0);
+ float maximum;xfence_lock(DMAIN_0);dma0_ldmax(maximum);xfence_unlock(DMAIN_0);
+ return maximum;
+}
+__global__ void kunlun_attention_range_dma(float *ranges,const unsigned char *input,const KunlunAttentionConfig *config){
+ if(core_id()!=0)return;
+ __local__ KunlunAttentionConfig p;GM2LM(config,&p,sizeof(p));
+ __local__ float record[8];
+ int mt=(p.dims[1]+31)/32,tasks=mt*p.dims[2]*p.dims[3],bytes=p.type_a?2:4;
+ for(int task=cluster_id();task<tasks;task+=cluster_num()){
+  int row0=task%mt*32,h=task/mt%p.dims[2],batch=task/mt/p.dims[2],rows=p.dims[1]-row0;if(rows>32)rows=32;
+  _global_ptr_ const unsigned char *src=input+row0*p.a[1]+h*p.a[2]+batch*p.a[3];
+  float maximum=0;
+  if(p.a[1]==p.dims[0]*bytes){
+   // Bound each 1-D request to the largest segment covered by the main shape tests.
+   int total=rows*p.dims[0];for(int base=0;base<total;base+=65536){int count=total-base;if(count>65536)count=65536;float value=range_peak(src+base*bytes,count,p.type_a);if(value>maximum)maximum=value;}
+  }else{
+   for(int r=0;r<rows;++r){float value=range_peak(src+r*p.a[1],p.dims[0],p.type_a);if(value>maximum)maximum=value;}
+  }
+  record[0]=kunlun_from_half(kunlun_to_half(maximum));for(int j=1;j<8;++j)record[j]=0;LM2GM(record,ranges+task*8,32);
+ }
+}

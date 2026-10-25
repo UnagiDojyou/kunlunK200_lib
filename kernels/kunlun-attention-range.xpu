@@ -1,0 +1,22 @@
+#include "xpu/kernel/cluster_header.h"
+#include "attention-config.h"
+#include "fp16-device.h"
+// One scale for each 32-query tile. Use the half-rounded maximum of the original view.
+__global__ void kunlun_attention_range(float *out,const unsigned char *x,const KunlunAttentionConfig *config) {
+    __local__ KunlunAttentionConfig p;GM2LM(config,&p,sizeof(p));
+    union Values {float f[256];unsigned short h[512];};
+    __local__ Values values;
+    int mt=(p.dims[1]+31)/32,tasks=mt*p.dims[2]*p.dims[3];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    for(int task=tid;task<tasks;task+=step){
+        int row0=task%mt*32,h=task/mt%p.dims[2],batch=task/mt/p.dims[2];float maximum=0.0f;
+        int rows=p.dims[1]-row0;if(rows>32)rows=32;
+        for(int r=0;r<rows;++r)for(int k0=0;k0<p.dims[0];k0+=256){
+            int count=p.dims[0]-k0;if(count>256)count=256;
+            _global_ptr_ const unsigned char *src=x+(row0+r)*p.a[1]+h*p.a[2]+batch*p.a[3]+k0*p.a[0];
+            if(p.type_a==0){GM2LM(src,values.f,count*4);for(int k=0;k<count;++k){float v=values.f[k];if(v<0)v=-v;if(v>maximum)maximum=v;}}
+            else{GM2LM(src,values.h,count*2);for(int k=0;k<count;++k){float v=kunlun_from_half(values.h[k]&32767);if(v>maximum)maximum=v;}}
+        }
+        values.f[0]=kunlun_from_half(kunlun_to_half(maximum));for(int j=1;j<8;++j)values.f[j]=0.0f;LM2GM(values.f,out+task*8,32);
+    }
+}

@@ -124,6 +124,8 @@ void upload_native_q4(int device, void * weights, const void * q4, int k, int n)
 enum class InputType { f32, f16 };
 // Byte strides describe a non-overlapping four-dimensional device view.
 struct Tensor4Layout { int ne[4],nb[4];InputType type; };
+// SDNN uses half inputs, symmetric INT16 DMA conversion and visible F32 accumulation/output.
+// KUNLUN_ATTENTION_MATMUL=cl selects the F32 SIMD arithmetic reference; see docs/attention.md.
 struct Matmul4Layout { Tensor4Layout a,b,y;bool round_b_to_f16=true; };
 struct Softmax4Layout { Tensor4Layout x,y,mask;bool has_mask=false;float scale=1,max_bias=0; };
 struct Rope4Layout { Tensor4Layout x,y;int n_dims,mode,n_offs;float freq_base,freq_scale,attn_factor; };

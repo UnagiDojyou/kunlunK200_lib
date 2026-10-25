@@ -80,3 +80,9 @@ See [F16 indexed cache updates](docs/set-rows.md).
 See [Fused SwiGLU](docs/swiglu.md).
 
 Native resident F16 Attention is available as an explicit opt-in; see [Attention implementation, constraints and measurement notes](docs/attention.md).
+
+Version 0.6.1 adds direct SDNN Attention matrix multiplication with half KV inputs and F32 visible accumulation/output. The CL reference remains selectable; see [precision, layout and dispatch details](docs/attention.md#sdnn-matrix-multiplication-061).
+
+Version 0.6.2 adds the local-memory CL Softmax path for rows up to 3072 elements, independent F16/F32 I/O, and `KUNLUN_ATTENTION_SOFTMAX=legacy` for comparison/fallback. Native exp and the previous SDNN matrix path are retained; see [Softmax details](docs/attention.md#softmax).
+
+Version 0.6.3 adds a dedicated SDNN DMA range pass and a shared preprocessing completion wait. MAC arithmetic and fast CL Softmax are retained. `KUNLUN_ATTENTION_PREP=legacy` selects the previous preprocessing. See [SDNN preprocessing](docs/attention.md#sdnn-preprocessing-063).
