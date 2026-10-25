@@ -78,3 +78,5 @@ Version 0.4 adds a typed, versioned common-F weight handle for GEMV and SD GEMM.
 See [F16 indexed cache updates](docs/set-rows.md).
 
 See [Fused SwiGLU](docs/swiglu.md).
+
+Native resident F16 Attention is available as an explicit opt-in; see [Attention implementation, constraints and measurement notes](docs/attention.md).
