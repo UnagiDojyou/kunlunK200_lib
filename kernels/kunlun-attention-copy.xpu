@@ -1,0 +1,17 @@
+#include "xpu/kernel/cluster_header.h"
+#include "attention-config.h"
+__global__ void kunlun_attention_copy(unsigned char *y,const unsigned char *x,const KunlunAttentionConfig *config) {
+    __local__ KunlunAttentionConfig p;
+    GM2LM(config,&p,sizeof(p));
+    __local__ unsigned char values[1024];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    int bytes=p.type_a==0?4:2,tile=1024/bytes,chunks=(p.dims[0]+tile-1)/tile;
+    int tasks=chunks*p.dims[1]*p.dims[2]*p.dims[3];
+    for(int task=tid;task<tasks;task+=step) {
+        int base=task%chunks*tile,row=task/chunks;
+        int i1=row%p.dims[1],i2=row/p.dims[1]%p.dims[2],i3=row/(p.dims[1]*p.dims[2]);
+        int len=p.dims[0]-base;if(len>tile)len=tile;
+        GM2LM(x+base*bytes+i1*p.a[1]+i2*p.a[2]+i3*p.a[3],values,len*bytes);
+        LM2GM(values,y+(row*p.dims[0]+base)*bytes,len*bytes);
+    }
+}

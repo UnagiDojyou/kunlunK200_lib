@@ -119,6 +119,11 @@ struct Kernel::Impl {
     Impl * elementwise = nullptr;
     Impl * broadcast = nullptr;
     Impl * swiglu = nullptr;
+    Impl * attention_pack_a=nullptr,*attention_pack_b=nullptr;
+    Impl * attention_mm=nullptr,*attention_sm=nullptr,*attention_cp=nullptr,*attention_phase=nullptr,*attention_rope=nullptr;
+    size_t attention_calls[4]={};
+    size_t attention_host_trig=0,attention_pack_calls=0;
+    std::vector<unsigned char> attention_config_cache;
     Impl * copy_rows = nullptr;
     Impl * set_rows = nullptr;
     Impl * rms_partial = nullptr;
@@ -231,7 +236,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->swiglu,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->swiglu,impl_->attention_pack_a,impl_->attention_pack_b,impl_->attention_mm,impl_->attention_sm,impl_->attention_cp,impl_->attention_phase,impl_->attention_rope,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -589,7 +594,8 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
 }
 
 #include "q4-common.inc"
+#include "attention.inc"
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.5.0"; }
+const char * version() { return "0.6.0"; }
 } // namespace kunlun

@@ -15,7 +15,7 @@ xt clang-10 -std=c++11 -O2 -fno-builtin -mcpu=xpu --xpu-device-only -c \
   -I"$XTDK/lib/clang/10.0.1/include" -I"$OUT/stubs" -I"$inc" \
   -o "$OUT/${name}.device.o" "$SRC"
 # This CL kernel must fit its local stack before it can be loaded.
-if [[ "$name" == kunlun-swiglu ]]; then
+if [[ "$name" == kunlun-swiglu || "$name" == kunlun-attention-* ]]; then
   xt clang-10 -std=c++11 -O2 -fno-builtin -mcpu=xpu --xpu-device-only -S \
     -resource-dir "$XTDK/lib/clang/10.0.1" \
     -I"$XTDK/lib/clang/10.0.1/include" -I"$OUT/stubs" -I"$inc" \
@@ -25,9 +25,9 @@ if [[ "$name" == kunlun-swiglu ]]; then
     $1=="addi" && $2=="sp," && $3=="sp," && $4<0 { if(-$4>frame)frame=-$4 }
     END {
       if(limit<=0 || frame<=0 || frame>limit) {
-        printf "SwiGLU local frame unsafe or unknown: frame=%d limit=%d\n",frame,limit > "/dev/stderr"; exit 1
+        printf "CL local frame unsafe or unknown: frame=%d limit=%d\n",frame,limit > "/dev/stderr"; exit 1
       }
-      printf "Checked SwiGLU local frame: %d bytes (limit %d)\n",frame,limit
+      printf "Checked CL local frame: %d bytes (limit %d)\n",frame,limit
     }' "$OUT/${name}.device.s"
 fi
 entry="$(xt llvm-nm --defined-only -g "$OUT/${name}.device.o" | awk '$2=="T"{print $3}' | grep -v '^_start$' | head -n1)"

@@ -1,0 +1,53 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/math.h"
+#include "fp16-device.h"
+#include "attention-config.h"
+
+__global__ void kunlun_attention_softmax(unsigned char *y,const unsigned char *x,const unsigned char *mask,
+                                        const KunlunAttentionConfig *config) {
+    __local__ KunlunAttentionConfig p;
+    GM2LM(config,&p,sizeof(p));
+    __local__ float values[256];
+    union Mask { float f[256];unsigned short h[512];unsigned int bits[256]; };
+    __local__ Mask mv;
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    int rows=p.dims[1]*p.dims[2]*p.dims[3];
+    for(int row=tid;row<rows;row+=step) {
+        int q=row%p.dims[1],h=row/p.dims[1]%p.dims[2],batch=row/(p.dims[1]*p.dims[2]);
+        int xo=q*p.a[1]+h*p.a[2]+batch*p.a[3],yo=q*p.y[1]+h*p.y[2]+batch*p.y[3];
+        int mo=q*p.mask[1]+(h%p.mask_ne[2])*p.mask[2]+(batch%p.mask_ne[3])*p.mask[3];
+        float slope=1;
+        if(p.max_bias>0) {
+            int nh=1;while(nh*2<=p.dims[2])nh*=2;
+            float b0=pow(2.0f,-p.max_bias/nh),b1=pow(2.0f,-p.max_bias/(2*nh));
+            slope=h<nh?pow(b0,(float)(h+1)):pow(b1,(float)(2*(h-nh)+1));
+        }
+        union {float f;unsigned int bits;} maximum;maximum.bits=0xff800000;
+        float sum=0;
+        for(int pass=0;pass<2;++pass)for(int base=0;base<p.dims[0];base+=256) {
+            int len=p.dims[0]-base;if(len>256)len=256;
+            GM2LM(x+xo+base*4,values,len*4);
+            if(mask) {
+                if(p.type_b==0)GM2LM(mask+mo+base*4,mv.f,len*4);
+                else {GM2LM(mask+mo+base*2,mv.h,len*2);for(int j=len-1;j>=0;--j)mv.f[j]=kunlun_from_half(mv.h[j]);}
+            }
+            for(int j=0;j<len;++j) {
+                float v=values[j]*p.scale+(mask?slope*mv.f[j]:0);
+                if(pass==0){if(v>maximum.f)maximum.f=v;}
+                else {
+                    union {float f;unsigned int bits;} val;val.f=v;
+                    values[j]=(maximum.bits==0xff800000 || val.bits==0xff800000)?0:expf(v-maximum.f);
+                    sum+=values[j];
+                }
+            }
+            if(pass==1)LM2GM(values,y+yo+base*4,len*4);
+        }
+        float inv=sum>0?1.0f/sum:0;
+        for(int base=0;base<p.dims[0];base+=256) {
+            int len=p.dims[0]-base;if(len>256)len=256;
+            GM2LM(y+yo+base*4,values,len*4);
+            for(int j=0;j<len;++j)values[j]*=inv;
+            LM2GM(values,y+yo+base*4,len*4);
+        }
+    }
+}

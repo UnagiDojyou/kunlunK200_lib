@@ -1,0 +1,46 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+#include "fp16-device.h"
+#include "attention-config.h"
+
+__global__ void kunlun_attention_matmul(unsigned char *y,const unsigned char *a,const unsigned char *b,
+                                       const KunlunAttentionConfig *config) {
+    __local__ KunlunAttentionConfig p;
+    GM2LM(config,&p,sizeof(p));
+    union Tile { float f[8][128]; unsigned short h[8][256]; };
+    __local__ Tile av,bv;
+    __local__ float acc[64][8],prod[8],out[8];
+    int group=p.dims[2]/p.heads_a;
+    int nt=(p.n+7)/8,mt=(p.m*group+7)/8;
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    int tasks=nt*mt*p.heads_a*p.dims[3];
+    for(int task=tid;task<tasks;task+=step) {
+        int nb=(task%nt)*8,mb=(task/nt%mt)*8;
+        int ah=task/(nt*mt)%p.heads_a,batch=task/(nt*mt*p.heads_a);
+        int ab=batch/(p.dims[3]/p.batches_a);
+        int nr=p.n-nb;if(nr>8)nr=8;int mr=p.m*group-mb;if(mr>8)mr=8;
+        for(int r=0;r<mr;++r)for(int n=0;n<nr;++n)for(int j=0;j<8;++j)acc[r*8+n][j]=0;
+        for(int base=0;base<p.k;base+=128) {
+            int len=p.k-base;if(len>128)len=128;
+            int padded=(len+7)&~7;
+            for(int r=0;r<nr;++r) {
+                _global_ptr_ const unsigned char *src=a+(nb+r)*p.a[1]+ah*p.a[2]+ab*p.a[3]+base*p.a[0];
+                GM2LM(src,av.f[r],len*4);
+                for(int j=len;j<padded;++j)av.f[r][j]=0;
+            }
+            for(int r=0;r<mr;++r) {
+                _global_ptr_ const unsigned char *src=b+((mb+r)%p.m)*p.b[1]+(ah*group+(mb+r)/p.m)*p.b[2]+batch*p.b[3]+base*p.b[0];
+                GM2LM(src,bv.f[r],len*4);
+                for(int j=len;j<padded;++j)bv.f[r][j]=0;
+            }
+            for(int r=0;r<mr;++r)for(int n=0;n<nr;++n)for(int j=0;j<padded;j+=8) {
+                _x256_vvmul_ls(av.f[n]+j,bv.f[r]+j,prod);
+                _x256_vvadd_ls(acc[r*8+n],prod,acc[r*8+n]);
+            }
+        }
+        for(int r=0;r<mr;++r) {
+            for(int n=0;n<nr;++n){float sum=0;for(int j=0;j<8;++j)sum+=acc[r*8+n][j];out[n]=sum;}
+            LM2GM(out,y+nb*4+((mb+r)%p.m)*p.y[1]+(ah*group+(mb+r)/p.m)*p.y[2]+batch*p.y[3],nr*4);
+        }
+    }
+}

@@ -1,0 +1,28 @@
+#include "xpu/kernel/cluster_header.h"
+#include "fp16-device.h"
+#include "attention-config.h"
+__global__ void kunlun_attention_rope(unsigned char *y,const unsigned char *x,const float *trig,const KunlunAttentionConfig *config) {
+    __local__ KunlunAttentionConfig p;
+    GM2LM(config,&p,sizeof(p));
+    union Values {float f[512];unsigned short h[1024];};
+    __local__ Values input,out;
+    __local__ float angles[512];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    int rows=p.dims[1]*p.dims[2];
+    int bytes=p.type_a==0?4:2;
+    for(int row=tid;row<rows;row+=step) {
+        int h=row%p.dims[1],t=row/p.dims[1];
+        int xo=h*p.a[1]+t*p.a[2],yo=h*p.y[1]+t*p.y[2];
+        if(p.type_a==0)GM2LM(x+xo,input.f,p.dims[0]*4);
+        else {GM2LM(x+xo,input.h,p.dims[0]*2);for(int j=p.dims[0]-1;j>=0;--j)input.f[j]=kunlun_from_half(input.h[j]);}
+        GM2LM(trig+t*p.n_dims,angles,p.n_dims*4);
+        for(int j=0;j<p.dims[0];++j)out.f[j]=input.f[j];
+        for(int j=0;j<p.n_dims/2;++j) {
+            int i=p.n_offs+(p.mode==0?2*j:j),k=i+(p.mode==0?1:p.n_dims/2);
+            float a=input.f[i],b=input.f[k],c=angles[2*j],s=angles[2*j+1];
+            out.f[i]=a*c-b*s;out.f[k]=a*s+b*c;
+        }
+        if(p.type_a==0)LM2GM(out.f,y+yo,p.dims[0]*4);
+        else {for(int j=0;j<p.dims[0];++j)out.h[j]=kunlun_to_half(out.f[j]);LM2GM(out.h,y+yo,p.dims[0]*2);}
+    }
+}

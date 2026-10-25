@@ -1,0 +1,20 @@
+#include "xpu/kernel/cluster_header.h"
+#include "fp16-device.h"
+#include "attention-config.h"
+__global__ void kunlun_attention_pack(float *y,const unsigned char *x,const KunlunAttentionConfig *config) {
+    __local__ KunlunAttentionConfig p;GM2LM(config,&p,sizeof(p));
+    union Values {float f[256];unsigned short h[512];};
+    __local__ Values values;
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    int chunks=(p.dims[0]+255)/256,rows=p.dims[1]*p.dims[2]*p.dims[3];
+    for(int task=tid;task<chunks*rows;task+=step) {
+        int base=task%chunks*256,row=task/chunks,len=p.dims[0]-base;if(len>256)len=256;
+        int i1=row%p.dims[1],i2=row/p.dims[1]%p.dims[2],i3=row/(p.dims[1]*p.dims[2]);
+        int offset=i1*p.a[1]+i2*p.a[2]+i3*p.a[3]+base*p.a[0];
+        if(p.type_a==0) {
+            GM2LM(x+offset,values.f,len*4);
+            if(p.round_b)for(int j=0;j<len;++j)values.f[j]=kunlun_from_half(kunlun_to_half(values.f[j]));
+        } else {GM2LM(x+offset,values.h,len*2);for(int j=len-1;j>=0;--j)values.f[j]=kunlun_from_half(values.h[j]);}
+        LM2GM(values.f,y+row*p.dims[0]+base,len*4);
+    }
+}

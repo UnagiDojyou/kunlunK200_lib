@@ -53,6 +53,7 @@ struct SetRowsLayout {
 };
 
 struct SwiGLULayout;
+struct Matmul4Layout;struct Softmax4Layout;struct Tensor4Layout;struct Rope4Layout;struct AttentionStatistics;
 
 class Kernel {
 public:
@@ -63,6 +64,11 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend bool attention_matmul(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const Matmul4Layout &);
+    friend bool attention_softmax(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const Softmax4Layout &);
+    friend bool attention_contiguous(Kernel &,int,void *,size_t,const void *,size_t,const Tensor4Layout &);
+    friend bool attention_rope(Kernel &,int,void *,size_t,const void *,size_t,const int32_t *,size_t,const Rope4Layout &);
+    friend AttentionStatistics attention_statistics(const Kernel &);
     friend void matmul(Kernel &, int, void *, const void *, const void *, int, int, int,
                        WeightType, const float *, const float *, int);
     friend void elementwise(Kernel &, int, void *, const void *, const void *, int, int,
@@ -116,6 +122,23 @@ size_t native_q4_size(int k, int n);
 bool pack_native_q4(void * destination, size_t bytes, const void * q4, int k, int n);
 void upload_native_q4(int device, void * weights, const void * q4, int k, int n);
 enum class InputType { f32, f16 };
+// Byte strides describe a non-overlapping four-dimensional device view.
+struct Tensor4Layout { int ne[4],nb[4];InputType type; };
+struct Matmul4Layout { Tensor4Layout a,b,y;bool round_b_to_f16=true; };
+struct Softmax4Layout { Tensor4Layout x,y,mask;bool has_mask=false;float scale=1,max_bias=0; };
+struct Rope4Layout { Tensor4Layout x,y;int n_dims,mode,n_offs;float freq_base,freq_scale,attn_factor; };
+struct AttentionStatistics { size_t matmuls,softmax,copies,rope,hbm_workspace_bytes,l3_workspace_bytes,rope_host_trig,pack_calls; };
+const char *tensor4_reason(const Tensor4Layout &);
+const char *attention_matmul_reason(const Matmul4Layout &);
+const char *attention_softmax_reason(const Softmax4Layout &);
+const char *attention_rope_reason(const Rope4Layout &);
+// All calls validate contracts before submission, serialize on runtime_mutex and complete before returning.
+bool attention_matmul(Kernel &,int device,void *y,size_t y_bytes,const void *a,size_t a_bytes,const void *b,size_t b_bytes,const Matmul4Layout &);
+bool attention_softmax(Kernel &,int device,void *y,size_t y_bytes,const void *x,size_t x_bytes,const void *mask,size_t mask_bytes,const Softmax4Layout &);
+bool attention_contiguous(Kernel &,int device,void *y,size_t y_bytes,const void *x,size_t x_bytes,const Tensor4Layout &);
+bool attention_rope(Kernel &,int device,void *y,size_t y_bytes,const void *x,size_t x_bytes,const int32_t *positions,size_t position_bytes,const Rope4Layout &);
+AttentionStatistics attention_statistics(const Kernel &);
+
 struct SwiGLULayout {
     int width, rows;
     int gate_stride, up_stride, output_stride; // Bytes between rows.

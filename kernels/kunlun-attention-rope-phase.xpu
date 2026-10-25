@@ -1,0 +1,28 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/math.h"
+#include "attention-config.h"
+// Range reduction is validated for absolute input positions up to 32768.
+static __device__ void kunlun_sincos(float x,float *s,float *c) {
+    int q=(int)(x*0.636619772367581343f+(x>=0?0.5f:-0.5f));
+    float r=((x-q*1.5703125f)-q*0.0004837512969970703125f)-q*7.54978941586159635335e-8f;
+    float z=r*r;
+    float sn=r+r*z*(-0.1666666666666667f+z*(0.008333333333333333f+z*(-0.0001984126984126984f+z*(0.000002755731922398589f-z*0.000000025052108385442f))));
+    float cs=1+z*(-0.5f+z*(0.04166666666666667f+z*(-0.001388888888888889f+z*(0.0000248015873015873f+z*(-0.0000002755731922398589f+z*0.00000000208767569878681f)))));
+    switch(q&3){case 0:*s=sn;*c=cs;break;case 1:*s=cs;*c=-sn;break;case 2:*s=-sn;*c=-cs;break;default:*s=-cs;*c=sn;break;}
+}
+__global__ void kunlun_attention_rope_phase(float *trig,const int *positions,const KunlunAttentionConfig *config) {
+    __local__ KunlunAttentionConfig p;
+    GM2LM(config,&p,sizeof(p));
+    __local__ int position;
+    __local__ float values[512];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    for(int t=tid;t<p.dims[2];t+=step) {
+        GM2LM(positions+t,&position,4);float theta=(float)position;
+        for(int j=0;j<p.n_dims/2;++j) {
+            float angle=theta*p.freq_scale;
+            float sn,cs;kunlun_sincos(angle,&sn,&cs);values[2*j]=cs*p.attn_factor;values[2*j+1]=sn*p.attn_factor;
+            theta*=p.theta_scale;
+        }
+        LM2GM(values,trig+t*p.n_dims,p.n_dims*4);
+    }
+}
