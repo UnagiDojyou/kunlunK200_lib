@@ -102,3 +102,7 @@ Build `k200-attention-prep-bench` for old/new direct comparisons. Arguments are 
 ```
 build/k200-attention-prep-bench 0 1 128 512 128 32 32 4 0 0 1 2
 ```
+
+## Experimental fused Attention
+
+See [FlashAttention](flash-attention.md) for the opt-in L3 block implementation and its separate comparison settings.

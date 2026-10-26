@@ -52,6 +52,7 @@ struct SetRowsLayout {
     int cache_features, cache_tokens, cache_stride;
 };
 
+struct Flash4Layout;struct FlashStatistics;
 struct SwiGLULayout;
 struct Matmul4Layout;struct Softmax4Layout;struct Tensor4Layout;struct Rope4Layout;struct AttentionStatistics;
 
@@ -64,6 +65,8 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend FlashStatistics flash_statistics(const Kernel &);
+    friend bool flash_attention(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
     friend bool attention_matmul(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const Matmul4Layout &);
     friend bool attention_softmax(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const Softmax4Layout &);
     friend bool attention_contiguous(Kernel &,int,void *,size_t,const void *,size_t,const Tensor4Layout &);
@@ -241,3 +244,12 @@ Statistics statistics();
 const char * version();
 
 } // namespace kunlun
+
+namespace kunlun {
+// Experimental opt-in fused Attention; Q/K/V bases must be 32-byte aligned.
+struct FlashStatistics { size_t calls,hbm_workspace_bytes,l3_workspace_bytes; int block,query_tile; };
+FlashStatistics flash_statistics(const Kernel &);
+struct Flash4Layout { Tensor4Layout q,k,v,y,mask; bool has_mask=false; float scale=1,max_bias=0; };
+const char *flash_attention_reason(const Flash4Layout &);
+bool flash_attention(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "corpus-tiny-cpuattn",
+    "lines": [
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.41302564282 perplexity=11.1676995491"
+    ],
+    "sha256": "1c62a66e31bf858876484d472d93b34518d701bc926faf6fc3bab7bb795b8251"
+  },
+  {
+    "name": "corpus-tiny-oldkv",
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0.00233188141618 mean_KL=0.0115892528268 max_KL=0.444695962332 max_abs=5.30684149265 greedy_equal=977",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.41165393198 perplexity=11.1523911962"
+    ],
+    "sha256": "2dd0d2ac835a0b6bbeaa2908e91febab9233ba7236a2d6c29e5a83177b36ee09"
+  },
+  {
+    "name": "corpus-tiny-flash",
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0.00226732909054 mean_KL=0.0106232973306 max_KL=0.262890877349 max_abs=3.1533408165 greedy_equal=968",
+      "QUALITY reference=1 positions=1020 nmse=0.00235080948668 mean_KL=0.0110532692832 max_KL=0.19227025116 max_abs=3.9464224577 greedy_equal=973",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.40916528227 perplexity=11.1246713081"
+    ],
+    "sha256": "45c11b7613fff5db0b23b3e8cc46d6eac69f120b45acf75fa45b04b7f095f810"
+  },
+  {
+    "name": "corpus-7b-cpuattn",
+    "lines": [
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.12232518596 perplexity=8.35053147013"
+    ],
+    "sha256": "3aa2d83be163c0b99732d5e41ac890d8a0982eac2992084a727e3ca0c8bb8456"
+  },
+  {
+    "name": "corpus-7b-oldkv",
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0.00669191446368 mean_KL=0.0103399024465 max_KL=1.39331264405 max_abs=5.49015307426 greedy_equal=981",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.1239695518 perplexity=8.36427409473"
+    ],
+    "sha256": "4179c3eb63bfffb9c36130ba4a6013bedbd9ab8d0d086c34e1ccb7583d965666"
+  },
+  {
+    "name": "corpus-7b-flash",
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0.00668308360361 mean_KL=0.00835000147539 max_KL=0.206812471099 max_abs=5.62077140808 greedy_equal=976",
+      "QUALITY reference=1 positions=1020 nmse=0.00613515166406 mean_KL=0.00957425453486 max_KL=0.693960308991 max_abs=5.03655427694 greedy_equal=963",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.12177597136 perplexity=8.34594649553"
+    ],
+    "sha256": "a8161559bb221f9a3c7a722c120dcac10f88ad01ce957e3609f9e7c3c4ad3152"
+  }
+]

@@ -1,0 +1,114 @@
+[
+  {
+    "test": "tiny-none-128",
+    "nmse": 0.0009362817023717368,
+    "mean_kl": 0.0038588210814583554,
+    "max_kl": 0.01887167281530324,
+    "greedy_equal": 31,
+    "positions": 32
+  },
+  {
+    "test": "tiny-none-512",
+    "nmse": 0.0008749007601212701,
+    "mean_kl": 0.0028060289228002103,
+    "max_kl": 0.016500454326212062,
+    "greedy_equal": 32,
+    "positions": 32
+  },
+  {
+    "test": "tiny-layer-128",
+    "nmse": 0.0009362817023717368,
+    "mean_kl": 0.0038588210814583554,
+    "max_kl": 0.01887167281530324,
+    "greedy_equal": 31,
+    "positions": 32
+  },
+  {
+    "test": "tiny-layer-512",
+    "nmse": 0.0008749007601212701,
+    "mean_kl": 0.0028060289228002103,
+    "max_kl": 0.016500454326212062,
+    "greedy_equal": 32,
+    "positions": 32
+  },
+  {
+    "test": "tiny-row-128",
+    "nmse": 0.0009362817023717368,
+    "mean_kl": 0.0038588210814583554,
+    "max_kl": 0.01887167281530324,
+    "greedy_equal": 31,
+    "positions": 32
+  },
+  {
+    "test": "tiny-row-512",
+    "nmse": 0.0008749007601212701,
+    "mean_kl": 0.0028060289228002103,
+    "max_kl": 0.016500454326212062,
+    "greedy_equal": 32,
+    "positions": 32
+  },
+  {
+    "test": "corpus-final-tiny",
+    "bitwise": true,
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0 mean_KL=0 max_KL=0 max_abs=0 greedy_equal=1020",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.40916528227 perplexity=11.1246713081"
+    ]
+  },
+  {
+    "test": "7b-none-128",
+    "nmse": 0.005089324138707539,
+    "mean_kl": 0.004624968399200791,
+    "max_kl": 0.04022324112714684,
+    "greedy_equal": 30,
+    "positions": 32
+  },
+  {
+    "test": "7b-none-512",
+    "nmse": 0.0021837731636376104,
+    "mean_kl": 0.002416416267560005,
+    "max_kl": 0.03438815521078536,
+    "greedy_equal": 32,
+    "positions": 32
+  },
+  {
+    "test": "7b-layer-128",
+    "nmse": 0.005089324138707539,
+    "mean_kl": 0.004624968399200791,
+    "max_kl": 0.04022324112714684,
+    "greedy_equal": 30,
+    "positions": 32
+  },
+  {
+    "test": "7b-layer-512",
+    "nmse": 0.0021837731636376104,
+    "mean_kl": 0.002416416267560005,
+    "max_kl": 0.03438815521078536,
+    "greedy_equal": 32,
+    "positions": 32
+  },
+  {
+    "test": "7b-row-128",
+    "nmse": 0.005089324138707539,
+    "mean_kl": 0.004624968399200791,
+    "max_kl": 0.04022324112714684,
+    "greedy_equal": 30,
+    "positions": 32
+  },
+  {
+    "test": "7b-row-512",
+    "nmse": 0.0021837731636376104,
+    "mean_kl": 0.002416416267560005,
+    "max_kl": 0.03438815521078536,
+    "greedy_equal": 32,
+    "positions": 32
+  },
+  {
+    "test": "corpus-final-7b",
+    "bitwise": true,
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0 mean_KL=0 max_KL=0 max_abs=0 greedy_equal=1020",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.12177597136 perplexity=8.34594649553"
+    ]
+  }
+]

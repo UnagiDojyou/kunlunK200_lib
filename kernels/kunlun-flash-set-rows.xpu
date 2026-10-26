@@ -1,0 +1,28 @@
+#include "xpu/kernel/cluster_header.h"
+#include "fp16-device.h"
+// Parallelize row and feature tiles for the non-transposed FlashAttention cache.
+__global__ void kunlun_flash_set_rows(unsigned char *dst,const unsigned char *src,const unsigned char *indices,const int *config,int *status){
+ __local__ int p[24],ids[512],error[8];
+ __local__ float values[128];
+ __local__ unsigned short halves[128];
+ __local__ unsigned int scalar[8];
+ GM2LM(config,p,22*4);error[0]=1;
+ int tid=cluster_id()*core_num()+core_id(),threads=cluster_num()*core_num(),chunks=(p[0]+127)/128;
+ // The host restricts this program to at most 256 rows and one head/batch.
+ GM2LM(indices,ids,p[1]*p[17]);
+ int words=p[17]/4,start=ids[0];bool parallel=start>=0&&start<=p[18]-p[1];
+ if(parallel)for(int row=0;row<p[1];++row)if(ids[row*words]!=start+row||(words==2&&ids[row*2+1]!=0))parallel=false;
+ // Preserve row order for duplicate or irregular indices.
+ for(int phase=0;phase<(parallel?1:p[1]);++phase)
+ for(int task=tid;task<chunks*(parallel?p[1]:1);task+=threads){
+  int base=task%chunks*128,row=parallel?task/chunks:phase,i2=0,i3=0;
+  int target=ids[row*words];if(target<0||target>=p[18]||(words==2&&ids[row*2+1]!=0)){LM2GM(error,status,4);continue;}
+  int len=p[0]-base;if(len>128)len=128;
+  int input=row*p[5]+i2*p[6]+i3*p[7],dest=target*p[8]+i2*p[9]+i3*p[10];
+  if(p[4]==p[16]){
+   if(p[16]==4){GM2LM(src+input+base*4,values,len*4);for(int j=0;j<len;++j)halves[j]=kunlun_to_half(values[j]);}
+   else GM2LM(src+input+base*2,halves,len*2);
+  }else for(int j=0;j<len;++j){GM2LM(src+input+(base+j)*p[4],scalar,p[16]);union{unsigned int u;float f;}x;x.u=scalar[0];halves[j]=p[16]==4?kunlun_to_half(x.f):scalar[0]&65535;}
+  LM2GM(halves,dst+dest+base*2,len*2);
+ }
+}

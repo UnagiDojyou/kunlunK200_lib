@@ -1,0 +1,38 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+#include "xpu/kernel/math.h"
+#include "fp16-device.h"
+#include "flash-config.h"
+__global__ void kunlun_flash_online(unsigned char *y,float *prob,float *acc,float *stats,const float *partial,const float *score,const unsigned char *mask,const float *qscale,const KunlunFlashConfig *cfg,int s0,int count){
+ __local__ KunlunFlashConfig p;GM2LM(cfg,&p,sizeof(p));
+ __local__ float logits[1024],a[128],part[128],st[8],values[1024];
+ __local__ unsigned short halves[1024];
+ __local__ float qpeak[8];
+ int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),rows=p.m*p.h*p.b;
+ for(int row=tid;row<rows;row+=step){
+  int q=row%p.m,h=row/p.m%p.h,b=row/(p.m*p.h);
+  if(s0){GM2LM(acc+row*p.d,a,p.d*4);GM2LM(partial+row*p.d,part,p.d*4);GM2LM(stats+row*8,st,32);for(int j=0;j<p.d;j+=8)_x256_vvadd_ls(a+j,part+j,a+j);}
+  else{for(int j=0;j<p.d;++j)a[j]=0;st[0]=-__builtin_inff();st[1]=0;}
+  if(count==0){float inv=st[1]>0?1.0f/st[1]:0;for(int j=0;j<p.d;j+=8)_x256_svmul_ls(inv,a+j,a+j);LM2GM(a,y+q*p.y[2]+h*p.y[1]+b*p.y[3],p.d*4);continue;}
+  GM2LM(score+row*p.block,logits,count*4);
+  if(mask){int off=s0*p.mask[0]+q*p.mask[1]+(h%p.mask_ne[2])*p.mask[2]+(b%p.mask_ne[3])*p.mask[3];if(p.mask_type){GM2LM(mask+off,halves,count*2);for(int j=0;j<count;++j)values[j]=kunlun_from_half(halves[j]);}else GM2LM(mask+off,values,count*4);}
+  float slope=1;
+  if(p.max_bias>0){int nh=1;while(nh*2<=p.h)nh*=2;float b0=pow(2.0f,-p.max_bias/nh),b1=pow(2.0f,-p.max_bias/(2*nh));slope=h<nh?pow(b0,(float)(h+1)):pow(b1,(float)(2*(h-nh)+1));}
+  float maximum=st[0],coefficient=p.scale;
+  if(p.m==1&&p.h>p.hk&&p.tg_group){GM2LM(qscale+row*8,qpeak,32);coefficient*=qpeak[0];}
+  for(int j=0;j<count;j+=8){_x256_svmul_ls(coefficient,logits+j,logits+j);if(mask){_x256_svmul_ls(slope,values+j,values+j);_x256_vvadd_ls(logits+j,values+j,logits+j);}}
+  for(int j=0;j<count;++j)if(logits[j]>maximum)maximum=logits[j];
+  float alpha=maximum==-__builtin_inff()?1.0f:expf(st[0]-maximum),sum=st[1]*alpha;
+  for(int j=0;j<p.d;j+=8)_x256_svmul_ls(alpha,a+j,a+j);
+  if(maximum==-__builtin_inff()){for(int j=0;j<count;++j)logits[j]=0;}
+  else for(int j=0;j<count;j+=8){
+   float e0=expf(logits[j]-maximum),e1=expf(logits[j+1]-maximum),e2=expf(logits[j+2]-maximum),e3=expf(logits[j+3]-maximum);
+   float e4=expf(logits[j+4]-maximum),e5=expf(logits[j+5]-maximum),e6=expf(logits[j+6]-maximum),e7=expf(logits[j+7]-maximum);
+   logits[j]=e0;logits[j+1]=e1;logits[j+2]=e2;logits[j+3]=e3;logits[j+4]=e4;logits[j+5]=e5;logits[j+6]=e6;logits[j+7]=e7;
+   sum+=e0;sum+=e1;sum+=e2;sum+=e3;sum+=e4;sum+=e5;sum+=e6;sum+=e7;
+  }
+  st[0]=maximum;st[1]=sum;
+  for(int j=count;j<p.block;++j)logits[j]=0;
+  LM2GM(logits,prob+row*p.block,p.block*4);LM2GM(a,acc+row*p.d,p.d*4);LM2GM(st,stats+row*8,32);
+ }
+}

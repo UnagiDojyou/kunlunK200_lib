@@ -86,3 +86,7 @@ Version 0.6.1 adds direct SDNN Attention matrix multiplication with half KV inpu
 Version 0.6.2 adds the local-memory CL Softmax path for rows up to 3072 elements, independent F16/F32 I/O, and `KUNLUN_ATTENTION_SOFTMAX=legacy` for comparison/fallback. Native exp and the previous SDNN matrix path are retained; see [Softmax details](docs/attention.md#softmax).
 
 Version 0.6.3 adds a dedicated SDNN DMA range pass and a shared preprocessing completion wait. MAC arithmetic and fast CL Softmax are retained. `KUNLUN_ATTENTION_PREP=legacy` selects the previous preprocessing. See [SDNN preprocessing](docs/attention.md#sdnn-preprocessing-063).
+
+## Experimental FlashAttention (0.7.0)
+
+The opt-in SDNN/CL block Attention path uses shared L3 for scores, probabilities and FP32 online state. See [configuration, contracts and comparison controls](docs/flash-attention.md). The separate Attention path remains the default.

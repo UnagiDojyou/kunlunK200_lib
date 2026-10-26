@@ -116,6 +116,7 @@ void upload_i8_rows(int id, void * weights, int k, int n, int first, int count, 
     check(xpu_wait());
 }
 struct Kernel::Impl {
+    std::shared_ptr<void> flash;
     Impl * elementwise = nullptr;
     Impl * broadcast = nullptr;
     Impl * swiglu = nullptr;
@@ -129,6 +130,7 @@ struct Kernel::Impl {
     std::vector<unsigned char> attention_config_cache;
     Impl * copy_rows = nullptr;
     Impl * set_rows = nullptr;
+    Impl * flash_set_rows = nullptr;
     Impl * rms_partial = nullptr;
     Impl * rms_output = nullptr;
     Impl * combine = nullptr;
@@ -239,7 +241,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->swiglu,impl_->attention_pack_a,impl_->attention_pack_b,impl_->attention_range,impl_->attention_range_dma,impl_->attention_sd,impl_->attention_sm_fast,impl_->attention_sm_typed,impl_->attention_mm,impl_->attention_sm,impl_->attention_cp,impl_->attention_phase,impl_->attention_rope,impl_->copy_rows,impl_->set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->swiglu,impl_->attention_pack_a,impl_->attention_pack_b,impl_->attention_range,impl_->attention_range_dma,impl_->attention_sd,impl_->attention_sm_fast,impl_->attention_sm_typed,impl_->attention_mm,impl_->attention_sm,impl_->attention_cp,impl_->attention_phase,impl_->attention_rope,impl_->copy_rows,impl_->set_rows,impl_->flash_set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -411,9 +413,12 @@ bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
         require(p.source_stride[1] == p.source_bytes && p.index_stride[0] == p.index_bytes && p.destination_stride[0] == 2);
     } else require(p.cache_tokens == 0 && p.cache_stride == 0);
     require(kernel.impl_->id == -1 || kernel.impl_->id == id); kernel.impl_->id=id;
-    if (!kernel.impl_->set_rows) kernel.impl_->set_rows=new Kernel::Impl{};
-    auto & fn=*kernel.impl_->set_rows;
-    select(id); load_kernel(fn,"kunlun-set-rows",id);
+    const char *flash_kv=std::getenv("KUNLUN_FLASH_KV");
+    bool parallel=flash_kv&&!std::strcmp(flash_kv,"1")&&p.width>1&&p.rows>1&&p.rows<=256&&p.dim2==1&&p.dim3==1&&p.index_extent[0]==1&&p.index_extent[1]==1&&p.index_stride[0]==p.index_bytes&&!p.cache_features;
+    auto &slot=parallel?kernel.impl_->flash_set_rows:kernel.impl_->set_rows;
+    if(!slot)slot=new Kernel::Impl{};
+    auto & fn=*slot;
+    select(id);load_kernel(fn,parallel?"kunlun-flash-set-rows":"kunlun-set-rows",id);
     if (!fn.scratch) { fn.scratch=allocate(id,512); fn.scratch_size=512; }
     require(fn.scratch);
     static_assert(sizeof(SetRowsLayout)==22*4,"SetRowsLayout layout");
@@ -598,7 +603,8 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
 
 #include "q4-common.inc"
 #include "attention.inc"
+#include "flash.inc"
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.6.0"; }
+const char * version() { return "0.7.0"; }
 } // namespace kunlun
