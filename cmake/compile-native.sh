@@ -15,7 +15,7 @@ xt clang-10 -std=c++11 -O2 -fno-builtin -mcpu=xpu --xpu-device-only -c \
   -I"$XTDK/lib/clang/10.0.1/include" -I"$OUT/stubs" -I"$inc" \
   -o "$OUT/${name}.device.o" "$SRC"
 # This CL kernel must fit its local stack before it can be loaded.
-if [[ "$name" == kunlun-swiglu || "$name" == kunlun-attention-* || "$name" == kunlun-flash-* ]]; then
+if [[ "$name" == kunlun-swiglu || "$name" == kunlun-attention-* || "$name" == kunlun-flash-* || "$name" == kunlun-kv-max-* ]]; then
   xt clang-10 -std=c++11 -O2 -fno-builtin -mcpu=xpu --xpu-device-only -S \
     -resource-dir "$XTDK/lib/clang/10.0.1" \
     -I"$XTDK/lib/clang/10.0.1/include" -I"$OUT/stubs" -I"$inc" \

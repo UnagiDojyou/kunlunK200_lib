@@ -15,12 +15,15 @@
 #include <limits.h>
 #include <memory>
 #include <chrono>
+#include <map>
+#include <deque>
 #include <stdexcept>
 
 namespace kunlun {
 namespace xdnn = baidu::xpu::api;
 namespace {
 std::recursive_mutex mutex;
+bool kv_tracking_any();bool kv_tracked_rows();void kv_copy_notice(void *,size_t);void kv_retire(int,void *,size_t);
 std::atomic<size_t> allocated[2];
 std::atomic<size_t> matmuls[2], peer_copies, peer_bytes;
 thread_local int diagnostic_device=-1;
@@ -65,6 +68,8 @@ void select(int id) { diagnostic_device=id; require(id >= 0 && id < 2); check(xp
 int wait() { return xpu_wait(); }
 int copy(void * dst, const void * src, size_t bytes, CopyKind kind) {
     require(kind == host_to_device || kind == device_to_host || kind == device_to_device);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(kind!=device_to_host)kv_copy_notice(dst,bytes);
     auto direction = kind == host_to_device ? XPU_HOST_TO_DEVICE : kind == device_to_host ? XPU_DEVICE_TO_HOST : XPU_DEVICE_TO_DEVICE;
     return xpu_memcpy(dst, src, bytes, direction);
 }
@@ -78,12 +83,13 @@ void * allocate(int id, size_t bytes) {
 }
 void release(int id, void * ptr, size_t bytes) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    if (ptr) { select(id); check(xpu_free(ptr)); allocated[id] -= std::max<size_t>(bytes, 256); }
+    if (ptr) { select(id); kv_retire(id,ptr,std::max<size_t>(bytes,256)); check(xpu_free(ptr)); allocated[id] -= std::max<size_t>(bytes, 256); }
 }
 size_t allocated_bytes(int id) { require(id >= 0 && id < 2); return allocated[id].load(); }
 void peer(int dst, void * dp, int src, const void * sp, size_t bytes) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     select(src); check(xpu_wait()); select(dst);
+    kv_max_invalidate(dst,dp,bytes);
     check(xpu_memcpy_peer(dst, dp, src, const_cast<void *>(sp), bytes));
     check(xpu_wait()); ++peer_copies; peer_bytes += bytes;
 }
@@ -384,6 +390,7 @@ bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
                   const void * src, size_t src_bytes, const void * indices, size_t index_bytes,
                   const SetRowsLayout & p) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(!kv_tracked_rows())kv_max_invalidate(id,dst,dst_bytes);
     require(dst && src && indices && dst != src && p.width > 0 && p.rows > 0 && p.dim2 > 0 && p.dim3 > 0);
     require(p.destination_rows > 0 && (p.source_bytes == 2 || p.source_bytes == 4) && (p.index_bytes == 4 || p.index_bytes == 8));
     require(p.index_extent[0] > 0 && p.index_extent[1] > 0 && p.dim2%p.index_extent[0] == 0 && p.dim3%p.index_extent[1] == 0);
@@ -603,8 +610,9 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
 
 #include "q4-common.inc"
 #include "attention.inc"
+#include "kv-max.inc"
 #include "flash.inc"
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.7.0"; }
+const char * version() { return "0.7.4"; }
 } // namespace kunlun

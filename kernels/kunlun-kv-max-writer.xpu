@@ -1,0 +1,48 @@
+#include "xpu/kernel/cluster_header.h"
+#include "fp16-device.h"
+// Preserve the original conversion's common path. Only its existing overflow /
+// exceptional branches set the status flag; finite PP does not run a max loop.
+static __device__ unsigned short checked_half(float value,_global_ptr_ int *status,__local__ int *flag){
+ union{float f;unsigned int u;}bits;bits.f=value;unsigned int sign=(bits.u>>16)&0x8000,mantissa=bits.u&0x7fffff;int exponent=((bits.u>>23)&255)-112;
+ if(exponent==143){LM2GM(flag,status+1,4);return sign|0x7c00|(mantissa?((mantissa>>13)|0x200):0);}
+ if(exponent>=31){LM2GM(flag,status+1,4);return sign|0x7c00;}
+ if(exponent<=0){if(exponent< -10)return sign;unsigned int m=mantissa|0x800000;int shift=14-exponent;return sign|((m+((1u<<(shift-1))-1)+((m>>shift)&1))>>shift);}
+ mantissa+=0xfff+((mantissa>>13)&1);if(mantissa&0x800000){mantissa=0;++exponent;}if(exponent>=31){LM2GM(flag,status+1,4);return sign|0x7c00;}return sign|(exponent<<10)|(mantissa>>13);
+}
+// One worker owns a complete unique destination row. Reduce after F16 rounding.
+__global__ void kunlun_kv_max_writer(unsigned char *dst,const unsigned char *src,const unsigned char *indices,const int *config,int *status,unsigned int *maxima,unsigned int *pending){
+ __local__ int p[24],ids[512],flag[8];__local__ float values[128];__local__ unsigned short halves[128];__local__ unsigned int peak[8];
+ GM2LM(config,p,96);GM2LM(indices,ids,p[1]*p[17]);flag[0]=1;
+ int tid=cluster_id()*core_num()+core_id(),workers=cluster_num()*core_num(),words=p[17]/4;
+ if((p[1]>1&&p[23]==0)||p[23]==-1){
+  int chunks=(p[0]+127)/128;
+  for(int task=tid;task<chunks*p[1];task+=workers){int base=task%chunks*128,row=task/chunks,target=ids[row*words],n=p[0]-base;if(n>128)n=128;
+   if(target<0||target>=p[18]||(words==2&&ids[row*2+1]!=0)){LM2GM(flag,status,4);continue;}
+   if(p[16]==4){GM2LM(src+row*p[5]+base*4,values,n*4);for(int j=0;j<n;++j)halves[j]=checked_half(values[j],status,flag);}
+   else{GM2LM(src+row*p[5]+base*2,halves,n*2);for(int j=0;j<n;++j)if((halves[j]&32767)>=0x7c00)LM2GM(flag,status+1,4);}
+   LM2GM(halves,dst+target*p[8]+base*2,n*2);
+  }return;
+ }
+ if(p[1]==1){
+  int target=ids[0];unsigned int maximum=0;
+  if(target<0||target>=p[18]||(words==2&&ids[1]!=0)){LM2GM(flag,status,4);return;}
+  for(int base=tid*128;base<p[0];base+=workers*128){int n=p[0]-base;if(n>128)n=128;
+   if(p[16]==4){GM2LM(src+base*4,values,n*4);for(int j=0;j<n;++j)halves[j]=kunlun_to_half(values[j]);}else GM2LM(src+base*2,halves,n*2);
+   for(int j=0;j<n;++j){unsigned int mag=halves[j]&32767;if(mag>=0x7c00)LM2GM(flag,status+1,4);if(mag<=0x7c00&&mag>maximum)maximum=mag;}
+   LM2GM(halves,dst+target*p[8]+base*2,n*2);
+  }
+  peak[0]=maximum;LM2GM(peak,pending+tid,4);return;
+ }
+ for(int row=tid;row<p[1];row+=workers){
+  int target=ids[row*words];if(target<0||target>=p[18]||(words==2&&ids[row*2+1]!=0)){LM2GM(flag,status,4);continue;}
+  unsigned int maximum=0;
+  for(int base=0;base<p[0];base+=128){
+   int n=p[0]-base;if(n>128)n=128;
+   if(p[16]==4){GM2LM(src+row*p[5]+base*4,values,n*4);for(int j=0;j<n;++j)halves[j]=kunlun_to_half(values[j]);}
+   else GM2LM(src+row*p[5]+base*2,halves,n*2);
+   for(int j=0;j<n;++j){unsigned int mag=halves[j]&32767;if(mag>=0x7c00)LM2GM(flag,status+1,4);if(mag<=0x7c00&&mag>maximum)maximum=mag;}
+   LM2GM(halves,dst+target*p[8]+base*2,n*2);
+  }
+  peak[0]=maximum;LM2GM(peak,maxima+target,4);
+ }
+}

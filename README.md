@@ -90,3 +90,16 @@ Version 0.6.3 adds a dedicated SDNN DMA range pass and a shared preprocessing co
 ## Experimental FlashAttention (0.7.0)
 
 The opt-in SDNN/CL block Attention path uses shared L3 for scores, probabilities and FP32 online state. See [configuration, contracts and comparison controls](docs/flash-attention.md). The separate Attention path remains the default.
+
+### 0.7.4: exact KV maximum reuse
+
+`KUNLUN_FLASH_KV_MAX=auto` (default) reuses GPU maxima only for backend-owned,
+tracked finite F16 storage and proven-zero append slots. `legacy` retains SDK
+findmax; `verify` independently compares cache hits with SDK results. Unknown
+writes/restore, alias and unsupported layouts safely fall back. KQ/PV, Online
+Softmax and quantization arithmetic are unchanged.
+
+Auto starts at S512 for D*HK >= 1024, and S8192 for 256 <= D*HK < 1024.
+Smaller features are opt-in only. Capacity below the threshold also retains the
+original writer. See [Japanese evaluation](docs/reports/kv-max-0.7.4.ja.md) and
+[reproduction](docs/reports/kv-max-0.7.4-reproduce.ja.md).

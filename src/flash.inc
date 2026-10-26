@@ -65,7 +65,7 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     auto &s=*std::static_pointer_cast<FlashState>(kernel.impl_->flash);
     bool profile=std::getenv("KUNLUN_FLASH_DECODING_PROFILE")&&p.q.ne[1]==1&&p.q.ne[2]*p.q.ne[3]>=32;
     bool trace=std::getenv("KUNLUN_FLASH_TRACE")!=nullptr||profile;auto start=std::chrono::steady_clock::now(),tick=start;
-    auto stage=[&](const char *name){if(trace){check(xpu_wait());auto now=std::chrono::steady_clock::now();std::fprintf(stderr,"FLASH_STAGE stage=%s ms=%.6f\n",name,std::chrono::duration<double,std::milli>(now-tick).count());tick=now;if(profile){flash_profile_report(name,s);tick=std::chrono::steady_clock::now();}}};
+    auto stage=[&](const char *name){if(trace){check(xpu_wait());auto now=std::chrono::steady_clock::now();std::fprintf(stderr,"FLASH_STAGE stage=%s ms=%.6f kv_max=%s phase=%s\n",name,std::chrono::duration<double,std::milli>(now-tick).count(),std::getenv("KUNLUN_FLASH_KV_MAX")?std::getenv("KUNLUN_FLASH_KV_MAX"):"default",std::getenv("K200_PROFILE_PHASE")?std::getenv("K200_PROFILE_PHASE"):"none");tick=now;if(profile){flash_profile_report(name,s);tick=std::chrono::steady_clock::now();}}};
     auto pq=p.q,pk=p.k,pv=p.v;
     // Each owner survives all enqueued blocks. Recompute on every call for KV updates.
     auto half=[&](Kernel::Impl &state,const void *src,Tensor4Layout &layout){
@@ -85,9 +85,13 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     q=half(s.qpack,q,pq);k=half(s.kpack,k,pk);v=half(s.vpack,v,pv);stage("pack_cast");
     if(!s.vendor){s.vendor=xdnn::create_context();require(s.vendor);s.vendor->set_ncluster(4);}
     native_reserve(s.peaks,id,1024);native_reserve(s.ranges,id,(size_t)((p.q.ne[1]+flash_query_tile()-1)/flash_query_tile())*p.q.ne[2]*p.q.ne[3]*32);
-    check(xdnn::findmax<float16>(s.vendor,(const float16*)k,(float*)s.peaks->data(),(int)tensor4_count(pk)));
     void *vmax=(char*)s.peaks->data()+256;
-    check(xdnn::findmax<float16>(s.vendor,(const float16*)v,(float*)vmax,(int)tensor4_count(pv)));
+    bool max_cached=kv_max_prepare(id,k,pk,v,pv,p.q.ne[1],s.peaks->data(),s.vendor);stage("kv_max_metadata");
+    if(!max_cached){
+        check(xdnn::findmax<float16>(s.vendor,(const float16*)k,(float*)s.peaks->data(),(int)tensor4_count(pk)));stage("k_findmax");
+        check(xdnn::findmax<float16>(s.vendor,(const float16*)v,(float*)vmax,(int)tensor4_count(pv)));stage("v_findmax");
+        kv_max_finish(id,k,pk,v,pv,s.peaks->data());stage("kv_max_seed");
+    }
     auto flat=pq;auto rcfg=attention_config(flat,pq);rcfg.k=flash_query_tile();
     attention_launch(s.range,id,"kunlun-flash-range",rcfg,{s.ranges->data(),q},true);stage("ranges");
     KunlunFlashConfig cfg{};cfg.d=pq.ne[0];cfg.s=pk.ne[1];cfg.m=pq.ne[1];cfg.h=pq.ne[2];cfg.hk=pk.ne[2];cfg.b=pq.ne[3];cfg.bk=pk.ne[3];cfg.bv=pv.ne[3];cfg.block=std::min(flash_block(cfg.m,cfg.h/cfg.hk),cfg.s);cfg.qt=flash_query_tile();

@@ -1,0 +1,12 @@
+#include "xpu/kernel/cluster_header.h"
+__global__ void kunlun_kv_max_build(const unsigned short *k,const unsigned short *v,unsigned int *km,unsigned int *vm,const int *jobs,int count,int kfeatures,int vfeatures,int *status){
+ __local__ int job[8],flag[8];__local__ unsigned short data[256];__local__ unsigned int out[8];flag[0]=1;
+ int tid=cluster_id()*core_num()+core_id(),workers=cluster_num()*core_num();
+ for(int i=tid;i<count;i+=workers){
+  GM2LM(jobs+i,job,4);int which=(job[0]>>30)&1,row=job[0]&0x3fffffff,features=which?vfeatures:kfeatures;auto src=which?v:k;auto dst=which?vm:km;unsigned int maximum=0;
+  for(int base=0;base<features;base+=256){int n=features-base;if(n>256)n=256;GM2LM(src+row*features+base,data,n*2);
+   for(int j=0;j<n;++j){unsigned int mag=data[j]&32767;if(mag>=0x7c00)LM2GM(flag,status,4);if(mag<=0x7c00&&mag>maximum)maximum=mag;}
+  }
+  out[0]=maximum;LM2GM(out,dst+row,4);
+ }
+}

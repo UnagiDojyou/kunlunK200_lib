@@ -1,0 +1,22 @@
+#include "xpu/kernel/cluster_header.h"
+#include "fp16-device.h"
+__global__ void kunlun_kv_max_reduce(float *peaks,unsigned int *km,unsigned int *vm,int kstart,int vstart,int count,const unsigned int *kp,const unsigned int *vp,int krow,int vrow,unsigned int *kg,unsigned int *vg,int kold,int vold){
+ if(core_id()!=0||cluster_id()>1)return;int which=cluster_id(),start=which?vstart:kstart;auto src=which?vm:km;
+ __local__ unsigned int data[256];__local__ float out[8];unsigned int maximum=0;
+ int old=which?vold:kold,row=which?vrow:krow;auto global=which?vg:kg;
+ bool seed=old==-2;
+ if(seed){GM2LM(peaks+which*64,out,16);float value=0;for(int j=0;j<4;++j)if(out[j]>value)value=out[j];maximum=kunlun_to_half(value)&32767;}
+ if(old>=0){GM2LM(global,data,4);maximum=data[0];}
+ if(row>=0){
+  GM2LM(src+row,data,4);unsigned int previous=data[0];GM2LM(which?vp:kp,data,128);unsigned int value=0;for(int j=0;j<32;++j)if(data[j]>value)value=data[j];
+  // An overwrite of the unique/current maximum may lower the exact range max.
+  // In that case scan row metadata again; never retain an overestimate.
+  if(old>=0&&row>=start&&row<start+old&&previous==maximum&&value<maximum){old=-1;maximum=0;}
+  if(row>=start&&row<start+count&&value>maximum)maximum=value;
+  data[0]=value;LM2GM(data,src+row,4);
+ }
+ int first=seed?count:(old>=0?old:0);
+ for(;first<count;first+=256){int n=count-first;if(n>256)n=256;GM2LM(src+start+first,data,n*4);for(int j=0;j<n;++j)if(data[j]>maximum)maximum=data[j];}
+ data[0]=maximum;LM2GM(data,global,4);
+ for(int j=0;j<8;++j)out[j]=0;out[0]=kunlun_from_half(maximum);LM2GM(out,peaks+which*64,32);
+}

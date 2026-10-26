@@ -243,6 +243,34 @@ struct Statistics {
 Statistics statistics();
 const char * version();
 
+// Backend-owned, exclusively tracked F16 storage. Register only when every write
+// goes through tracked backend operations/copy APIs. Raw SDK writes must call
+// kv_max_invalidate; unregistered/public raw FlashAttention inputs use SDK max.
+class KVMaxCache {
+public:
+ struct Impl;
+ KVMaxCache(int device,void *data,size_t bytes,int features,int rows,const char *name);
+ ~KVMaxCache();
+ KVMaxCache(const KVMaxCache &)=delete;
+ KVMaxCache &operator=(const KVMaxCache &)=delete;
+private:
+ Impl *impl_;
+};
+void kv_max_invalidate(int device,void *data,size_t bytes);
+void kv_max_zero(int device,void *data,size_t bytes);
+void kv_max_mark_rows(int device,void *data,const int64_t *rows,size_t count);
+// Returns true only when the write was fully handled. Input indices have already
+// been copied/validated by the backend. The host target set must match the device
+// indices exactly and contain no duplicates; the kernel independently checks bounds.
+bool kv_max_set_rows(Kernel &,int device,void *dst,size_t dst_bytes,const void *src,size_t src_bytes,const void *indices,size_t index_bytes,const SetRowsLayout &,const int64_t *targets,size_t count);
+struct KVMaxStatistics {
+ size_t seeds=0,fallback_unverified=0;
+ size_t lookups=0,hits=0,full_calls=0,verify_calls=0,rebuilds=0,rebuild_rows=0,writer_calls=0,writer_rows=0,invalidations=0,retired=0,metadata_bytes=0,zero_bytes=0,scan_bytes=0,meta_read_bytes=0,verify_mismatches=0;
+ size_t fallback_legacy=0,fallback_pp=0,fallback_short=0,fallback_unowned=0,fallback_poison=0;
+};
+KVMaxStatistics kv_max_statistics(int device);
+void kv_max_log_statistics();
+
 } // namespace kunlun
 
 namespace kunlun {
