@@ -1,0 +1,6 @@
+{
+  "head": "780fb6933fe3d4ee06e686438f5f37fc7826d901\n",
+  "branch": "codex/k200-flash-kq-20261026\n",
+  "status": " M CMakeLists.txt\n M docs/flash-attention.md\n M src/flash.inc\n?? bench/experiments/\n?? bench/flash-kq-api-bench.cpp\n?? bench/flash-kq-bench.cpp\n?? bench/flash-online-api-bench.cpp\n?? bench/flash-online-bench.cpp\n?? docs/flash-kq.md\n?? docs/flash-online.md\n?? docs/reports/flash-kq-20261026/\n?? docs/reports/flash-online-20261026/\n?? kernels/flash-kq-device.h\n?? kernels/flash-online-device.h\n?? kernels/kunlun-flash-kq-reuse1024.xpu\n?? kernels/kunlun-flash-online-ordered.xpu\n",
+  "remotes": "origin\tgit@github.com:UnagiDojyou/kunlunK200_lib.git (fetch)\norigin\tgit@github.com:UnagiDojyou/kunlunK200_lib.git (push)\nupstream\thttps://github.com/sam6321/KunlunK200.git (fetch)\nupstream\thttps://github.com/sam6321/KunlunK200.git (push)\n"
+}

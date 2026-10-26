@@ -1,0 +1,559 @@
+[
+  {
+    "test": "auto-unit-p0-s2048",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.263316 old_ms=0.313652 cpu_nmse=3.60641235761e-10 cpu_max=1.52558651564e-06 old_nmse=2.08297414637e-10 old_max=1.18836760521e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s2304",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=29 block=576 storage=L3 flash_ms=0.286994 old_ms=0.372323 cpu_nmse=1.1029430395e-09 cpu_max=1.40961554578e-06 old_nmse=1.16685036535e-09 old_max=1.25728547573e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s2560",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=2560 M=1 HK=4 H=32 batch=1 pattern=29 block=640 storage=L3 flash_ms=0.329478 old_ms=0.400107 cpu_nmse=5.28387581983e-09 cpu_max=1.63164138146e-06 old_nmse=5.08484995364e-09 old_max=1.33248977363e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s2816",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=2816 M=1 HK=4 H=32 batch=1 pattern=29 block=704 storage=L3 flash_ms=0.353206 old_ms=0.428402 cpu_nmse=1.09205475986e-09 cpu_max=1.49992867176e-06 old_nmse=1.03706272362e-09 old_max=1.23307108879e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s3072",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=3072 M=1 HK=4 H=32 batch=1 pattern=29 block=768 storage=L3 flash_ms=0.352990 old_ms=0.455160 cpu_nmse=6.53127480261e-10 cpu_max=1.57831960117e-06 old_nmse=7.14952327603e-10 old_max=1.4454126358e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s3328",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=3328 M=1 HK=4 H=32 batch=1 pattern=29 block=832 storage=L3 flash_ms=0.377439 old_ms=0.514447 cpu_nmse=1.0728023935e-09 cpu_max=1.59640688397e-06 old_nmse=1.07687331847e-09 old_max=1.12364068627e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s3584",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=3584 M=1 HK=4 H=32 batch=1 pattern=29 block=896 storage=L3 flash_ms=0.420039 old_ms=0.554873 cpu_nmse=4.1908364993e-09 cpu_max=1.11865336668e-06 old_nmse=3.24429228316e-09 old_max=1.03283673525e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s3840",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=3840 M=1 HK=4 H=32 batch=1 pattern=29 block=960 storage=L3 flash_ms=0.441442 old_ms=0.567273 cpu_nmse=5.43869885974e-09 cpu_max=1.16700457951e-06 old_nmse=2.73312486288e-09 old_max=9.33418050408e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s4096",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.495291 old_ms=0.596331 cpu_nmse=1.2714401e-09 cpu_max=1.15162009648e-06 old_nmse=4.47976650314e-10 old_max=6.36093318462e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p0-s4352",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.505629 old_ms=0.655008 cpu_nmse=1.41282867293e-09 cpu_max=1.29758314861e-06 old_nmse=4.78131333057e-10 old_max=6.04428350925e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-auto-p0-d64-s1280-hk4",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.244424 old_ms=0.232015 cpu_nmse=1.87056663181e-09 cpu_max=2.01266010963e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-auto-p0-d64-s8192-hk4",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=8192 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=1.168947 old_ms=1.169183 cpu_nmse=2.2751482702e-08 cpu_max=9.83933167232e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-auto-p0-d128-s4352-hk32",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=4.213821 old_ms=4.214628 cpu_nmse=3.43355751478e-10 cpu_max=7.64360189777e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-kq-p0",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=1.731311 old_ms=1.730790 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-unknown-kq-p0",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=1.730941 old_ms=1.732709 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-online-p0",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.872159 old_ms=0.872576 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-pv-p0",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.728087 old_ms=0.729370 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-unknown-p0",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.654546 old_ms=0.655846 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-hbm-p0",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=HBM flash_ms=0.665281 old_ms=0.665188 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-pp-p0",
+    "active": false,
+    "line": "FLASH_UNIT pd=0 D=64 S=512 M=128 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=1.817484 old_ms=1.814401 cpu_nmse=2.99692629618e-10 cpu_max=5.19200003544e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "layout-control-p0-d64-pat0",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=0 block=1024 storage=L3 flash_ms=0.345245 old_ms=0.431202 cpu_nmse=2.81479425927e-09 cpu_max=1.25652965908e-06 old_nmse=1.05773355457e-09 old_max=5.27128577232e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "layout-control-p0-d64-pat11",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=11 block=1024 storage=L3 flash_ms=0.430902 old_ms=0.514632 cpu_nmse=2.81479425927e-09 cpu_max=1.25652965908e-06 old_nmse=1.05773355457e-09 old_max=5.27128577232e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "layout-control-p0-d128-pat0",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=0 block=1024 storage=L3 flash_ms=2.303649 old_ms=2.401671 cpu_nmse=7.25986451632e-10 cpu_max=7.37905336478e-07 old_nmse=6.86461944759e-10 old_max=6.56582415104e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "layout-control-p0-d128-pat11",
+    "active": true,
+    "line": "FLASH_UNIT pd=0 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=11 block=1024 storage=L3 flash_ms=3.963467 old_ms=4.072408 cpu_nmse=7.25986451632e-10 cpu_max=7.37905336478e-07 old_nmse=6.86461944759e-10 old_max=6.56582415104e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s2048",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.241520 old_ms=0.308274 cpu_nmse=3.60641235761e-10 cpu_max=1.52558651564e-06 old_nmse=2.08297414637e-10 old_max=1.18836760521e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s2304",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=29 block=576 storage=L3 flash_ms=0.296825 old_ms=0.366398 cpu_nmse=1.1029430395e-09 cpu_max=1.40961554578e-06 old_nmse=1.16685036535e-09 old_max=1.25728547573e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s2560",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=2560 M=1 HK=4 H=32 batch=1 pattern=29 block=640 storage=L3 flash_ms=0.306861 old_ms=0.397135 cpu_nmse=5.28387581983e-09 cpu_max=1.63164138146e-06 old_nmse=5.08484995364e-09 old_max=1.33248977363e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s2816",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=2816 M=1 HK=4 H=32 batch=1 pattern=29 block=704 storage=L3 flash_ms=0.343884 old_ms=0.420353 cpu_nmse=1.09205475986e-09 cpu_max=1.49992867176e-06 old_nmse=1.03706272362e-09 old_max=1.23307108879e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s3072",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=3072 M=1 HK=4 H=32 batch=1 pattern=29 block=768 storage=L3 flash_ms=0.365656 old_ms=0.448383 cpu_nmse=6.53127480261e-10 cpu_max=1.57831960117e-06 old_nmse=7.14952327603e-10 old_max=1.4454126358e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s3328",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=3328 M=1 HK=4 H=32 batch=1 pattern=29 block=832 storage=L3 flash_ms=0.370211 old_ms=0.503169 cpu_nmse=1.0728023935e-09 cpu_max=1.59640688397e-06 old_nmse=1.07687331847e-09 old_max=1.12364068627e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s3584",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=3584 M=1 HK=4 H=32 batch=1 pattern=29 block=896 storage=L3 flash_ms=0.393579 old_ms=0.534003 cpu_nmse=4.1908364993e-09 cpu_max=1.11865336668e-06 old_nmse=3.24429228316e-09 old_max=1.03283673525e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s3840",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=3840 M=1 HK=4 H=32 batch=1 pattern=29 block=960 storage=L3 flash_ms=0.431377 old_ms=0.561401 cpu_nmse=5.43869885974e-09 cpu_max=1.16700457951e-06 old_nmse=2.73312486288e-09 old_max=9.33418050408e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s4096",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.504727 old_ms=0.588505 cpu_nmse=1.2714401e-09 cpu_max=1.15162009648e-06 old_nmse=4.47976650314e-10 old_max=6.36093318462e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "auto-unit-p1-s4352",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.499560 old_ms=0.643075 cpu_nmse=1.41282867293e-09 cpu_max=1.29758314861e-06 old_nmse=4.78131333057e-10 old_max=6.04428350925e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-auto-p1-d64-s1280-hk4",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.229506 old_ms=0.229860 cpu_nmse=1.87056663181e-09 cpu_max=2.01266010963e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-auto-p1-d64-s8192-hk4",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=8192 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=1.152600 old_ms=1.154256 cpu_nmse=2.2751482702e-08 cpu_max=9.83933167232e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-auto-p1-d128-s4352-hk32",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=4.073981 old_ms=4.057540 cpu_nmse=3.43355751478e-10 cpu_max=7.64360189777e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-kq-p1",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=1.706424 old_ms=1.707301 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-unknown-kq-p1",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=1.706262 old_ms=1.706997 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-online-p1",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.864130 old_ms=0.865203 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-pv-p1",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.712467 old_ms=0.713127 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-unknown-p1",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=L3 flash_ms=0.642755 old_ms=0.647051 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-hbm-p1",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=29 block=1024 storage=HBM flash_ms=0.657323 old_ms=0.657936 cpu_nmse=1.34488691128e-09 cpu_max=1.20427304598e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "fallback-pp-p1",
+    "active": false,
+    "line": "FLASH_UNIT pd=1 D=64 S=512 M=128 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=1.811703 old_ms=1.813204 cpu_nmse=2.99692629618e-10 cpu_max=5.19200003544e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "layout-control-p1-d64-pat0",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=0 block=1024 storage=L3 flash_ms=0.352132 old_ms=0.423611 cpu_nmse=2.81479425927e-09 cpu_max=1.25652965908e-06 old_nmse=1.05773355457e-09 old_max=5.27128577232e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "layout-control-p1-d64-pat11",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=11 block=1024 storage=L3 flash_ms=0.411537 old_ms=0.506805 cpu_nmse=2.81479425927e-09 cpu_max=1.25652965908e-06 old_nmse=1.05773355457e-09 old_max=5.27128577232e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "layout-control-p1-d128-pat0",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=0 block=1024 storage=L3 flash_ms=2.284743 old_ms=2.376956 cpu_nmse=7.25986451632e-10 cpu_max=7.37905336478e-07 old_nmse=6.86461944759e-10 old_max=6.56582415104e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "layout-control-p1-d128-pat11",
+    "active": true,
+    "line": "FLASH_UNIT pd=1 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=11 block=1024 storage=L3 flash_ms=3.806576 old_ms=3.915777 cpu_nmse=7.25986451632e-10 cpu_max=7.37905336478e-07 old_nmse=6.86461944759e-10 old_max=6.56582415104e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "final-auto-tiny-p0",
+    "measured_method_bitwise": true,
+    "lines": [
+      "FDBENCH_STATE prefix=4096 bytes=92324401 prefill_ms=18738.475310 restore_outside_timer=1",
+      "FDBENCH trial=0 order=0 prefix=4096 mode=auto tg_ms=3405.253239 steps=63 tps=18.500826687 logits_hash=8652095206837246635",
+      "FDBENCH trial=0 order=1 prefix=4096 mode=off tg_ms=3629.983761 steps=63 tps=17.355449541 logits_hash=18205627610432250689",
+      "FDBENCH trial=1 order=0 prefix=4096 mode=off tg_ms=3626.678157 steps=63 tps=17.371268492 logits_hash=18205627610432250689",
+      "FDBENCH trial=1 order=1 prefix=4096 mode=auto tg_ms=3359.263749 steps=63 tps=18.754109444 logits_hash=8652095206837246635"
+    ],
+    "nmse": 4.785189466100832e-06,
+    "mean_kl": 4.01750437699437e-05,
+    "max_kl": 0.00010017461602016548,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "final-auto-tiny-p1",
+    "measured_method_bitwise": true,
+    "lines": [
+      "FDBENCH_STATE prefix=4096 bytes=92324401 prefill_ms=18381.929416 restore_outside_timer=1",
+      "FDBENCH trial=0 order=0 prefix=4096 mode=auto tg_ms=3519.295243 steps=63 tps=17.901311385 logits_hash=8652095206837246635",
+      "FDBENCH trial=0 order=1 prefix=4096 mode=off tg_ms=3562.318848 steps=63 tps=17.685109809 logits_hash=18205627610432250689",
+      "FDBENCH trial=1 order=0 prefix=4096 mode=off tg_ms=3566.307471 steps=63 tps=17.665330461 logits_hash=18205627610432250689",
+      "FDBENCH trial=1 order=1 prefix=4096 mode=auto tg_ms=3356.748635 steps=63 tps=18.768161352 logits_hash=8652095206837246635"
+    ],
+    "nmse": 4.785189466100832e-06,
+    "mean_kl": 4.01750437699437e-05,
+    "max_kl": 0.00010017461602016548,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "final-split-tiny-layer-off",
+    "perf": [
+      "K200PERF trial=0 pp_ms=453.853352 pp_tokens=128 tg_ms=666.836752 tg_steps=15 first_process_ms=453.853352",
+      "K200PERF trial=0 pp_ms=1835.968455 pp_tokens=512 tg_ms=696.497076 tg_steps=15 first_process_ms=449.128499",
+      "K200PERF trial=0 pp_ms=8109.725202 pp_tokens=2048 tg_ms=779.774000 tg_steps=15 first_process_ms=432.462325"
+    ]
+  },
+  {
+    "test": "final-split-tiny-layer-auto",
+    "perf": [
+      "K200PERF trial=0 pp_ms=457.386056 pp_tokens=128 tg_ms=667.503739 tg_steps=15 first_process_ms=457.386056",
+      "K200PERF trial=0 pp_ms=1831.657757 pp_tokens=512 tg_ms=682.250489 tg_steps=15 first_process_ms=451.567749",
+      "K200PERF trial=0 pp_ms=8272.313135 pp_tokens=2048 tg_ms=737.650187 tg_steps=15 first_process_ms=450.962470"
+    ]
+  },
+  {
+    "test": "final-split-quality-tiny-layer-p128",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": -1.4313289530336272e-19,
+    "max_kl": 9.045885225973232e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-quality-tiny-layer-p512",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": 4.458366916963906e-20,
+    "max_kl": 7.8092006297218e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-quality-tiny-layer-p2048",
+    "bitwise": false,
+    "nmse": 2.1587347445005186e-05,
+    "mean_kl": 0.00013685778016433894,
+    "max_kl": 0.001235829293179351,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-tiny-row-off",
+    "perf": [
+      "K200PERF trial=0 pp_ms=716.103426 pp_tokens=128 tg_ms=1155.522742 tg_steps=15 first_process_ms=716.103426",
+      "K200PERF trial=0 pp_ms=3011.140747 pp_tokens=512 tg_ms=1159.393897 tg_steps=15 first_process_ms=742.822773",
+      "K200PERF trial=0 pp_ms=12467.157073 pp_tokens=2048 tg_ms=1304.183208 tg_steps=15 first_process_ms=748.470590"
+    ]
+  },
+  {
+    "test": "final-split-tiny-row-auto",
+    "perf": [
+      "K200PERF trial=0 pp_ms=754.460192 pp_tokens=128 tg_ms=1136.599467 tg_steps=15 first_process_ms=754.460192",
+      "K200PERF trial=0 pp_ms=3002.046390 pp_tokens=512 tg_ms=1170.029292 tg_steps=15 first_process_ms=740.581731",
+      "K200PERF trial=0 pp_ms=12945.465573 pp_tokens=2048 tg_ms=1186.851038 tg_steps=15 first_process_ms=749.970288"
+    ]
+  },
+  {
+    "test": "final-split-quality-tiny-row-p128",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": -1.4313289530336272e-19,
+    "max_kl": 9.045885225973232e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-quality-tiny-row-p512",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": 4.458366916963906e-20,
+    "max_kl": 7.8092006297218e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-quality-tiny-row-p2048",
+    "bitwise": false,
+    "nmse": 2.1587347445005186e-05,
+    "mean_kl": 0.00013685778016433894,
+    "max_kl": 0.001235829293179351,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-7b-layer-off",
+    "perf": [
+      "K200PERF trial=0 pp_ms=1820.226539 pp_tokens=128 tg_ms=2114.916248 tg_steps=15 first_process_ms=1820.226539",
+      "K200PERF trial=0 pp_ms=7313.832186 pp_tokens=512 tg_ms=2321.234987 tg_steps=15 first_process_ms=1815.134467",
+      "K200PERF trial=0 pp_ms=30888.168646 pp_tokens=2048 tg_ms=3008.106743 tg_steps=15 first_process_ms=1815.802941"
+    ]
+  },
+  {
+    "test": "final-split-7b-layer-auto",
+    "perf": [
+      "K200PERF trial=0 pp_ms=1820.783791 pp_tokens=128 tg_ms=2118.773590 tg_steps=15 first_process_ms=1820.783791",
+      "K200PERF trial=0 pp_ms=7308.514405 pp_tokens=512 tg_ms=2332.766685 tg_steps=15 first_process_ms=1816.079560",
+      "K200PERF trial=0 pp_ms=30888.624284 pp_tokens=2048 tg_ms=3015.438607 tg_steps=15 first_process_ms=1811.370927"
+    ]
+  },
+  {
+    "test": "final-split-quality-7b-layer-p128",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": -5.90590502682866e-20,
+    "max_kl": 1.1029776634064433e-18,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-quality-7b-layer-p512",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": -5.217073040136009e-20,
+    "max_kl": 0.0,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-quality-7b-layer-p2048",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": -4.2062851146070056e-20,
+    "max_kl": 8.168322482569538e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-7b-row-off",
+    "perf": [
+      "K200PERF trial=0 pp_ms=2777.021976 pp_tokens=128 tg_ms=3011.536384 tg_steps=15 first_process_ms=2777.021976",
+      "K200PERF trial=0 pp_ms=11146.242393 pp_tokens=512 tg_ms=3200.332951 tg_steps=15 first_process_ms=2774.607326",
+      "K200PERF trial=0 pp_ms=45985.510203 pp_tokens=2048 tg_ms=3893.335126 tg_steps=15 first_process_ms=2774.509645"
+    ]
+  },
+  {
+    "test": "final-split-7b-row-auto",
+    "perf": [
+      "K200PERF trial=0 pp_ms=2775.658385 pp_tokens=128 tg_ms=2996.469962 tg_steps=15 first_process_ms=2775.658385",
+      "K200PERF trial=0 pp_ms=11133.816957 pp_tokens=512 tg_ms=3210.170779 tg_steps=15 first_process_ms=2772.477643",
+      "K200PERF trial=0 pp_ms=46113.008778 pp_tokens=2048 tg_ms=3922.656298 tg_steps=15 first_process_ms=2772.648540"
+    ]
+  },
+  {
+    "test": "final-split-quality-7b-row-p128",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": -5.90590502682866e-20,
+    "max_kl": 1.1029776634064433e-18,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-quality-7b-row-p512",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": -5.217073040136009e-20,
+    "max_kl": 0.0,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-split-quality-7b-row-p2048",
+    "bitwise": true,
+    "nmse": 0.0,
+    "mean_kl": -4.2062851146070056e-20,
+    "max_kl": 8.168322482569538e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "final-memory-tiny-off",
+    "lines": [
+      "KUNLUN Flash PD0 D=64 S=256 M=128 H=32 block=256 workspace=6422528 storage=L3 kq=reuse1024 calls=1",
+      "FLASH_AUDIT key=clear|H2D|pd0 count=99 bytes=103809024 wait_ms=0.000000",
+      "FLASH_AUDIT key=clear|wait|pd0 count=1 bytes=0 wait_ms=0.001136",
+      "FLASH_AUDIT key=context|H2D|pd0 count=99 bytes=103809024 wait_ms=0.000000",
+      "FLASH_AUDIT key=context|wait|pd0 count=1 bytes=0 wait_ms=0.001569",
+      "FLASH_AUDIT key=model|H2D|pd0 count=199 bytes=545366016 wait_ms=0.000000",
+      "FLASH_AUDIT key=model|wait|pd0 count=353 bytes=0 wait_ms=0.404389",
+      "FLASH_AUDIT key=pp|D2H|pd0 count=5728 bytes=3946518016 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|H2D|pd0 count=5192 bytes=1991710464 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|launch|pd0 count=36000 bytes=0 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|wait|pd0 count=42166 bytes=0 wait_ms=16930.375472",
+      "FLASH_AUDIT key=tg|D2H|pd0 count=1253 bytes=7115584 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|H2D|pd0 count=1130 bytes=3965128 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|launch|pd0 count=11277 bytes=0 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|wait|pd0 count=10426 bytes=0 wait_ms=319.629389",
+      "FLASH_MEMORY pd=0 hbm_peak=735120384 l3_peak=10616832 hbm_live=735120384 l3_live=10616832",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "KUNLUN Flash totals PD0: calls=858 hbm=1575680 l3=148480 block=1024 query_tile=128",
+      "FLASH_AUDIT key=cleanup|wait|pd0 count=170 bytes=0 wait_ms=0.150781",
+      "FLASH_MEMORY pd=0 hbm_peak=735120384 l3_peak=10616832 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=0 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0"
+    ]
+  },
+  {
+    "test": "final-memory-tiny-auto",
+    "lines": [
+      "KUNLUN Flash PD0 D=64 S=256 M=128 H=32 block=256 workspace=6422528 storage=L3 kq=reuse1024 calls=1",
+      "KUNLUN Flash-Decoding PD0 D=64 S=4352 H=32 HK=4 chunks=5 fixed=1024 block=1024 waves=1 workspace=742400 storage=L3 pool=10616832 layout=head work=head calls=705",
+      "FLASH_AUDIT key=clear|H2D|pd0 count=99 bytes=103809024 wait_ms=0.000000",
+      "FLASH_AUDIT key=clear|wait|pd0 count=1 bytes=0 wait_ms=0.001152",
+      "FLASH_AUDIT key=context|H2D|pd0 count=99 bytes=103809024 wait_ms=0.000000",
+      "FLASH_AUDIT key=context|wait|pd0 count=1 bytes=0 wait_ms=0.001285",
+      "FLASH_AUDIT key=model|H2D|pd0 count=199 bytes=545366016 wait_ms=0.000000",
+      "FLASH_AUDIT key=model|wait|pd0 count=353 bytes=0 wait_ms=0.433539",
+      "FLASH_AUDIT key=pp|D2H|pd0 count=5728 bytes=3946518016 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|H2D|pd0 count=5192 bytes=1991710464 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|launch|pd0 count=36000 bytes=0 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|wait|pd0 count=42166 bytes=0 wait_ms=17252.458973",
+      "FLASH_AUDIT key=tg|D2H|pd0 count=1253 bytes=7115584 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|H2D|pd0 count=1134 bytes=3977708 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|launch|pd0 count=9429 bytes=0 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|wait|pd0 count=10430 bytes=0 wait_ms=299.185969",
+      "FLASH_MEMORY pd=0 hbm_peak=735132928 l3_peak=10616832 hbm_live=735132928 l3_live=10616832",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "KUNLUN Flash totals PD0: calls=858 hbm=1575680 l3=742400 block=1024 query_tile=128",
+      "FLASH_AUDIT key=cleanup|wait|pd0 count=170 bytes=0 wait_ms=0.144104",
+      "FLASH_MEMORY pd=0 hbm_peak=735132928 l3_peak=10616832 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=0 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0"
+    ]
+  },
+  {
+    "test": "final-memory-7b-off",
+    "lines": [
+      "KUNLUN Flash PD0 D=128 S=256 M=128 H=32 block=256 workspace=8519680 storage=L3 kq=reuse1024 calls=1",
+      "FLASH_AUDIT key=clear|H2D|pd0 count=2048 bytes=2147483648 wait_ms=0.000000",
+      "FLASH_AUDIT key=clear|wait|pd0 count=2 bytes=0 wait_ms=0.002120",
+      "FLASH_AUDIT key=context|H2D|pd0 count=2048 bytes=2147483648 wait_ms=0.000000",
+      "FLASH_AUDIT key=context|wait|pd0 count=2 bytes=0 wait_ms=0.002349",
+      "FLASH_AUDIT key=model|H2D|pd0 count=289 bytes=3643817984 wait_ms=0.000000",
+      "FLASH_AUDIT key=model|wait|pd0 count=513 bytes=0 wait_ms=1.060191",
+      "FLASH_AUDIT key=pp|D2H|pd0 count=4144 bytes=5661364224 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|H2D|pd0 count=1682 bytes=2835632992 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|launch|pd0 count=23008 bytes=0 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|wait|pd0 count=28496 bytes=0 wait_ms=28937.894096",
+      "FLASH_AUDIT key=tg|D2H|pd0 count=1813 bytes=20077568 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|H2D|pd0 count=726 bytes=10475784 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|launch|pd0 count=15043 bytes=0 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|wait|pd0 count=14222 bytes=0 wait_ms=1306.590081",
+      "FLASH_MEMORY pd=0 hbm_peak=5894381568 l3_peak=12713984 hbm_live=5894381568 l3_live=12713984",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "KUNLUN Flash totals PD0: calls=736 hbm=3148544 l3=164864 block=1024 query_tile=128",
+      "FLASH_AUDIT key=cleanup|wait|pd0 count=240 bytes=0 wait_ms=0.253223",
+      "FLASH_MEMORY pd=0 hbm_peak=5894381568 l3_peak=12713984 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=0 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0"
+    ]
+  },
+  {
+    "test": "final-memory-7b-auto",
+    "lines": [
+      "KUNLUN Flash PD0 D=128 S=256 M=128 H=32 block=256 workspace=8519680 storage=L3 kq=reuse1024 calls=1",
+      "FLASH_AUDIT key=clear|H2D|pd0 count=2048 bytes=2147483648 wait_ms=0.000000",
+      "FLASH_AUDIT key=clear|wait|pd0 count=2 bytes=0 wait_ms=0.002115",
+      "FLASH_AUDIT key=context|H2D|pd0 count=2048 bytes=2147483648 wait_ms=0.000000",
+      "FLASH_AUDIT key=context|wait|pd0 count=2 bytes=0 wait_ms=0.002512",
+      "FLASH_AUDIT key=model|H2D|pd0 count=289 bytes=3643817984 wait_ms=0.000000",
+      "FLASH_AUDIT key=model|wait|pd0 count=513 bytes=0 wait_ms=1.075189",
+      "FLASH_AUDIT key=pp|D2H|pd0 count=4144 bytes=5661364224 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|H2D|pd0 count=1682 bytes=2835632992 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|launch|pd0 count=23008 bytes=0 wait_ms=0.000000",
+      "FLASH_AUDIT key=pp|wait|pd0 count=28496 bytes=0 wait_ms=28682.438294",
+      "FLASH_AUDIT key=tg|D2H|pd0 count=1813 bytes=20077568 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|H2D|pd0 count=726 bytes=10475784 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|launch|pd0 count=15043 bytes=0 wait_ms=0.000000",
+      "FLASH_AUDIT key=tg|wait|pd0 count=14222 bytes=0 wait_ms=1309.218104",
+      "FLASH_MEMORY pd=0 hbm_peak=5894381568 l3_peak=12713984 hbm_live=5894381568 l3_live=12713984",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "KUNLUN Flash totals PD0: calls=736 hbm=3148544 l3=164864 block=1024 query_tile=128",
+      "FLASH_AUDIT key=cleanup|wait|pd0 count=240 bytes=0 wait_ms=0.230158",
+      "FLASH_MEMORY pd=0 hbm_peak=5894381568 l3_peak=12713984 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=0 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0",
+      "FLASH_MEMORY pd=1 hbm_peak=0 l3_peak=0 hbm_live=0 l3_live=0"
+    ]
+  }
+]

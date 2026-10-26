@@ -1,0 +1,28 @@
+[
+  {
+    "pd": 0,
+    "nmse": 4.785189466100832e-06,
+    "max_abs": 0.07262468338012695,
+    "mean_KL": 4.01750437699437e-05,
+    "max_KL": 0.00010017461602016548,
+    "greedy_equal": 64,
+    "positions": 64,
+    "old_continuation_ppl": 1521.4187675234639,
+    "new_continuation_ppl": 1519.7744081851,
+    "delta_nll": -0.0010813910222751133,
+    "changed": []
+  },
+  {
+    "pd": 1,
+    "nmse": 4.785189466100832e-06,
+    "max_abs": 0.07262468338012695,
+    "mean_KL": 4.01750437699437e-05,
+    "max_KL": 0.00010017461602016548,
+    "greedy_equal": 64,
+    "positions": 64,
+    "old_continuation_ppl": 1521.4187675234639,
+    "new_continuation_ppl": 1519.7744081851,
+    "delta_nll": -0.0010813910222751133,
+    "changed": []
+  }
+]

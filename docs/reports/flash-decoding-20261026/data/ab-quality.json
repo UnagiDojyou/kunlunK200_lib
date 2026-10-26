@@ -1,0 +1,98 @@
+[
+  {
+    "test": "ab-tiny-p0",
+    "model": "tiny",
+    "pd": 0,
+    "mode": "on",
+    "unit_best": 5,
+    "nmse": 5.32969046421385e-06,
+    "mean_kl": 4.349283669528891e-05,
+    "max_kl": 0.00010679411623359513,
+    "greedy_equal": 63,
+    "positions": 64
+  },
+  {
+    "test": "ab-tiny-p0",
+    "model": "tiny",
+    "pd": 0,
+    "mode": "on:5",
+    "unit_best": 5,
+    "nmse": 4.611948383038958e-06,
+    "mean_kl": 3.977028747531608e-05,
+    "max_kl": 0.00010547144226229953,
+    "greedy_equal": 63,
+    "positions": 64
+  },
+  {
+    "test": "ab-tiny-p1",
+    "model": "tiny",
+    "pd": 1,
+    "mode": "on",
+    "unit_best": 5,
+    "nmse": 5.32969046421385e-06,
+    "mean_kl": 4.349283669528891e-05,
+    "max_kl": 0.00010679411623359513,
+    "greedy_equal": 63,
+    "positions": 64
+  },
+  {
+    "test": "ab-tiny-p1",
+    "model": "tiny",
+    "pd": 1,
+    "mode": "on:5",
+    "unit_best": 5,
+    "nmse": 4.611948383038958e-06,
+    "mean_kl": 3.977028747531608e-05,
+    "max_kl": 0.00010547144226229953,
+    "greedy_equal": 63,
+    "positions": 64
+  },
+  {
+    "test": "ab-7b-p0",
+    "model": "7b",
+    "pd": 0,
+    "mode": "on",
+    "unit_best": 5,
+    "nmse": 4.173277820337659e-05,
+    "mean_kl": 1.8475899891738385e-05,
+    "max_kl": 0.00024469067682544805,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "ab-7b-p0",
+    "model": "7b",
+    "pd": 0,
+    "mode": "on:5",
+    "unit_best": 5,
+    "nmse": 3.166427384486242e-05,
+    "mean_kl": 1.4580356976076707e-05,
+    "max_kl": 0.0002462970163685866,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "ab-7b-p1",
+    "model": "7b",
+    "pd": 1,
+    "mode": "on",
+    "unit_best": 5,
+    "nmse": 4.173277820337659e-05,
+    "mean_kl": 1.8475899891738385e-05,
+    "max_kl": 0.00024469067682544805,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "ab-7b-p1",
+    "model": "7b",
+    "pd": 1,
+    "mode": "on:5",
+    "unit_best": 5,
+    "nmse": 3.166427384486242e-05,
+    "mean_kl": 1.4580356976076707e-05,
+    "max_kl": 0.0002462970163685866,
+    "greedy_equal": 64,
+    "positions": 64
+  }
+]

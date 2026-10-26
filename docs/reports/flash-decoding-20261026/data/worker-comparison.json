@@ -1,0 +1,2396 @@
+[
+  {
+    "test": "profile-p0-hk1-c1",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=1 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 170161,
+        "t1": 3234,
+        "t2": 34944,
+        "t3": 18355,
+        "t4": 10467,
+        "t5": 9730,
+        "t6": 9156,
+        "t7": 10687,
+        "t8": 210466,
+        "t9": 477200,
+        "t10": 512,
+        "t11": 16,
+        "t12": 32,
+        "t13": 256,
+        "t14": 256,
+        "t15": 16,
+        "critical_ticks": 120669,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          42803,
+          810,
+          9136,
+          4591,
+          2619,
+          2434,
+          2292,
+          2679,
+          53946
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 291822
+      },
+      "pv": {
+        "t0": 8956,
+        "t1": 4392,
+        "t2": 28704,
+        "t3": 33592,
+        "t4": 4500,
+        "t5": 1424,
+        "t6": 1264,
+        "t7": 1683,
+        "t8": 12627,
+        "t9": 97142,
+        "t10": 4,
+        "t11": 8,
+        "t12": 8,
+        "t13": 64,
+        "t14": 32,
+        "t15": 4,
+        "critical_ticks": 90509,
+        "launches": 4,
+        "active_sdnn": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "critical_phase_ticks": [
+          8956,
+          4392,
+          28704,
+          33592,
+          4500,
+          1424,
+          1264,
+          1683,
+          5994
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 32,
+        "critical_ticks": 5974
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk1-c1",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD0 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 179498,
+        "t1": 3394,
+        "t2": 35474,
+        "t3": 18515,
+        "t4": 10611,
+        "t5": 9731,
+        "t6": 9155,
+        "t7": 10734,
+        "t8": 239226,
+        "t9": 516338,
+        "t10": 512,
+        "t11": 16,
+        "t12": 32,
+        "t13": 256,
+        "t14": 256,
+        "t15": 16,
+        "critical_ticks": 130387,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          45418,
+          850,
+          9235,
+          4631,
+          2655,
+          2435,
+          2291,
+          2689,
+          60730
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 271113
+      },
+      "pv": {
+        "t0": 9008,
+        "t1": 4396,
+        "t2": 28802,
+        "t3": 33776,
+        "t4": 4568,
+        "t5": 1436,
+        "t6": 1460,
+        "t7": 1684,
+        "t8": 13354,
+        "t9": 98484,
+        "t10": 4,
+        "t11": 8,
+        "t12": 8,
+        "t13": 64,
+        "t14": 32,
+        "t15": 4,
+        "critical_ticks": 91090,
+        "launches": 4,
+        "active_sdnn": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "critical_phase_ticks": [
+          9008,
+          4396,
+          28802,
+          33776,
+          4568,
+          1436,
+          1460,
+          1684,
+          5960
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3957
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk1-c4",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=1 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 41457,
+        "t1": 809,
+        "t2": 37591,
+        "t3": 17598,
+        "t4": 9144,
+        "t5": 8576,
+        "t6": 8432,
+        "t7": 8816,
+        "t8": 51829,
+        "t9": 184252,
+        "t10": 128,
+        "t11": 8,
+        "t12": 8,
+        "t13": 256,
+        "t14": 256,
+        "t15": 4,
+        "critical_ticks": 46455,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          10475,
+          203,
+          9622,
+          4401,
+          2286,
+          2144,
+          2108,
+          2205,
+          13156
+        ]
+      },
+      "online": {
+        "launches": 1,
+        "active_cl": [
+          64
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 151339
+      },
+      "pv": {
+        "t0": 8951,
+        "t1": 4393,
+        "t2": 37237,
+        "t3": 33593,
+        "t4": 4499,
+        "t5": 1424,
+        "t6": 1264,
+        "t7": 1679,
+        "t8": 5822,
+        "t9": 98862,
+        "t10": 4,
+        "t11": 8,
+        "t12": 8,
+        "t13": 64,
+        "t14": 32,
+        "t15": 4,
+        "critical_ticks": 24785,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          2239,
+          1099,
+          9383,
+          8399,
+          1125,
+          356,
+          316,
+          421,
+          1475
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 128,
+        "critical_ticks": 8380
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk1-c4",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD0 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 177403,
+        "t1": 3395,
+        "t2": 36976,
+        "t3": 18514,
+        "t4": 10611,
+        "t5": 9729,
+        "t6": 9152,
+        "t7": 10733,
+        "t8": 240308,
+        "t9": 516821,
+        "t10": 512,
+        "t11": 16,
+        "t12": 32,
+        "t13": 256,
+        "t14": 256,
+        "t15": 16,
+        "critical_ticks": 130880,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          44961,
+          851,
+          9495,
+          4630,
+          2655,
+          2433,
+          2288,
+          2691,
+          61220
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 270740
+      },
+      "pv": {
+        "t0": 9008,
+        "t1": 4396,
+        "t2": 28724,
+        "t3": 33776,
+        "t4": 4568,
+        "t5": 1436,
+        "t6": 1460,
+        "t7": 1683,
+        "t8": 13630,
+        "t9": 98681,
+        "t10": 4,
+        "t11": 8,
+        "t12": 8,
+        "t13": 64,
+        "t14": 32,
+        "t15": 4,
+        "critical_ticks": 91010,
+        "launches": 4,
+        "active_sdnn": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "critical_phase_ticks": [
+          9008,
+          4396,
+          28724,
+          33776,
+          4568,
+          1436,
+          1460,
+          1683,
+          5959
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3983
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk4-c1",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 40767,
+        "t1": 2178,
+        "t2": 185002,
+        "t3": 70387,
+        "t4": 15058,
+        "t5": 9732,
+        "t6": 12337,
+        "t7": 10682,
+        "t8": 77288,
+        "t9": 423431,
+        "t10": 128,
+        "t11": 32,
+        "t12": 16,
+        "t13": 1024,
+        "t14": 1024,
+        "t15": 16,
+        "critical_ticks": 106767,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          10548,
+          546,
+          46900,
+          17599,
+          3766,
+          2436,
+          3085,
+          2676,
+          19903
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 289511
+      },
+      "pv": {
+        "t0": 11221,
+        "t1": 9345,
+        "t2": 179651,
+        "t3": 134371,
+        "t4": 9684,
+        "t5": 2626,
+        "t6": 2418,
+        "t7": 3639,
+        "t8": 23285,
+        "t9": 376240,
+        "t10": 16,
+        "t11": 32,
+        "t12": 16,
+        "t13": 256,
+        "t14": 128,
+        "t15": 16,
+        "critical_ticks": 94808,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          2812,
+          2337,
+          45667,
+          33595,
+          2424,
+          658,
+          606,
+          916,
+          5896
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 32,
+        "critical_ticks": 5857
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk4-c1",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD0 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 44566,
+        "t1": 2338,
+        "t2": 173945,
+        "t3": 70821,
+        "t4": 13218,
+        "t5": 9731,
+        "t6": 12290,
+        "t7": 10733,
+        "t8": 86720,
+        "t9": 424362,
+        "t10": 128,
+        "t11": 32,
+        "t12": 16,
+        "t13": 1024,
+        "t14": 1024,
+        "t15": 16,
+        "critical_ticks": 106772,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          11971,
+          586,
+          44192,
+          17709,
+          3306,
+          2435,
+          3074,
+          2688,
+          22317
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 270868
+      },
+      "pv": {
+        "t0": 11435,
+        "t1": 9363,
+        "t2": 180183,
+        "t3": 135111,
+        "t4": 9955,
+        "t5": 2675,
+        "t6": 5842,
+        "t7": 3636,
+        "t8": 24896,
+        "t9": 383096,
+        "t10": 16,
+        "t11": 32,
+        "t12": 16,
+        "t13": 256,
+        "t14": 128,
+        "t15": 16,
+        "critical_ticks": 96319,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          2864,
+          2343,
+          45910,
+          33783,
+          2491,
+          671,
+          1462,
+          915,
+          6723
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 4024
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk4-c4",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 41561,
+        "t1": 2178,
+        "t2": 149681,
+        "t3": 70305,
+        "t4": 14784,
+        "t5": 9730,
+        "t6": 12339,
+        "t7": 10684,
+        "t8": 67695,
+        "t9": 378957,
+        "t10": 128,
+        "t11": 32,
+        "t12": 16,
+        "t13": 1024,
+        "t14": 1024,
+        "t15": 16,
+        "critical_ticks": 95058,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          10550,
+          546,
+          37766,
+          17580,
+          3699,
+          2434,
+          3087,
+          2678,
+          17342
+        ]
+      },
+      "online": {
+        "launches": 1,
+        "active_cl": [
+          64
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 151128
+      },
+      "pv": {
+        "t0": 11229,
+        "t1": 9348,
+        "t2": 146183,
+        "t3": 134373,
+        "t4": 9681,
+        "t5": 2627,
+        "t6": 2455,
+        "t7": 3638,
+        "t8": 14046,
+        "t9": 333580,
+        "t10": 16,
+        "t11": 32,
+        "t12": 16,
+        "t13": 256,
+        "t14": 128,
+        "t15": 16,
+        "critical_ticks": 83644,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          2812,
+          2340,
+          36804,
+          33597,
+          2421,
+          659,
+          616,
+          915,
+          3530
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 128,
+        "critical_ticks": 8214
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk4-c4",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD0 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 46711,
+        "t1": 2337,
+        "t2": 179505,
+        "t3": 70823,
+        "t4": 13219,
+        "t5": 9730,
+        "t6": 12292,
+        "t7": 10728,
+        "t8": 85477,
+        "t9": 430822,
+        "t10": 128,
+        "t11": 32,
+        "t12": 16,
+        "t13": 1024,
+        "t14": 1024,
+        "t15": 16,
+        "critical_ticks": 109341,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          12378,
+          585,
+          45757,
+          17711,
+          3307,
+          2434,
+          3076,
+          2687,
+          22171
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 270789
+      },
+      "pv": {
+        "t0": 11437,
+        "t1": 9364,
+        "t2": 185130,
+        "t3": 135110,
+        "t4": 9953,
+        "t5": 2675,
+        "t6": 5841,
+        "t7": 3636,
+        "t8": 24708,
+        "t9": 387854,
+        "t10": 16,
+        "t11": 32,
+        "t12": 16,
+        "t13": 256,
+        "t14": 128,
+        "t15": 16,
+        "critical_ticks": 97437,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          2864,
+          2344,
+          46851,
+          33782,
+          2489,
+          671,
+          1461,
+          915,
+          6787
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 4011
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk32-c1",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=32 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 44738,
+        "t1": 17305,
+        "t2": 1355203,
+        "t3": 562218,
+        "t4": 116995,
+        "t5": 20497,
+        "t6": 97815,
+        "t7": 28083,
+        "t8": 182478,
+        "t9": 2425332,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 8192,
+        "t14": 8192,
+        "t15": 128,
+        "critical_ticks": 615571,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          11925,
+          4345,
+          348184,
+          140586,
+          29263,
+          5137,
+          24471,
+          7069,
+          46734
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 290296
+      },
+      "pv": {
+        "t0": 32435,
+        "t1": 74773,
+        "t2": 1332635,
+        "t3": 1074988,
+        "t4": 76565,
+        "t5": 13842,
+        "t6": 19426,
+        "t7": 21931,
+        "t8": 101099,
+        "t9": 2747694,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 2048,
+        "t14": 1024,
+        "t15": 128,
+        "critical_ticks": 696049,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          8154,
+          18709,
+          342425,
+          268780,
+          19157,
+          3474,
+          4870,
+          5528,
+          25709
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 32,
+        "critical_ticks": 5873
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk32-c1",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD0 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 45637,
+        "t1": 17176,
+        "t2": 1322685,
+        "t3": 566571,
+        "t4": 106452,
+        "t5": 20500,
+        "t6": 98098,
+        "t7": 28484,
+        "t8": 192804,
+        "t9": 2398407,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 8192,
+        "t14": 8192,
+        "t15": 128,
+        "critical_ticks": 610852,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          12684,
+          4312,
+          342342,
+          141675,
+          26628,
+          5140,
+          24538,
+          7165,
+          49113
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 269701
+      },
+      "pv": {
+        "t0": 34094,
+        "t1": 74901,
+        "t2": 1319108,
+        "t3": 1080208,
+        "t4": 78071,
+        "t5": 14225,
+        "t6": 46289,
+        "t7": 21930,
+        "t8": 108242,
+        "t9": 2777068,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 2048,
+        "t14": 1024,
+        "t15": 128,
+        "critical_ticks": 704114,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          8567,
+          18741,
+          339594,
+          270088,
+          19535,
+          3569,
+          11585,
+          5531,
+          27350
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3972
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk32-c4",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=32 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 42432,
+        "t1": 17301,
+        "t2": 1195320,
+        "t3": 562216,
+        "t4": 116723,
+        "t5": 20503,
+        "t6": 97812,
+        "t7": 28092,
+        "t8": 171628,
+        "t9": 2252027,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 8192,
+        "t14": 8192,
+        "t15": 128,
+        "critical_ticks": 563421,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          11029,
+          4341,
+          299369,
+          140584,
+          29198,
+          5143,
+          24468,
+          7069,
+          43441
+        ]
+      },
+      "online": {
+        "launches": 1,
+        "active_cl": [
+          64
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 150140
+      },
+      "pv": {
+        "t0": 32444,
+        "t1": 74773,
+        "t2": 1176349,
+        "t3": 1074985,
+        "t4": 76561,
+        "t5": 13841,
+        "t6": 19460,
+        "t7": 21932,
+        "t8": 91430,
+        "t9": 2581775,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 2048,
+        "t14": 1024,
+        "t15": 128,
+        "critical_ticks": 648021,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          8158,
+          18709,
+          296626,
+          268777,
+          19153,
+          3473,
+          4877,
+          5530,
+          23064
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 128,
+        "critical_ticks": 8255
+      }
+    }
+  },
+  {
+    "test": "profile-p0-hk32-c4",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD0 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 45342,
+        "t1": 17173,
+        "t2": 1336496,
+        "t3": 566568,
+        "t4": 106452,
+        "t5": 20501,
+        "t6": 98100,
+        "t7": 28479,
+        "t8": 193478,
+        "t9": 2412589,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 8192,
+        "t14": 8192,
+        "t15": 128,
+        "critical_ticks": 612067,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          12645,
+          4309,
+          343473,
+          141672,
+          26628,
+          5141,
+          24540,
+          7165,
+          49340
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 269250
+      },
+      "pv": {
+        "t0": 34094,
+        "t1": 74900,
+        "t2": 1356117,
+        "t3": 1080202,
+        "t4": 78070,
+        "t5": 14232,
+        "t6": 46293,
+        "t7": 21935,
+        "t8": 107924,
+        "t9": 2813767,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 2048,
+        "t14": 1024,
+        "t15": 128,
+        "critical_ticks": 711854,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          8568,
+          18739,
+          347259,
+          270082,
+          19534,
+          3576,
+          11589,
+          5533,
+          27232
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3908
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk1-c1",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=1 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 169740,
+        "t1": 3232,
+        "t2": 35000,
+        "t3": 18352,
+        "t4": 10464,
+        "t5": 9728,
+        "t6": 9152,
+        "t7": 10599,
+        "t8": 206475,
+        "t9": 472742,
+        "t10": 512,
+        "t11": 16,
+        "t12": 32,
+        "t13": 256,
+        "t14": 256,
+        "t15": 16,
+        "critical_ticks": 119251,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          43420,
+          808,
+          9112,
+          4588,
+          2616,
+          2432,
+          2288,
+          2652,
+          52649
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 289573
+      },
+      "pv": {
+        "t0": 8924,
+        "t1": 4392,
+        "t2": 28134,
+        "t3": 33592,
+        "t4": 4500,
+        "t5": 1424,
+        "t6": 1264,
+        "t7": 1656,
+        "t8": 12342,
+        "t9": 96228,
+        "t10": 4,
+        "t11": 8,
+        "t12": 8,
+        "t13": 64,
+        "t14": 32,
+        "t15": 4,
+        "critical_ticks": 89745,
+        "launches": 4,
+        "active_sdnn": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "critical_phase_ticks": [
+          8924,
+          4392,
+          28134,
+          33592,
+          4500,
+          1424,
+          1264,
+          1656,
+          5859
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 32,
+        "critical_ticks": 5578
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk1-c1",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD1 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 175996,
+        "t1": 3392,
+        "t2": 35342,
+        "t3": 18512,
+        "t4": 10608,
+        "t5": 9728,
+        "t6": 9152,
+        "t7": 10647,
+        "t8": 240493,
+        "t9": 513870,
+        "t10": 512,
+        "t11": 16,
+        "t12": 32,
+        "t13": 256,
+        "t14": 256,
+        "t15": 16,
+        "critical_ticks": 129546,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          44444,
+          848,
+          9022,
+          4628,
+          2652,
+          2432,
+          2288,
+          2664,
+          60967
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 271695
+      },
+      "pv": {
+        "t0": 8976,
+        "t1": 4396,
+        "t2": 28478,
+        "t3": 33776,
+        "t4": 4568,
+        "t5": 1436,
+        "t6": 1460,
+        "t7": 1656,
+        "t8": 12790,
+        "t9": 97536,
+        "t10": 4,
+        "t11": 8,
+        "t12": 8,
+        "t13": 64,
+        "t14": 32,
+        "t15": 4,
+        "critical_ticks": 90830,
+        "launches": 4,
+        "active_sdnn": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "critical_phase_ticks": [
+          8976,
+          4396,
+          28478,
+          33776,
+          4568,
+          1436,
+          1460,
+          1656,
+          6084
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3886
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk1-c4",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=1 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 42444,
+        "t1": 808,
+        "t2": 37085,
+        "t3": 17596,
+        "t4": 9144,
+        "t5": 8576,
+        "t6": 8432,
+        "t7": 8794,
+        "t8": 52265,
+        "t9": 185144,
+        "t10": 128,
+        "t11": 8,
+        "t12": 8,
+        "t13": 256,
+        "t14": 256,
+        "t15": 4,
+        "critical_ticks": 46570,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          11014,
+          202,
+          9588,
+          4399,
+          2286,
+          2144,
+          2108,
+          2199,
+          13381
+        ]
+      },
+      "online": {
+        "launches": 1,
+        "active_cl": [
+          64
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 150807
+      },
+      "pv": {
+        "t0": 8925,
+        "t1": 4392,
+        "t2": 37727,
+        "t3": 33592,
+        "t4": 4500,
+        "t5": 1424,
+        "t6": 1264,
+        "t7": 1657,
+        "t8": 5778,
+        "t9": 99259,
+        "t10": 4,
+        "t11": 8,
+        "t12": 8,
+        "t13": 64,
+        "t14": 32,
+        "t15": 4,
+        "critical_ticks": 25037,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          2233,
+          1098,
+          9634,
+          8398,
+          1125,
+          356,
+          316,
+          415,
+          1465
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 128,
+        "critical_ticks": 8270
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk1-c4",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD1 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 177371,
+        "t1": 3392,
+        "t2": 36512,
+        "t3": 18512,
+        "t4": 10608,
+        "t5": 9728,
+        "t6": 9152,
+        "t7": 10648,
+        "t8": 240015,
+        "t9": 515938,
+        "t10": 512,
+        "t11": 16,
+        "t12": 32,
+        "t13": 256,
+        "t14": 256,
+        "t15": 16,
+        "critical_ticks": 130062,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          44950,
+          848,
+          9416,
+          4628,
+          2652,
+          2432,
+          2288,
+          2665,
+          60684
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 271087
+      },
+      "pv": {
+        "t0": 8976,
+        "t1": 4396,
+        "t2": 28326,
+        "t3": 33776,
+        "t4": 4568,
+        "t5": 1436,
+        "t6": 1460,
+        "t7": 1656,
+        "t8": 13948,
+        "t9": 98542,
+        "t10": 4,
+        "t11": 8,
+        "t12": 8,
+        "t13": 64,
+        "t14": 32,
+        "t15": 4,
+        "critical_ticks": 90834,
+        "launches": 4,
+        "active_sdnn": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "critical_phase_ticks": [
+          8976,
+          4396,
+          28326,
+          33776,
+          4568,
+          1436,
+          1460,
+          1656,
+          6240
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3802
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk4-c1",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 38671,
+        "t1": 2176,
+        "t2": 182955,
+        "t3": 70384,
+        "t4": 15056,
+        "t5": 9728,
+        "t6": 12336,
+        "t7": 10602,
+        "t8": 77273,
+        "t9": 419181,
+        "t10": 128,
+        "t11": 32,
+        "t12": 16,
+        "t13": 1024,
+        "t14": 1024,
+        "t15": 16,
+        "critical_ticks": 105413,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          10230,
+          544,
+          46248,
+          17596,
+          3764,
+          2432,
+          3084,
+          2654,
+          20070
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 291153
+      },
+      "pv": {
+        "t0": 11123,
+        "t1": 9344,
+        "t2": 180264,
+        "t3": 134368,
+        "t4": 9680,
+        "t5": 2624,
+        "t6": 2416,
+        "t7": 3555,
+        "t8": 24046,
+        "t9": 377420,
+        "t10": 16,
+        "t11": 32,
+        "t12": 16,
+        "t13": 256,
+        "t14": 128,
+        "t15": 16,
+        "critical_ticks": 94880,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          2785,
+          2336,
+          45424,
+          33592,
+          2420,
+          656,
+          604,
+          891,
+          6280
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 32,
+        "critical_ticks": 5878
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk4-c1",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD1 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 41145,
+        "t1": 2336,
+        "t2": 184112,
+        "t3": 70816,
+        "t4": 13216,
+        "t5": 9728,
+        "t6": 12288,
+        "t7": 10645,
+        "t8": 84826,
+        "t9": 429112,
+        "t10": 128,
+        "t11": 32,
+        "t12": 16,
+        "t13": 1024,
+        "t14": 1024,
+        "t15": 16,
+        "critical_ticks": 107975,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          10848,
+          584,
+          46482,
+          17704,
+          3304,
+          2432,
+          3072,
+          2663,
+          21800
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 270728
+      },
+      "pv": {
+        "t0": 11334,
+        "t1": 9360,
+        "t2": 180659,
+        "t3": 135104,
+        "t4": 9952,
+        "t5": 2672,
+        "t6": 5840,
+        "t7": 3556,
+        "t8": 23378,
+        "t9": 381855,
+        "t10": 16,
+        "t11": 32,
+        "t12": 16,
+        "t13": 256,
+        "t14": 128,
+        "t15": 16,
+        "critical_ticks": 95846,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          2840,
+          2340,
+          45590,
+          33776,
+          2488,
+          668,
+          1460,
+          892,
+          5943
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3812
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk4-c4",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 41794,
+        "t1": 2176,
+        "t2": 147313,
+        "t3": 70300,
+        "t4": 14780,
+        "t5": 9728,
+        "t6": 12336,
+        "t7": 10597,
+        "t8": 66844,
+        "t9": 375868,
+        "t10": 128,
+        "t11": 32,
+        "t12": 16,
+        "t13": 1024,
+        "t14": 1024,
+        "t15": 16,
+        "critical_ticks": 94286,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          10564,
+          544,
+          36904,
+          17575,
+          3695,
+          2432,
+          3084,
+          2652,
+          16950
+        ]
+      },
+      "online": {
+        "launches": 1,
+        "active_cl": [
+          64
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 150765
+      },
+      "pv": {
+        "t0": 11123,
+        "t1": 9344,
+        "t2": 147566,
+        "t3": 134368,
+        "t4": 9680,
+        "t5": 2624,
+        "t6": 2452,
+        "t7": 3555,
+        "t8": 14002,
+        "t9": 334714,
+        "t10": 16,
+        "t11": 32,
+        "t12": 16,
+        "t13": 256,
+        "t14": 128,
+        "t15": 16,
+        "critical_ticks": 83920,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          2785,
+          2336,
+          37109,
+          33592,
+          2420,
+          656,
+          613,
+          891,
+          3524
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 128,
+        "critical_ticks": 8004
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk4-c4",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD1 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 41647,
+        "t1": 2336,
+        "t2": 183789,
+        "t3": 70816,
+        "t4": 13216,
+        "t5": 9728,
+        "t6": 12288,
+        "t7": 10645,
+        "t8": 83263,
+        "t9": 427728,
+        "t10": 128,
+        "t11": 32,
+        "t12": 16,
+        "t13": 1024,
+        "t14": 1024,
+        "t15": 16,
+        "critical_ticks": 107629,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          10752,
+          584,
+          46344,
+          17704,
+          3304,
+          2432,
+          3072,
+          2663,
+          21319
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 271368
+      },
+      "pv": {
+        "t0": 11334,
+        "t1": 9360,
+        "t2": 182975,
+        "t3": 135104,
+        "t4": 9952,
+        "t5": 2672,
+        "t6": 5840,
+        "t7": 3556,
+        "t8": 23839,
+        "t9": 384632,
+        "t10": 16,
+        "t11": 32,
+        "t12": 16,
+        "t13": 256,
+        "t14": 128,
+        "t15": 16,
+        "critical_ticks": 96512,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          2839,
+          2340,
+          46254,
+          33776,
+          2488,
+          668,
+          1460,
+          892,
+          6388
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3878
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk32-c1",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=32 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 43269,
+        "t1": 17280,
+        "t2": 1327235,
+        "t3": 562176,
+        "t4": 116976,
+        "t5": 20480,
+        "t6": 97792,
+        "t7": 27417,
+        "t8": 180212,
+        "t9": 2392837,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 8192,
+        "t14": 8192,
+        "t15": 128,
+        "critical_ticks": 605897,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          11677,
+          4320,
+          339986,
+          140544,
+          29244,
+          5120,
+          24448,
+          6873,
+          45653
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 286469
+      },
+      "pv": {
+        "t0": 31607,
+        "t1": 74752,
+        "t2": 1333499,
+        "t3": 1074944,
+        "t4": 76544,
+        "t5": 13824,
+        "t6": 19408,
+        "t7": 21269,
+        "t8": 101326,
+        "t9": 2747173,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 2048,
+        "t14": 1024,
+        "t15": 128,
+        "critical_ticks": 696493,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          7927,
+          18688,
+          342724,
+          268736,
+          19136,
+          3456,
+          4852,
+          5333,
+          25759
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 32,
+        "critical_ticks": 5854
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk32-c1",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD1 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 43702,
+        "t1": 17152,
+        "t2": 1267828,
+        "t3": 566528,
+        "t4": 106432,
+        "t5": 20480,
+        "t6": 98080,
+        "t7": 27801,
+        "t8": 192597,
+        "t9": 2340600,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 8192,
+        "t14": 8192,
+        "t15": 128,
+        "critical_ticks": 595457,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          11558,
+          4288,
+          327292,
+          141632,
+          26608,
+          5120,
+          24520,
+          6968,
+          48946
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 269169
+      },
+      "pv": {
+        "t0": 33272,
+        "t1": 74880,
+        "t2": 1300320,
+        "t3": 1080160,
+        "t4": 78048,
+        "t5": 14208,
+        "t6": 46272,
+        "t7": 21274,
+        "t8": 108070,
+        "t9": 2756504,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 2048,
+        "t14": 1024,
+        "t15": 128,
+        "critical_ticks": 700370,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          8344,
+          18720,
+          336535,
+          270040,
+          19512,
+          3552,
+          11568,
+          5338,
+          27301
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3915
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk32-c4",
+    "mode": "decode",
+    "banner": "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=32 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=5",
+    "stages": {
+      "kq": {
+        "t0": 44511,
+        "t1": 17280,
+        "t2": 1192381,
+        "t3": 562176,
+        "t4": 116700,
+        "t5": 20480,
+        "t6": 97792,
+        "t7": 27429,
+        "t8": 175569,
+        "t9": 2254318,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 8192,
+        "t14": 8192,
+        "t15": 128,
+        "critical_ticks": 564023,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          11513,
+          4320,
+          298563,
+          140544,
+          29175,
+          5120,
+          24448,
+          6879,
+          44850
+        ]
+      },
+      "online": {
+        "launches": 1,
+        "active_cl": [
+          64
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 150292
+      },
+      "pv": {
+        "t0": 31609,
+        "t1": 74752,
+        "t2": 1106283,
+        "t3": 1074944,
+        "t4": 76544,
+        "t5": 13824,
+        "t6": 19444,
+        "t7": 21273,
+        "t8": 91220,
+        "t9": 2509893,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 2048,
+        "t14": 1024,
+        "t15": 128,
+        "critical_ticks": 639693,
+        "launches": 1,
+        "active_sdnn": [
+          4
+        ],
+        "critical_phase_ticks": [
+          7926,
+          18688,
+          288899,
+          268736,
+          19136,
+          3456,
+          4861,
+          5337,
+          23174
+        ]
+      },
+      "reduce": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 128,
+        "critical_ticks": 8329
+      }
+    }
+  },
+  {
+    "test": "profile-p1-hk32-c4",
+    "mode": "legacy",
+    "banner": "KUNLUN Flash PD1 D=128 S=4096 M=1 H=32 block=1024 workspace=164864 storage=L3 kq=reuse1024 calls=5",
+    "stages": {
+      "kq": {
+        "t0": 44724,
+        "t1": 17152,
+        "t2": 1297757,
+        "t3": 566528,
+        "t4": 106432,
+        "t5": 20480,
+        "t6": 98080,
+        "t7": 27805,
+        "t8": 193380,
+        "t9": 2372338,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 8192,
+        "t14": 8192,
+        "t15": 128,
+        "critical_ticks": 606163,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          12268,
+          4288,
+          338043,
+          141632,
+          26608,
+          5120,
+          24520,
+          6970,
+          49153
+        ]
+      },
+      "online": {
+        "launches": 4,
+        "active_cl": [
+          32,
+          32,
+          32,
+          32
+        ],
+        "rows": 128,
+        "elements": 131072,
+        "critical_ticks": 268960
+      },
+      "pv": {
+        "t0": 33266,
+        "t1": 74880,
+        "t2": 1314108,
+        "t3": 1080160,
+        "t4": 78048,
+        "t5": 14208,
+        "t6": 46272,
+        "t7": 21272,
+        "t8": 107814,
+        "t9": 2770028,
+        "t10": 128,
+        "t11": 256,
+        "t12": 128,
+        "t13": 2048,
+        "t14": 1024,
+        "t15": 128,
+        "critical_ticks": 703059,
+        "launches": 4,
+        "active_sdnn": [
+          4,
+          4,
+          4,
+          4
+        ],
+        "critical_phase_ticks": [
+          8338,
+          18720,
+          339004,
+          270040,
+          19512,
+          3552,
+          11568,
+          5336,
+          27259
+        ]
+      },
+      "final": {
+        "launches": 1,
+        "active_cl": [
+          32
+        ],
+        "rows": 32,
+        "elements": 0,
+        "critical_ticks": 3860
+      }
+    }
+  }
+]

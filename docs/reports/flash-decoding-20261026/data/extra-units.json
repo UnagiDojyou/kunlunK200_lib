@@ -1,0 +1,354 @@
+[
+  {
+    "test": "padded-p0-d64-hk4-s1280-c2",
+    "line": "FLASH_UNIT pd=0 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=640 storage=L3 flash_ms=0.153805 old_ms=0.162518 cpu_nmse=7.28873165532e-09 cpu_max=8.9523048003e-06 old_nmse=6.21444725216e-09 old_max=7.24382698536e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s1280-c3",
+    "line": "FLASH_UNIT pd=0 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=448 storage=L3 flash_ms=0.157936 old_ms=0.163370 cpu_nmse=5.80954532552e-09 cpu_max=7.66571302217e-06 old_nmse=6.6358385143e-09 old_max=7.38771632314e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s1280-c4",
+    "line": "FLASH_UNIT pd=0 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=320 storage=L3 flash_ms=0.171411 old_ms=0.162921 cpu_nmse=4.94893928616e-09 cpu_max=6.59376073879e-06 old_nmse=6.71143448077e-09 old_max=8.4713101387e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s1280-c5",
+    "line": "FLASH_UNIT pd=0 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.167850 old_ms=0.163627 cpu_nmse=4.64810921439e-09 cpu_max=7.62788672823e-06 old_nmse=6.57608989119e-09 old_max=9.38959419727e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s1280-c8",
+    "line": "FLASH_UNIT pd=0 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=160 storage=L3 flash_ms=0.196970 old_ms=0.162819 cpu_nmse=3.80326649955e-09 cpu_max=6.16022711701e-06 old_nmse=7.66445197386e-09 old_max=1.30347907543e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s2304-c2",
+    "line": "FLASH_UNIT pd=0 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.220090 old_ms=0.250948 cpu_nmse=8.89612582931e-09 cpu_max=9.37037810991e-06 old_nmse=5.32064183085e-09 old_max=7.70017504692e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s2304-c3",
+    "line": "FLASH_UNIT pd=0 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=768 storage=L3 flash_ms=0.198539 old_ms=0.250510 cpu_nmse=7.67595379306e-09 cpu_max=6.82973012636e-06 old_nmse=8.19085986032e-09 old_max=7.74674117565e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s2304-c4",
+    "line": "FLASH_UNIT pd=0 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=576 storage=L3 flash_ms=0.199641 old_ms=0.251554 cpu_nmse=6.50748045016e-09 cpu_max=6.81669161032e-06 old_nmse=8.8196950323e-09 old_max=7.47852027416e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s2304-c5",
+    "line": "FLASH_UNIT pd=0 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=480 storage=L3 flash_ms=0.218879 old_ms=0.250383 cpu_nmse=6.0112547448e-09 cpu_max=6.52480216826e-06 old_nmse=9.77131124161e-09 old_max=8.41543078423e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s2304-c8",
+    "line": "FLASH_UNIT pd=0 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=288 storage=L3 flash_ms=0.249359 old_ms=0.253332 cpu_nmse=5.08253411248e-09 cpu_max=5.93663522579e-06 old_nmse=1.05683861392e-08 old_max=1.25821679831e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s4352-c2",
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.356956 old_ms=0.428570 cpu_nmse=1.11304034947e-08 cpu_max=8.14786217942e-06 old_nmse=8.09765398614e-09 old_max=1.04978680611e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s4352-c3",
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.371732 old_ms=0.428486 cpu_nmse=1.0263026472e-08 cpu_max=7.56048019504e-06 old_nmse=1.10499058757e-08 old_max=6.97327777743e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s4352-c4",
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.388586 old_ms=0.430338 cpu_nmse=9.71200335939e-09 cpu_max=7.45123289361e-06 old_nmse=1.1612115965e-08 old_max=1.06226652861e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s4352-c5",
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=896 storage=L3 flash_ms=0.326064 old_ms=0.432912 cpu_nmse=8.72176947366e-09 cpu_max=6.27908440632e-06 old_nmse=1.42923003621e-08 old_max=1.08401291072e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d64-hk4-s4352-c8",
+    "line": "FLASH_UNIT pd=0 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=544 storage=L3 flash_ms=0.344366 old_ms=0.428655 cpu_nmse=7.01724579964e-09 cpu_max=5.81704433536e-06 old_nmse=1.41591953565e-08 old_max=9.43057239056e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s1280-c2",
+    "line": "FLASH_UNIT pd=0 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=640 storage=L3 flash_ms=0.727728 old_ms=0.738074 cpu_nmse=7.3534893471e-09 cpu_max=1.07170419355e-05 old_nmse=6.6278132692e-09 old_max=1.26510858536e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s1280-c3",
+    "line": "FLASH_UNIT pd=0 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=448 storage=L3 flash_ms=0.747685 old_ms=0.738326 cpu_nmse=6.30390434661e-09 cpu_max=1.24325113608e-05 old_nmse=7.42484163856e-09 old_max=1.59423798323e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s1280-c4",
+    "line": "FLASH_UNIT pd=0 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=320 storage=L3 flash_ms=0.783305 old_ms=0.738419 cpu_nmse=5.27688727279e-09 cpu_max=9.23828111167e-06 old_nmse=7.45610130527e-09 old_max=1.45705416799e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s1280-c5",
+    "line": "FLASH_UNIT pd=0 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.809315 old_ms=0.740221 cpu_nmse=4.84891023447e-09 cpu_max=8.3011644198e-06 old_nmse=7.3189817148e-09 old_max=1.52084976435e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s1280-c8",
+    "line": "FLASH_UNIT pd=0 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=160 storage=L3 flash_ms=0.940731 old_ms=0.738446 cpu_nmse=3.87276666323e-09 cpu_max=7.1421016079e-06 old_nmse=8.41006142732e-09 old_max=1.3682525605e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s2304-c2",
+    "line": "FLASH_UNIT pd=0 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=1.269427 old_ms=1.268240 cpu_nmse=1.01731010903e-08 cpu_max=9.78545594547e-06 old_nmse=5.01532747998e-09 old_max=7.91065394878e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s2304-c3",
+    "line": "FLASH_UNIT pd=0 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=768 storage=L3 flash_ms=1.218282 old_ms=1.271086 cpu_nmse=8.41643781934e-09 cpu_max=8.74369210568e-06 old_nmse=9.64466915168e-09 old_max=1.10706314445e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s2304-c4",
+    "line": "FLASH_UNIT pd=0 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=576 storage=L3 flash_ms=1.255345 old_ms=1.270047 cpu_nmse=7.03160363878e-09 cpu_max=7.25058021261e-06 old_nmse=1.00243507971e-08 old_max=9.29925590754e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s2304-c5",
+    "line": "FLASH_UNIT pd=0 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=480 storage=L3 flash_ms=1.281084 old_ms=1.270538 cpu_nmse=6.83718562404e-09 cpu_max=8.0965141357e-06 old_nmse=1.08149845941e-08 old_max=9.91625711322e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s2304-c8",
+    "line": "FLASH_UNIT pd=0 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=288 storage=L3 flash_ms=1.378899 old_ms=1.270570 cpu_nmse=4.97433375883e-09 cpu_max=6.65120853174e-06 old_nmse=1.17881547101e-08 old_max=1.11125409603e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s4352-c2",
+    "line": "FLASH_UNIT pd=0 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=2.383881 old_ms=2.397024 cpu_nmse=1.29313792802e-08 cpu_max=1.18373485659e-05 old_nmse=8.43163245329e-09 old_max=1.04233622551e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s4352-c3",
+    "line": "FLASH_UNIT pd=0 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=2.358032 old_ms=2.400801 cpu_nmse=1.20295805527e-08 cpu_max=1.0712555879e-05 old_nmse=1.18818558387e-08 old_max=1.23083591461e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s4352-c4",
+    "line": "FLASH_UNIT pd=0 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=2.481920 old_ms=2.397479 cpu_nmse=1.07901534474e-08 cpu_max=8.90749327881e-06 old_nmse=1.27889252147e-08 old_max=1.33197754622e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s4352-c5",
+    "line": "FLASH_UNIT pd=0 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=896 storage=L3 flash_ms=2.306469 old_ms=2.407828 cpu_nmse=9.43413811827e-09 cpu_max=7.9871729954e-06 old_nmse=1.58403969237e-08 old_max=1.68886035681e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p0-d128-hk32-s4352-c8",
+    "line": "FLASH_UNIT pd=0 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=544 storage=L3 flash_ms=2.417791 old_ms=2.412618 cpu_nmse=7.69312355973e-09 cpu_max=5.99084256783e-06 old_nmse=1.65740135234e-08 old_max=1.6663223505e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p0-s256",
+    "line": "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=32 H=32 batch=1 pattern=14 block=64 storage=L3 flash_ms=0.267641 old_ms=0.144242 cpu_nmse=2.50170373405e-09 cpu_max=1.46112740028e-05 old_nmse=3.56709892287e-09 old_max=1.39698386192e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p0-s512",
+    "line": "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=32 H=32 batch=1 pattern=14 block=128 storage=L3 flash_ms=0.326903 old_ms=0.209984 cpu_nmse=3.23212911772e-09 cpu_max=1.02312511947e-05 old_nmse=4.59171367657e-09 old_max=1.55158340931e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p0-s1024",
+    "line": "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=32 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.463510 old_ms=0.351192 cpu_nmse=4.65641631323e-09 cpu_max=8.18536286496e-06 old_nmse=7.68131375046e-09 old_max=1.09588727355e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p0-s2048",
+    "line": "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=32 H=32 batch=1 pattern=14 block=512 storage=L3 flash_ms=0.697884 old_ms=0.690181 cpu_nmse=6.17800810815e-09 cpu_max=6.47764483671e-06 old_nmse=8.05518943656e-09 old_max=8.90367664397e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p0-s4096",
+    "line": "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=1.226195 old_ms=1.415846 cpu_nmse=8.46131664015e-09 cpu_max=6.1681118336e-06 old_nmse=8.69391434594e-09 old_max=5.70341944695e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-length-p0-l256",
+    "line": "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.560381 old_ms=0.530485 cpu_nmse=5.32778428295e-09 cpu_max=4.92412639107e-06 old_nmse=1.85637901838e-08 old_max=1.47875398397e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-length-p0-l512",
+    "line": "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=14 block=512 storage=L3 flash_ms=0.457135 old_ms=0.531887 cpu_nmse=7.58778630787e-09 cpu_max=5.11328608706e-06 old_nmse=1.69757885331e-08 old_max=1.38562172651e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-length-p0-l1024",
+    "line": "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.419150 old_ms=0.530538 cpu_nmse=1.0772490356e-08 cpu_max=7.52168626502e-06 old_nmse=1.3615963943e-08 old_max=1.37258321047e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-block-p0-b256",
+    "line": "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.317879 old_ms=0.409911 cpu_nmse=9.50542488847e-09 cpu_max=9.71204257812e-06 old_nmse=5.59139384606e-09 old_max=1.13621354103e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-block-p0-b512",
+    "line": "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=14 block=512 storage=L3 flash_ms=0.256557 old_ms=0.322207 cpu_nmse=1.09422702394e-08 cpu_max=1.40553857201e-05 old_nmse=5.40482037809e-09 old_max=1.2282282114e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-ungroup-p0-hk1",
+    "line": "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.385422 old_ms=0.958041 cpu_nmse=9.47871073173e-09 cpu_max=6.50878200584e-06 old_nmse=8.81276925036e-09 old_max=9.10274684429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-ungroup-p0-hk4",
+    "line": "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.547704 old_ms=0.681584 cpu_nmse=1.07935321932e-08 cpu_max=7.40620226576e-06 old_nmse=1.36189774402e-08 old_max=1.38441100717e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-hbm-p0",
+    "line": "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=14 block=512 storage=HBM flash_ms=0.246885 old_ms=0.281777 cpu_nmse=8.52944540355e-09 cpu_max=9.50766411088e-06 old_nmse=1.21120006262e-08 old_max=1.23903155327e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-pp-p0",
+    "line": "FLASH_UNIT pd=0 D=64 S=512 M=128 HK=4 H=32 batch=1 pattern=14 block=512 storage=L3 flash_ms=1.796404 old_ms=1.795923 cpu_nmse=6.4771134423e-09 cpu_max=5.14254964477e-05 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s1280-c2",
+    "line": "FLASH_UNIT pd=1 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=640 storage=L3 flash_ms=0.123280 old_ms=0.161427 cpu_nmse=7.28873165532e-09 cpu_max=8.9523048003e-06 old_nmse=6.21444725216e-09 old_max=7.24382698536e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s1280-c3",
+    "line": "FLASH_UNIT pd=1 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=448 storage=L3 flash_ms=0.143959 old_ms=0.160348 cpu_nmse=5.80954532552e-09 cpu_max=7.66571302217e-06 old_nmse=6.6358385143e-09 old_max=7.38771632314e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s1280-c4",
+    "line": "FLASH_UNIT pd=1 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=320 storage=L3 flash_ms=0.173409 old_ms=0.161145 cpu_nmse=4.94893928616e-09 cpu_max=6.59376073879e-06 old_nmse=6.71143448077e-09 old_max=8.4713101387e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s1280-c5",
+    "line": "FLASH_UNIT pd=1 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.169923 old_ms=0.160870 cpu_nmse=4.64810921439e-09 cpu_max=7.62788672823e-06 old_nmse=6.57608989119e-09 old_max=9.38959419727e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s1280-c8",
+    "line": "FLASH_UNIT pd=1 D=64 S=1280 M=1 HK=4 H=32 batch=1 pattern=14 block=160 storage=L3 flash_ms=0.196802 old_ms=0.161293 cpu_nmse=3.80326649955e-09 cpu_max=6.16022711701e-06 old_nmse=7.66445197386e-09 old_max=1.30347907543e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s2304-c2",
+    "line": "FLASH_UNIT pd=1 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.217018 old_ms=0.246644 cpu_nmse=8.89612582931e-09 cpu_max=9.37037810991e-06 old_nmse=5.32064183085e-09 old_max=7.70017504692e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s2304-c3",
+    "line": "FLASH_UNIT pd=1 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=768 storage=L3 flash_ms=0.211038 old_ms=0.247367 cpu_nmse=7.67595379306e-09 cpu_max=6.82973012636e-06 old_nmse=8.19085986032e-09 old_max=7.74674117565e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s2304-c4",
+    "line": "FLASH_UNIT pd=1 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=576 storage=L3 flash_ms=0.199838 old_ms=0.247784 cpu_nmse=6.50748045016e-09 cpu_max=6.81669161032e-06 old_nmse=8.8196950323e-09 old_max=7.47852027416e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s2304-c5",
+    "line": "FLASH_UNIT pd=1 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=480 storage=L3 flash_ms=0.220545 old_ms=0.247475 cpu_nmse=6.0112547448e-09 cpu_max=6.52480216826e-06 old_nmse=9.77131124161e-09 old_max=8.41543078423e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s2304-c8",
+    "line": "FLASH_UNIT pd=1 D=64 S=2304 M=1 HK=4 H=32 batch=1 pattern=14 block=288 storage=L3 flash_ms=0.247952 old_ms=0.246737 cpu_nmse=5.08253411248e-09 cpu_max=5.93663522579e-06 old_nmse=1.05683861392e-08 old_max=1.25821679831e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s4352-c2",
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.351282 old_ms=0.422756 cpu_nmse=1.11304034947e-08 cpu_max=8.14786217942e-06 old_nmse=8.09765398614e-09 old_max=1.04978680611e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s4352-c3",
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.369464 old_ms=0.422064 cpu_nmse=1.0263026472e-08 cpu_max=7.56048019504e-06 old_nmse=1.10499058757e-08 old_max=6.97327777743e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s4352-c4",
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.378447 old_ms=0.422106 cpu_nmse=9.71200335939e-09 cpu_max=7.45123289361e-06 old_nmse=1.1612115965e-08 old_max=1.06226652861e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s4352-c5",
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=896 storage=L3 flash_ms=0.326266 old_ms=0.425755 cpu_nmse=8.72176947366e-09 cpu_max=6.27908440632e-06 old_nmse=1.42923003621e-08 old_max=1.08401291072e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d64-hk4-s4352-c8",
+    "line": "FLASH_UNIT pd=1 D=64 S=4352 M=1 HK=4 H=32 batch=1 pattern=14 block=544 storage=L3 flash_ms=0.342745 old_ms=0.423822 cpu_nmse=7.01724579964e-09 cpu_max=5.81704433536e-06 old_nmse=1.41591953565e-08 old_max=9.43057239056e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s1280-c2",
+    "line": "FLASH_UNIT pd=1 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=640 storage=L3 flash_ms=0.722861 old_ms=0.733896 cpu_nmse=7.3534893471e-09 cpu_max=1.07170419355e-05 old_nmse=6.6278132692e-09 old_max=1.26510858536e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s1280-c3",
+    "line": "FLASH_UNIT pd=1 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=448 storage=L3 flash_ms=0.724630 old_ms=0.733044 cpu_nmse=6.30390434661e-09 cpu_max=1.24325113608e-05 old_nmse=7.42484163856e-09 old_max=1.59423798323e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s1280-c4",
+    "line": "FLASH_UNIT pd=1 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=320 storage=L3 flash_ms=0.781043 old_ms=0.735508 cpu_nmse=5.27688727279e-09 cpu_max=9.23828111167e-06 old_nmse=7.45610130527e-09 old_max=1.45705416799e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s1280-c5",
+    "line": "FLASH_UNIT pd=1 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.805064 old_ms=0.734507 cpu_nmse=4.84891023447e-09 cpu_max=8.3011644198e-06 old_nmse=7.3189817148e-09 old_max=1.52084976435e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s1280-c8",
+    "line": "FLASH_UNIT pd=1 D=128 S=1280 M=1 HK=32 H=32 batch=1 pattern=14 block=160 storage=L3 flash_ms=0.930472 old_ms=0.734923 cpu_nmse=3.87276666323e-09 cpu_max=7.1421016079e-06 old_nmse=8.41006142732e-09 old_max=1.3682525605e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s2304-c2",
+    "line": "FLASH_UNIT pd=1 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=1.250655 old_ms=1.259452 cpu_nmse=1.01731010903e-08 cpu_max=9.78545594547e-06 old_nmse=5.01532747998e-09 old_max=7.91065394878e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s2304-c3",
+    "line": "FLASH_UNIT pd=1 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=768 storage=L3 flash_ms=1.229944 old_ms=1.259646 cpu_nmse=8.41643781934e-09 cpu_max=8.74369210568e-06 old_nmse=9.64466915168e-09 old_max=1.10706314445e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s2304-c4",
+    "line": "FLASH_UNIT pd=1 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=576 storage=L3 flash_ms=1.264543 old_ms=1.259489 cpu_nmse=7.03160363878e-09 cpu_max=7.25058021261e-06 old_nmse=1.00243507971e-08 old_max=9.29925590754e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s2304-c5",
+    "line": "FLASH_UNIT pd=1 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=480 storage=L3 flash_ms=1.270658 old_ms=1.260579 cpu_nmse=6.83718562404e-09 cpu_max=8.0965141357e-06 old_nmse=1.08149845941e-08 old_max=9.91625711322e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s2304-c8",
+    "line": "FLASH_UNIT pd=1 D=128 S=2304 M=1 HK=32 H=32 batch=1 pattern=14 block=288 storage=L3 flash_ms=1.383779 old_ms=1.260011 cpu_nmse=4.97433375883e-09 cpu_max=6.65120853174e-06 old_nmse=1.17881547101e-08 old_max=1.11125409603e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s4352-c2",
+    "line": "FLASH_UNIT pd=1 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=2.377081 old_ms=2.379083 cpu_nmse=1.29313792802e-08 cpu_max=1.18373485659e-05 old_nmse=8.43163245329e-09 old_max=1.04233622551e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s4352-c3",
+    "line": "FLASH_UNIT pd=1 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=2.350894 old_ms=2.382266 cpu_nmse=1.20295805527e-08 cpu_max=1.0712555879e-05 old_nmse=1.18818558387e-08 old_max=1.23083591461e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s4352-c4",
+    "line": "FLASH_UNIT pd=1 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=2.436412 old_ms=2.390382 cpu_nmse=1.07901534474e-08 cpu_max=8.90749327881e-06 old_nmse=1.27889252147e-08 old_max=1.33197754622e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s4352-c5",
+    "line": "FLASH_UNIT pd=1 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=896 storage=L3 flash_ms=2.299839 old_ms=2.388975 cpu_nmse=9.43413811827e-09 cpu_max=7.9871729954e-06 old_nmse=1.58403969237e-08 old_max=1.68886035681e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "padded-p1-d128-hk32-s4352-c8",
+    "line": "FLASH_UNIT pd=1 D=128 S=4352 M=1 HK=32 H=32 batch=1 pattern=14 block=544 storage=L3 flash_ms=2.402959 old_ms=2.385963 cpu_nmse=7.69312355973e-09 cpu_max=5.99084256783e-06 old_nmse=1.65740135234e-08 old_max=1.6663223505e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p1-s256",
+    "line": "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=32 H=32 batch=1 pattern=14 block=64 storage=L3 flash_ms=0.269200 old_ms=0.143187 cpu_nmse=2.50170373405e-09 cpu_max=1.46112740028e-05 old_nmse=3.56709892287e-09 old_max=1.39698386192e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p1-s512",
+    "line": "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=32 H=32 batch=1 pattern=14 block=128 storage=L3 flash_ms=0.315223 old_ms=0.211054 cpu_nmse=3.23212911772e-09 cpu_max=1.02312511947e-05 old_nmse=4.59171367657e-09 old_max=1.55158340931e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p1-s1024",
+    "line": "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=32 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.461593 old_ms=0.348099 cpu_nmse=4.65641631323e-09 cpu_max=8.18536286496e-06 old_nmse=7.68131375046e-09 old_max=1.09588727355e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p1-s2048",
+    "line": "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=32 H=32 batch=1 pattern=14 block=512 storage=L3 flash_ms=0.697083 old_ms=0.685429 cpu_nmse=6.17800810815e-09 cpu_max=6.47764483671e-06 old_nmse=8.05518943656e-09 old_max=8.90367664397e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-mha-p1-s4096",
+    "line": "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=32 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=1.213155 old_ms=1.409564 cpu_nmse=8.46131664015e-09 cpu_max=6.1681118336e-06 old_nmse=8.69391434594e-09 old_max=5.70341944695e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-length-p1-l256",
+    "line": "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.559559 old_ms=0.525636 cpu_nmse=5.32778428295e-09 cpu_max=4.92412639107e-06 old_nmse=1.85637901838e-08 old_max=1.47875398397e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-length-p1-l512",
+    "line": "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=14 block=512 storage=L3 flash_ms=0.450864 old_ms=0.526976 cpu_nmse=7.58778630787e-09 cpu_max=5.11328608706e-06 old_nmse=1.69757885331e-08 old_max=1.38562172651e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-length-p1-l1024",
+    "line": "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.416698 old_ms=0.527240 cpu_nmse=1.0772490356e-08 cpu_max=7.52168626502e-06 old_nmse=1.3615963943e-08 old_max=1.37258321047e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-block-p1-b256",
+    "line": "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=14 block=256 storage=L3 flash_ms=0.315132 old_ms=0.404512 cpu_nmse=9.50542488847e-09 cpu_max=9.71204257812e-06 old_nmse=5.59139384606e-09 old_max=1.13621354103e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-block-p1-b512",
+    "line": "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=14 block=512 storage=L3 flash_ms=0.252976 old_ms=0.315299 cpu_nmse=1.09422702394e-08 cpu_max=1.40553857201e-05 old_nmse=5.40482037809e-09 old_max=1.2282282114e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-ungroup-p1-hk1",
+    "line": "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.382072 old_ms=0.945063 cpu_nmse=9.47871073173e-09 cpu_max=6.50878200584e-06 old_nmse=8.81276925036e-09 old_max=9.10274684429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-ungroup-p1-hk4",
+    "line": "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=14 block=1024 storage=L3 flash_ms=0.560617 old_ms=0.676253 cpu_nmse=1.07935321932e-08 cpu_max=7.40620226576e-06 old_nmse=1.36189774402e-08 old_max=1.38441100717e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-hbm-p1",
+    "line": "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=14 block=512 storage=HBM flash_ms=0.246230 old_ms=0.279248 cpu_nmse=8.52944540355e-09 cpu_max=9.50766411088e-06 old_nmse=1.21120006262e-08 old_max=1.23903155327e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  },
+  {
+    "test": "extra-pp-p1",
+    "line": "FLASH_UNIT pd=1 D=64 S=512 M=128 HK=4 H=32 batch=1 pattern=14 block=512 storage=L3 flash_ms=1.792165 old_ms=1.784907 cpu_nmse=6.4771134423e-09 cpu_max=5.14254964477e-05 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+  }
+]

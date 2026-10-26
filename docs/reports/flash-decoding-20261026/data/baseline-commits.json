@@ -1,0 +1,12 @@
+{
+  "library": {
+    "head": "d8bd87f56ae95872287c4f4a030b7ac7e68dd7b9",
+    "branch": "codex/k200-flash-kq-20261026",
+    "status": ""
+  },
+  "llama": {
+    "head": "8d62617cb1d267d9283d5fcffe8e66c57820dfcc",
+    "branch": "codex/k200-flash-kq-20261026",
+    "status": ""
+  }
+}

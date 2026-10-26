@@ -77,3 +77,7 @@ See the [Japanese implementation and evaluation report](reports/flash-attention-
 ## 0.7.2 KQ reuse
 
 `KUNLUN_FLASH_KQ=auto/legacy/reuse1024` controls Q/L1D and K/L1W reuse. See [KQ implementation and benchmarks](flash-kq.md). Online Softmax and all other attention components retain the 0.7.1 implementation.
+
+## 0.7.3 Flash-Decoding
+
+See [TG chunk execution, dispatch and benchmarks](flash-decoding.md). PP and the0.7.2 fallback remain unchanged.

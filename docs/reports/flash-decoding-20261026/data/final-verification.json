@@ -1,0 +1,225 @@
+{
+  "states": {
+    "0": {
+      "state": "RUNNING",
+      "errinfo": "no error"
+    },
+    "1": {
+      "state": "RUNNING",
+      "errinfo": "no error"
+    }
+  },
+  "resets": 1,
+  "baseline_production_kernels_unchanged": {
+    "flash-decode-lib": {
+      "kunlun-flash-set-rows.bin": true,
+      "kunlun-attention-range.bin": true,
+      "kunlun-native-q4.bin": true,
+      "kunlun-flash-pv.bin": true,
+      "kunlun-common-rows64.bin": true,
+      "kunlun-attention-softmax-fast.bin": true,
+      "kunlun-attention-rope.bin": true,
+      "kunlun-common-combo2.bin": true,
+      "kunlun-common-main.bin": true,
+      "kunlun-flash-kq.bin": true,
+      "kunlun-native-q4-sum.bin": true,
+      "kunlun-rms-output.bin": true,
+      "kunlun-common-combined.bin": true,
+      "kunlun-flash-online.bin": true,
+      "kunlun-combine.bin": true,
+      "kunlun-native-q4-residual.bin": true,
+      "kunlun-attention-copy.bin": true,
+      "kunlun-attention-pack.bin": true,
+      "kunlun-attention-rope-phase.bin": true,
+      "kunlun-copy-rows.bin": true,
+      "kunlun-common-quant-row-serial-fused.bin": true,
+      "kunlun-set-rows.bin": true,
+      "kunlun-elementwise-broadcast.bin": true,
+      "kunlun-common-sum.bin": true,
+      "kunlun-common-quant-row-fused.bin": true,
+      "kunlun-flash-pv-wide.bin": true,
+      "kunlun-attention-softmax.bin": true,
+      "kunlun-common-io.bin": true,
+      "kunlun-common-gemv.bin": true,
+      "kunlun-common-max.bin": true,
+      "kunlun-native-q4-main.bin": true,
+      "kunlun-swiglu.bin": true,
+      "kunlun-rms-partial.bin": true,
+      "kunlun-native-q4-fallback.bin": true,
+      "kunlun-common-rows128.bin": true,
+      "kunlun-flash-kq-reuse1024.bin": true,
+      "kunlun-matvec.bin": true,
+      "kunlun-common-wide.bin": true,
+      "kunlun-common-quant-partial.bin": true,
+      "kunlun-flash-range.bin": true,
+      "kunlun-attention-sdnn.bin": true,
+      "kunlun-flash-online-ordered.bin": true,
+      "kunlun-attention-matmul.bin": true,
+      "kunlun-common-residual.bin": true,
+      "kunlun-elementwise.bin": true,
+      "kunlun-common-fallback.bin": true,
+      "kunlun-common-join-slices.bin": true,
+      "kunlun-common-combo4.bin": true,
+      "kunlun-native-q4-n32.bin": true,
+      "kunlun-native-q4-max.bin": true,
+      "kunlun-attention-range-dma.bin": true,
+      "kunlun-attention-softmax-typed.bin": true
+    },
+    "flash-decode-llama": {
+      "kunlun-flash-set-rows.bin": true,
+      "kunlun-attention-range.bin": true,
+      "kunlun-native-q4.bin": true,
+      "kunlun-flash-pv.bin": true,
+      "kunlun-common-rows64.bin": true,
+      "kunlun-attention-softmax-fast.bin": true,
+      "kunlun-attention-rope.bin": true,
+      "kunlun-common-combo2.bin": true,
+      "kunlun-common-main.bin": true,
+      "kunlun-flash-kq.bin": true,
+      "kunlun-native-q4-sum.bin": true,
+      "kunlun-rms-output.bin": true,
+      "kunlun-common-combined.bin": true,
+      "kunlun-flash-online.bin": true,
+      "kunlun-combine.bin": true,
+      "kunlun-native-q4-residual.bin": true,
+      "kunlun-attention-copy.bin": true,
+      "kunlun-attention-pack.bin": true,
+      "kunlun-attention-rope-phase.bin": true,
+      "kunlun-copy-rows.bin": true,
+      "kunlun-common-quant-row-serial-fused.bin": true,
+      "kunlun-set-rows.bin": true,
+      "kunlun-elementwise-broadcast.bin": true,
+      "kunlun-common-sum.bin": true,
+      "kunlun-common-quant-row-fused.bin": true,
+      "kunlun-flash-pv-wide.bin": true,
+      "kunlun-attention-softmax.bin": true,
+      "kunlun-common-io.bin": true,
+      "kunlun-common-gemv.bin": true,
+      "kunlun-common-max.bin": true,
+      "kunlun-native-q4-main.bin": true,
+      "kunlun-swiglu.bin": true,
+      "kunlun-rms-partial.bin": true,
+      "kunlun-native-q4-fallback.bin": true,
+      "kunlun-common-rows128.bin": true,
+      "kunlun-flash-kq-reuse1024.bin": true,
+      "kunlun-matvec.bin": true,
+      "kunlun-common-wide.bin": true,
+      "kunlun-common-quant-partial.bin": true,
+      "kunlun-flash-range.bin": true,
+      "kunlun-attention-sdnn.bin": true,
+      "kunlun-flash-online-ordered.bin": true,
+      "kunlun-attention-matmul.bin": true,
+      "kunlun-common-residual.bin": true,
+      "kunlun-elementwise.bin": true,
+      "kunlun-common-fallback.bin": true,
+      "kunlun-common-join-slices.bin": true,
+      "kunlun-common-combo4.bin": true,
+      "kunlun-native-q4-n32.bin": true,
+      "kunlun-native-q4-max.bin": true,
+      "kunlun-attention-range-dma.bin": true,
+      "kunlun-attention-softmax-typed.bin": true
+    }
+  },
+  "frames": {
+    "kunlun-flash-profile-decode-pv.device": {
+      "frames": [
+        "-480"
+      ],
+      "bytes": 2872
+    },
+    "kunlun-flash-profile-decode-pv-head.device": {
+      "frames": [
+        "-480"
+      ],
+      "bytes": 2888
+    },
+    "kunlun-flash-profile-decode-kq.device": {
+      "frames": [
+        "-608"
+      ],
+      "bytes": 4264
+    },
+    "kunlun-flash-decode-reduce.device": {
+      "frames": [
+        "-2336"
+      ],
+      "bytes": 1440
+    },
+    "kunlun-flash-decode-kq-head.device": {
+      "frames": [
+        "-512"
+      ],
+      "bytes": 3300
+    },
+    "kunlun-flash-profile-decode-kq-head.device": {
+      "frames": [
+        "-608"
+      ],
+      "bytes": 4304
+    },
+    "kunlun-flash-decode-kq.device": {
+      "frames": [
+        "-512"
+      ],
+      "bytes": 3284
+    },
+    "kunlun-flash-decode-online-head.device": {
+      "frames": [
+        "-9696"
+      ],
+      "bytes": 4556
+    },
+    "kunlun-flash-decode-reduce-head.device": {
+      "frames": [
+        "-11008"
+      ],
+      "bytes": 1512
+    },
+    "kunlun-flash-decode-pv.device": {
+      "frames": [
+        "-384"
+      ],
+      "bytes": 1932
+    },
+    "kunlun-flash-decode-online.device": {
+      "frames": [
+        "-9696"
+      ],
+      "bytes": 4536
+    },
+    "kunlun-flash-profile-decode-reduce.device": {
+      "frames": [
+        "-11072"
+      ],
+      "bytes": 2012
+    },
+    "kunlun-flash-profile-decode-online.device": {
+      "frames": [
+        "-9760"
+      ],
+      "bytes": 5124
+    },
+    "kunlun-flash-decode-pv-head.device": {
+      "frames": [
+        "-384"
+      ],
+      "bytes": 1996
+    },
+    "kunlun-flash-decode-pv-head-affinity.device": {
+      "frames": [
+        "-384"
+      ],
+      "bytes": 1988
+    }
+  },
+  "source": {
+    "library": {
+      "head": "d8bd87f56ae95872287c4f4a030b7ac7e68dd7b9",
+      "status": " M CMakeLists.txt\n M docs/flash-attention.md\n M src/flash.inc\n?? bench/flash-decode-bench.cpp\n?? docs/flash-decoding.md\n?? kernels/flash-decode-config.h\n?? kernels/kunlun-flash-decode-kq-head.xpu\n?? kernels/kunlun-flash-decode-kq.xpu\n?? kernels/kunlun-flash-decode-online-head.xpu\n?? kernels/kunlun-flash-decode-online.xpu\n?? kernels/kunlun-flash-decode-pv-head-affinity.xpu\n?? kernels/kunlun-flash-decode-pv-head.xpu\n?? kernels/kunlun-flash-decode-pv.xpu\n?? kernels/kunlun-flash-decode-reduce-head.xpu\n?? kernels/kunlun-flash-decode-reduce.xpu\n?? kernels/kunlun-flash-profile-decode-kq-head.xpu\n?? kernels/kunlun-flash-profile-decode-kq.xpu\n?? kernels/kunlun-flash-profile-decode-online.xpu\n?? kernels/kunlun-flash-profile-decode-pv-head.xpu\n?? kernels/kunlun-flash-profile-decode-pv.xpu\n?? kernels/kunlun-flash-profile-decode-reduce.xpu\n?? kernels/kunlun-flash-profile-kq.xpu\n?? kernels/kunlun-flash-profile-online.xpu\n?? kernels/kunlun-flash-profile-pv.xpu\n?? src/flash-decode.inc\n?? src/flash-profile.inc\n"
+    },
+    "llama": {
+      "head": "8d62617cb1d267d9283d5fcffe8e66c57820dfcc",
+      "status": " M examples/kunlun/CMakeLists.txt\n m vendor/KunlunK200\n?? docs/backend/kunlun-flash-decoding.md\n?? examples/kunlun/flash-decoding-bench.cpp\n"
+    }
+  }
+}

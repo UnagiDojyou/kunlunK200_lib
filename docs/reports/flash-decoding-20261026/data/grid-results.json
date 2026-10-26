@@ -1,0 +1,2404 @@
+[
+  {
+    "name": "grid-p0-d64-hk1-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=256 H=32 HK=1 chunks=1 block=256 waves=1 workspace=50176 storage=L3 pool=50176 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.108559 old_ms=0.095314 cpu_nmse=1.44046785185e-10 cpu_max=4.90152106365e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=256 H=32 HK=1 chunks=2 block=128 waves=1 workspace=67584 storage=L3 pool=67584 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2043",
+      "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.104887 old_ms=0.098884 cpu_nmse=1.56399070246e-10 cpu_max=4.47646618229e-06 old_nmse=7.96760194244e-11 old_max=2.92807817459e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=256 H=32 HK=1 chunks=4 block=64 waves=1 workspace=102400 storage=L3 pool=102400 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2038",
+      "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.094986 old_ms=0.101138 cpu_nmse=1.78327147491e-10 cpu_max=5.32354706942e-06 old_nmse=1.3777010123e-10 old_max=3.71783971786e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=256 H=32 HK=1 chunks=8 block=32 waves=1 workspace=172032 storage=L3 pool=172032 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2042",
+      "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.121701 old_ms=0.095230 cpu_nmse=1.39409747977e-10 cpu_max=5.32987655807e-06 old_nmse=1.26117645021e-10 old_max=4.28408384323e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=512 H=32 HK=1 chunks=1 block=512 waves=1 workspace=82944 storage=L3 pool=82944 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.119399 old_ms=0.122115 cpu_nmse=1.17291526459e-10 cpu_max=3.9350192803e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=512 H=32 HK=1 chunks=2 block=256 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2038",
+      "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.093639 old_ms=0.112793 cpu_nmse=7.75333985807e-11 cpu_max=2.68335775608e-06 old_nmse=7.5112061637e-11 old_max=2.10851430893e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=512 H=32 HK=1 chunks=4 block=128 waves=1 workspace=135168 storage=L3 pool=135168 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2037",
+      "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.097210 old_ms=0.113318 cpu_nmse=9.97188215365e-11 cpu_max=3.30518159687e-06 old_nmse=1.02273363347e-10 old_max=2.60770320892e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=512 H=32 HK=1 chunks=8 block=64 waves=1 workspace=204800 storage=L3 pool=204800 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2042",
+      "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.140743 old_ms=0.112822 cpu_nmse=1.33707351078e-10 cpu_max=3.90577928642e-06 old_nmse=1.66134069859e-10 old_max=3.84449958801e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=1024 H=32 HK=1 chunks=1 block=1024 waves=1 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.167212 old_ms=0.160208 cpu_nmse=2.11978177311e-09 cpu_max=2.51976918287e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=1024 H=32 HK=1 chunks=2 block=512 waves=1 workspace=165888 storage=L3 pool=165888 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.117203 old_ms=0.156725 cpu_nmse=2.33326026895e-09 cpu_max=2.63116339237e-06 old_nmse=1.20826074389e-09 old_max=1.62422657013e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=1024 H=32 HK=1 chunks=4 block=256 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2044",
+      "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.122765 old_ms=0.171273 cpu_nmse=1.92432447658e-09 cpu_max=2.29634694717e-06 old_nmse=2.90527359522e-09 old_max=2.61329114437e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=1024 H=32 HK=1 chunks=8 block=128 waves=1 workspace=270336 storage=L3 pool=270336 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2048",
+      "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.169901 old_ms=0.159068 cpu_nmse=2.0053529648e-09 cpu_max=2.34906391056e-06 old_nmse=2.86963424748e-09 old_max=1.77323818207e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=2048 H=32 HK=1 chunks=1 block=1024 waves=2 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.292643 old_ms=0.284408 cpu_nmse=9.49178072797e-10 cpu_max=1.22112950677e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=2048 H=32 HK=1 chunks=2 block=1024 waves=1 workspace=296960 storage=L3 pool=296960 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2039",
+      "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.170196 old_ms=0.286766 cpu_nmse=1.14569490097e-09 cpu_max=1.58433742182e-06 old_nmse=4.59106432384e-10 old_max=1.26892700791e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=2048 H=32 HK=1 chunks=4 block=512 waves=1 workspace=331776 storage=L3 pool=331776 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.165514 old_ms=0.286989 cpu_nmse=1.28668175701e-09 cpu_max=1.54522187368e-06 old_nmse=8.6702350066e-10 old_max=1.32620334625e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=2048 H=32 HK=1 chunks=8 block=256 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.228400 old_ms=0.284298 cpu_nmse=9.35516827296e-10 cpu_max=1.25006589296e-06 old_nmse=1.14059045553e-09 old_max=1.27777457237e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4096 H=32 HK=1 chunks=1 block=1024 waves=4 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.551680 old_ms=0.552533 cpu_nmse=8.9722219191e-10 cpu_max=1.20748452779e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4096 H=32 HK=1 chunks=2 block=1024 waves=2 workspace=296960 storage=L3 pool=296960 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2027",
+      "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.309296 old_ms=0.555833 cpu_nmse=1.00388399888e-09 cpu_max=1.27733372089e-06 old_nmse=3.33267860933e-10 old_max=9.27597284317e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4096 H=32 HK=1 chunks=4 block=1024 waves=1 workspace=593920 storage=L3 pool=593920 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2045",
+      "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.264586 old_ms=0.540083 cpu_nmse=1.08386704898e-09 cpu_max=1.44869707462e-06 old_nmse=5.82491975902e-10 old_max=8.34465026855e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk1-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4096 H=32 HK=1 chunks=8 block=512 waves=1 workspace=663552 storage=L3 pool=663552 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.296341 old_ms=0.541887 cpu_nmse=1.23364746594e-09 cpu_max=1.51854626771e-06 old_nmse=8.61226035005e-10 old_max=9.685754776e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=256 H=32 HK=4 chunks=1 block=256 waves=1 workspace=50176 storage=L3 pool=50176 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.076006 old_ms=0.076099 cpu_nmse=1.86732223074e-10 cpu_max=4.85913502649e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=256 H=32 HK=4 chunks=2 block=128 waves=1 workspace=67584 storage=L3 pool=67584 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2036",
+      "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.090344 old_ms=0.076172 cpu_nmse=1.71224417488e-10 cpu_max=4.77147725682e-06 old_nmse=9.65462591946e-11 old_max=3.22714913636e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=256 H=32 HK=4 chunks=4 block=64 waves=1 workspace=102400 storage=L3 pool=102400 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.101045 old_ms=0.076210 cpu_nmse=1.96454567692e-10 cpu_max=4.69410585761e-06 old_nmse=1.77858326442e-10 old_max=4.92483377457e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=256 H=32 HK=4 chunks=8 block=32 waves=1 workspace=172032 storage=L3 pool=172032 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.152144 old_ms=0.077840 cpu_nmse=1.85766814051e-10 cpu_max=5.61425256133e-06 old_nmse=2.18847765419e-10 old_max=6.0573220253e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=512 H=32 HK=4 chunks=1 block=512 waves=1 workspace=82944 storage=L3 pool=82944 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.125155 old_ms=0.100192 cpu_nmse=1.19937440371e-10 cpu_max=3.04273354741e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=512 H=32 HK=4 chunks=2 block=256 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2039",
+      "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.111657 old_ms=0.102091 cpu_nmse=1.09473909265e-10 cpu_max=3.15931624491e-06 old_nmse=7.49572351317e-11 old_max=2.01910734177e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=512 H=32 HK=4 chunks=4 block=128 waves=1 workspace=135168 storage=L3 pool=135168 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2043",
+      "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.131163 old_ms=0.109121 cpu_nmse=1.24091077815e-10 cpu_max=3.13983059465e-06 old_nmse=1.13393356613e-10 old_max=2.05636024475e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=512 H=32 HK=4 chunks=8 block=64 waves=1 workspace=204800 storage=L3 pool=204800 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2044",
+      "FLASH_UNIT pd=0 D=64 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.181480 old_ms=0.109828 cpu_nmse=1.17107472481e-10 cpu_max=2.9069814764e-06 old_nmse=1.56713884888e-10 old_max=4.01958823204e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=1024 H=32 HK=4 chunks=1 block=1024 waves=1 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.157441 old_ms=0.150518 cpu_nmse=1.70584480291e-09 cpu_max=2.00350150477e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=1024 H=32 HK=4 chunks=2 block=512 waves=1 workspace=165888 storage=L3 pool=165888 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.162080 old_ms=0.149040 cpu_nmse=1.32118794311e-09 cpu_max=1.7521135356e-06 old_nmse=1.01890581622e-09 old_max=1.52154825628e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=1024 H=32 HK=4 chunks=4 block=256 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.155284 old_ms=0.151933 cpu_nmse=1.35021937251e-09 cpu_max=1.91404472542e-06 old_nmse=2.02668442738e-09 old_max=2.03959643841e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=1024 H=32 HK=4 chunks=8 block=128 waves=1 workspace=270336 storage=L3 pool=270336 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.204972 old_ms=0.157209 cpu_nmse=1.49473374753e-09 cpu_max=2.03443936368e-06 old_nmse=1.94185824417e-09 old_max=2.19116918743e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=2048 H=32 HK=4 chunks=1 block=1024 waves=2 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.275753 old_ms=0.274019 cpu_nmse=1.26403457468e-09 cpu_max=1.3799307611e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=2048 H=32 HK=4 chunks=2 block=1024 waves=1 workspace=296960 storage=L3 pool=296960 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1957",
+      "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.195500 old_ms=0.272208 cpu_nmse=1.09853445629e-09 cpu_max=1.38179340625e-06 old_nmse=3.93968496024e-10 old_max=1.20885670185e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=2048 H=32 HK=4 chunks=4 block=512 waves=1 workspace=331776 storage=L3 pool=331776 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.222305 old_ms=0.271419 cpu_nmse=1.06276811543e-09 cpu_max=1.79574785279e-06 old_nmse=1.39962243328e-09 old_max=1.68569386005e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=2048 H=32 HK=4 chunks=8 block=256 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2045",
+      "FLASH_UNIT pd=0 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.272273 old_ms=0.271347 cpu_nmse=9.2261868889e-10 cpu_max=1.17256407345e-06 old_nmse=1.68774074154e-09 old_max=1.57952308655e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4096 H=32 HK=4 chunks=1 block=1024 waves=4 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.527154 old_ms=0.524769 cpu_nmse=1.32785304581e-09 cpu_max=1.20837643024e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=296960 storage=L3 pool=296960 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2033",
+      "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.364332 old_ms=0.524153 cpu_nmse=1.30871379043e-09 cpu_max=9.61689382576e-07 old_nmse=1.78837882616e-10 old_max=5.73694705963e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=593920 storage=L3 pool=593920 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2045",
+      "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.353570 old_ms=0.526381 cpu_nmse=1.39847560335e-09 cpu_max=1.29748399798e-06 old_nmse=4.71618281654e-10 old_max=6.00703060627e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d64-hk4-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=663552 storage=L3 pool=663552 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=0 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.417633 old_ms=0.523893 cpu_nmse=1.21330032211e-09 cpu_max=1.51174898644e-06 old_nmse=1.26347119576e-09 old_max=9.89995896816e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=1 chunks=1 block=256 waves=1 workspace=66560 storage=L3 pool=66560 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.098755 old_ms=0.097444 cpu_nmse=6.82554861903e-11 cpu_max=3.50642284605e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=1 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4080",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.112739 old_ms=0.098604 cpu_nmse=6.20677159952e-11 cpu_max=2.7551920751e-06 old_nmse=3.18183969027e-11 old_max=2.1755695343e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=1 chunks=4 block=64 waves=1 workspace=167936 storage=L3 pool=167936 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4076",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.108502 old_ms=0.097383 cpu_nmse=7.59209663591e-11 cpu_max=3.45203996927e-06 old_nmse=5.99981863986e-11 old_max=2.87592411041e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=1 chunks=8 block=32 waves=1 workspace=303104 storage=L3 pool=303104 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4079",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.138658 old_ms=0.099661 cpu_nmse=7.49421374791e-11 cpu_max=4.009157268e-06 old_nmse=7.13855608456e-11 old_max=2.77161598206e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=1 chunks=1 block=512 waves=1 workspace=99328 storage=L3 pool=99328 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.131683 old_ms=0.121273 cpu_nmse=5.11673038959e-11 cpu_max=1.94147724744e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=1 chunks=2 block=256 waves=1 workspace=133120 storage=L3 pool=133120 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4081",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.115432 old_ms=0.123035 cpu_nmse=6.2202983108e-11 cpu_max=2.11234931431e-06 old_nmse=4.33226470162e-11 old_max=1.56462192535e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=1 chunks=4 block=128 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4076",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.108521 old_ms=0.124521 cpu_nmse=6.42193491404e-11 cpu_max=2.20057637385e-06 old_nmse=6.8382236408e-11 old_max=1.94157473743e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=1 chunks=8 block=64 waves=1 workspace=335872 storage=L3 pool=335872 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4082",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.171524 old_ms=0.121610 cpu_nmse=5.82957880016e-11 cpu_max=2.36221451422e-06 old_nmse=8.066519991e-11 old_max=2.43633985519e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=1 chunks=1 block=1024 waves=1 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.184924 old_ms=0.172171 cpu_nmse=8.18202270059e-10 cpu_max=1.21276652797e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=1 chunks=2 block=512 waves=1 workspace=198656 storage=L3 pool=198656 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4084",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.136950 old_ms=0.172695 cpu_nmse=5.6103721741e-10 cpu_max=1.13371461929e-06 old_nmse=5.1621673485e-10 old_max=1.11758708954e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=1 chunks=4 block=256 waves=1 workspace=266240 storage=L3 pool=266240 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.139836 old_ms=0.172774 cpu_nmse=9.7671727068e-10 cpu_max=1.75676942171e-06 old_nmse=1.08510409164e-09 old_max=1.53016299009e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=1 chunks=8 block=128 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.174559 old_ms=0.173672 cpu_nmse=7.6783146188e-10 cpu_max=1.31252855362e-06 old_nmse=1.3525105854e-09 old_max=1.49942934513e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=1 chunks=1 block=1024 waves=2 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.313140 old_ms=0.315796 cpu_nmse=4.86883057811e-10 cpu_max=1.00300115525e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=1 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3831",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.189407 old_ms=0.315062 cpu_nmse=4.84284098716e-10 cpu_max=1.00672644555e-06 old_nmse=1.33949016297e-10 old_max=8.7870284915e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=1 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4091",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.189715 old_ms=0.315362 cpu_nmse=3.83761209164e-10 cpu_max=1.09649230927e-06 old_nmse=4.00302842985e-10 old_max=1.00210309029e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=1 chunks=8 block=256 waves=1 workspace=532480 storage=L3 pool=532480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.230146 old_ms=0.315401 cpu_nmse=5.28715241779e-10 cpu_max=1.54911508053e-06 old_nmse=6.81068342202e-10 old_max=1.37183815241e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=1 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.599315 old_ms=0.599817 cpu_nmse=4.33130812631e-10 cpu_max=5.87975060773e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=1 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3916",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.352297 old_ms=0.600515 cpu_nmse=3.93934264757e-10 cpu_max=6.01533659496e-07 old_nmse=2.0655132951e-10 old_max=5.51342964172e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=1 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4089",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.305283 old_ms=0.599610 cpu_nmse=3.75107085667e-10 cpu_max=5.78818635291e-07 old_nmse=3.48345691189e-10 old_max=7.04079866409e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk1-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=1 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.335067 old_ms=0.601879 cpu_nmse=3.57266150242e-10 cpu_max=5.72399031883e-07 old_nmse=5.08878675157e-10 old_max=6.38887286186e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=4 chunks=1 block=256 waves=1 workspace=66560 storage=L3 pool=66560 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.089918 old_ms=0.084078 cpu_nmse=6.87493734657e-11 cpu_max=3.45068380719e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=4 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4077",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.092833 old_ms=0.088101 cpu_nmse=8.34458714287e-11 cpu_max=3.48048612958e-06 old_nmse=4.52899995744e-11 old_max=2.68220901489e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=4 chunks=4 block=64 waves=1 workspace=167936 storage=L3 pool=167936 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4084",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.116951 old_ms=0.083727 cpu_nmse=8.30934898573e-11 cpu_max=3.89279113211e-06 old_nmse=7.34578061332e-11 old_max=3.03238630295e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=4 chunks=8 block=32 waves=1 workspace=303104 storage=L3 pool=303104 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4084",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.171516 old_ms=0.086464 cpu_nmse=8.88555869868e-11 cpu_max=3.52387043868e-06 old_nmse=6.82304457793e-11 old_max=2.75671482086e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=4 chunks=1 block=512 waves=1 workspace=99328 storage=L3 pool=99328 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.146135 old_ms=0.114966 cpu_nmse=5.73470913333e-11 cpu_max=2.17698356569e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=4 chunks=2 block=256 waves=1 workspace=133120 storage=L3 pool=133120 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4076",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.123437 old_ms=0.114304 cpu_nmse=4.51962813907e-11 cpu_max=1.81224220867e-06 old_nmse=3.54953971218e-11 old_max=1.55717134476e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=4 chunks=4 block=128 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4076",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.157627 old_ms=0.113777 cpu_nmse=6.89214377722e-11 cpu_max=2.42373186596e-06 old_nmse=7.03680013013e-11 old_max=1.94157473743e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=4 chunks=8 block=64 waves=1 workspace=335872 storage=L3 pool=335872 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4079",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.206607 old_ms=0.114721 cpu_nmse=6.59385471777e-11 cpu_max=2.66139397173e-06 old_nmse=8.72517623923e-11 old_max=2.6673078537e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=4 chunks=1 block=1024 waves=1 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.182703 old_ms=0.180935 cpu_nmse=6.06671875262e-10 cpu_max=1.28297406611e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=4 chunks=2 block=512 waves=1 workspace=198656 storage=L3 pool=198656 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4080",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.159523 old_ms=0.182692 cpu_nmse=7.08445428852e-10 cpu_max=1.25795266572e-06 old_nmse=5.53904030943e-10 old_max=1.14366412163e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=4 chunks=4 block=256 waves=1 workspace=266240 storage=L3 pool=266240 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.186536 old_ms=0.182311 cpu_nmse=6.14870464268e-10 cpu_max=1.21819950075e-06 old_nmse=8.05179962167e-10 old_max=1.32340937853e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=4 chunks=8 block=128 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.240815 old_ms=0.180207 cpu_nmse=7.50822522246e-10 cpu_max=1.32764826916e-06 old_nmse=1.14488023915e-09 old_max=1.42306089401e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=4 chunks=1 block=1024 waves=2 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.344551 old_ms=0.342658 cpu_nmse=3.71401791367e-10 cpu_max=9.77074236273e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=4 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3916",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.260188 old_ms=0.344401 cpu_nmse=3.08243399923e-10 cpu_max=8.48551720976e-07 old_nmse=1.27585490879e-10 old_max=6.16535544395e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=4 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4089",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.292960 old_ms=0.341005 cpu_nmse=4.58206624564e-10 cpu_max=1.07614191726e-06 old_nmse=5.64323941581e-10 old_max=1.15856528282e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=4 chunks=8 block=256 waves=1 workspace=532480 storage=L3 pool=532480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.342882 old_ms=0.339825 cpu_nmse=5.50748424636e-10 cpu_max=1.19472462982e-06 old_nmse=7.86842802158e-10 old_max=1.42492353916e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.663949 old_ms=0.662784 cpu_nmse=4.34018393218e-10 cpu_max=7.76160016203e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3998",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.510874 old_ms=0.659054 cpu_nmse=4.52699963011e-10 cpu_max=7.70572080755e-07 old_nmse=2.39882138881e-10 old_max=6.34230673313e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4091",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.495605 old_ms=0.660064 cpu_nmse=4.42718319794e-10 cpu_max=7.43655196582e-07 old_nmse=2.82251764164e-10 old_max=5.83939254284e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk4-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4090",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.537925 old_ms=0.662437 cpu_nmse=3.98238060614e-10 cpu_max=6.55916390957e-07 old_nmse=5.55779293667e-10 old_max=9.70438122749e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=32 chunks=1 block=256 waves=1 workspace=66560 storage=L3 pool=66560 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=32 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.230153 old_ms=0.207803 cpu_nmse=1.14147825836e-10 cpu_max=4.22705188351e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=32 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4067",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=32 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.257838 old_ms=0.207471 cpu_nmse=1.0523290915e-10 cpu_max=3.33187836879e-06 old_nmse=6.50162218176e-11 old_max=3.65823507309e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=32 chunks=4 block=64 waves=1 workspace=167936 storage=L3 pool=167936 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4085",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=32 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.341537 old_ms=0.207709 cpu_nmse=9.61357655727e-11 cpu_max=2.91634337629e-06 old_nmse=1.09897046773e-10 old_max=3.89665365219e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=32 chunks=8 block=32 waves=1 workspace=303104 storage=L3 pool=303104 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4083",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=32 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.491033 old_ms=0.206853 cpu_nmse=1.02911084574e-10 cpu_max=3.75846928742e-06 old_nmse=1.31144000074e-10 old_max=4.52250242233e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=32 chunks=1 block=512 waves=1 workspace=99328 storage=L3 pool=99328 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.342165 old_ms=0.342944 cpu_nmse=5.01243815627e-11 cpu_max=2.22889154766e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=32 chunks=2 block=256 waves=1 workspace=133120 storage=L3 pool=133120 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4085",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=32 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.382965 old_ms=0.339633 cpu_nmse=6.2970778253e-11 cpu_max=2.55721885653e-06 old_nmse=4.54839896375e-11 old_max=1.99675559998e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=32 chunks=4 block=128 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4070",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=32 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.450553 old_ms=0.342029 cpu_nmse=5.82158070114e-11 cpu_max=2.72946773922e-06 old_nmse=4.70464246864e-11 old_max=1.6987323761e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=512 H=32 HK=32 chunks=8 block=64 waves=1 workspace=335872 storage=L3 pool=335872 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4070",
+      "FLASH_UNIT pd=0 D=128 S=512 M=1 HK=32 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.613248 old_ms=0.340542 cpu_nmse=5.22662824804e-11 cpu_max=2.0009762294e-06 old_nmse=5.99268279297e-11 old_max=1.75833702087e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=32 chunks=1 block=1024 waves=1 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.629748 old_ms=0.632185 cpu_nmse=1.11609560859e-09 cpu_max=1.62476832221e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=32 chunks=2 block=512 waves=1 workspace=198656 storage=L3 pool=198656 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4086",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.603232 old_ms=0.632067 cpu_nmse=1.14448287461e-09 cpu_max=1.60644632579e-06 old_nmse=8.29719742581e-10 old_max=1.43609941006e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=32 chunks=4 block=256 waves=1 workspace=266240 storage=L3 pool=266240 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=32 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.698464 old_ms=0.631773 cpu_nmse=1.18728679092e-09 cpu_max=1.39007503341e-06 old_nmse=1.20550089092e-09 old_max=1.54227018356e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1024 H=32 HK=32 chunks=8 block=128 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=0 D=128 S=1024 M=1 HK=32 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.860738 old_ms=0.629845 cpu_nmse=8.18311233312e-10 cpu_max=1.45737930892e-06 old_nmse=1.30433364334e-09 old_max=1.63866207004e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=32 chunks=1 block=1024 waves=2 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.281632 old_ms=1.282553 cpu_nmse=5.44939545337e-10 cpu_max=1.1432190469e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=32 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3967",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.161199 old_ms=1.289006 cpu_nmse=5.19974071142e-10 cpu_max=1.03801335985e-06 old_nmse=1.50184296794e-10 old_max=6.15604221821e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=32 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4087",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=1.185314 old_ms=1.285208 cpu_nmse=6.10464087689e-10 cpu_max=1.19447555239e-06 old_nmse=6.07785875531e-10 old_max=1.01514160633e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=32 chunks=8 block=256 waves=1 workspace=532480 storage=L3 pool=532480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=32 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=1.342206 old_ms=1.286403 cpu_nmse=4.62009191774e-10 cpu_max=8.31866599181e-07 old_nmse=7.75382828684e-10 old_max=9.02451574802e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=32 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=2.518023 old_ms=2.527223 cpu_nmse=3.43288848636e-10 cpu_max=7.67036859515e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=32 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4039",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=2.366852 old_ms=2.527547 cpu_nmse=3.53591879616e-10 cpu_max=7.79112380278e-07 old_nmse=1.68771929887e-10 old_max=5.27477823198e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=32 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=2.252637 old_ms=2.542693 cpu_nmse=4.14251372813e-10 cpu_max=7.54247239809e-07 old_nmse=3.46294737436e-10 old_max=6.25848770142e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p0-d128-hk32-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=32 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4090",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=2.288099 old_ms=2.557265 cpu_nmse=4.58382335102e-10 cpu_max=7.35298726993e-07 old_nmse=5.8595317509e-10 old_max=6.55651092529e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=256 H=32 HK=1 chunks=1 block=256 waves=1 workspace=50176 storage=L3 pool=50176 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.086731 old_ms=0.089454 cpu_nmse=1.44046785185e-10 cpu_max=4.90152106365e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=256 H=32 HK=1 chunks=2 block=128 waves=1 workspace=67584 storage=L3 pool=67584 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2043",
+      "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.080524 old_ms=0.095946 cpu_nmse=1.56399070246e-10 cpu_max=4.47646618229e-06 old_nmse=7.96760194244e-11 old_max=2.92807817459e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=256 H=32 HK=1 chunks=4 block=64 waves=1 workspace=102400 storage=L3 pool=102400 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2038",
+      "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.085566 old_ms=0.089446 cpu_nmse=1.78327147491e-10 cpu_max=5.32354706942e-06 old_nmse=1.3777010123e-10 old_max=3.71783971786e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=256 H=32 HK=1 chunks=8 block=32 waves=1 workspace=172032 storage=L3 pool=172032 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2042",
+      "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.136781 old_ms=0.089388 cpu_nmse=1.39409747977e-10 cpu_max=5.32987655807e-06 old_nmse=1.26117645021e-10 old_max=4.28408384323e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=512 H=32 HK=1 chunks=1 block=512 waves=1 workspace=82944 storage=L3 pool=82944 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.113873 old_ms=0.116605 cpu_nmse=1.17291526459e-10 cpu_max=3.9350192803e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=512 H=32 HK=1 chunks=2 block=256 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2038",
+      "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.095250 old_ms=0.114061 cpu_nmse=7.75333985807e-11 cpu_max=2.68335775608e-06 old_nmse=7.5112061637e-11 old_max=2.10851430893e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=512 H=32 HK=1 chunks=4 block=128 waves=1 workspace=135168 storage=L3 pool=135168 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2037",
+      "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.115566 old_ms=0.110801 cpu_nmse=9.97188215365e-11 cpu_max=3.30518159687e-06 old_nmse=1.02273363347e-10 old_max=2.60770320892e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=512 H=32 HK=1 chunks=8 block=64 waves=1 workspace=204800 storage=L3 pool=204800 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2042",
+      "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.142521 old_ms=0.110842 cpu_nmse=1.33707351078e-10 cpu_max=3.90577928642e-06 old_nmse=1.66134069859e-10 old_max=3.84449958801e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=1024 H=32 HK=1 chunks=1 block=1024 waves=1 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.165702 old_ms=0.154836 cpu_nmse=2.11978177311e-09 cpu_max=2.51976918287e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=1024 H=32 HK=1 chunks=2 block=512 waves=1 workspace=165888 storage=L3 pool=165888 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.130537 old_ms=0.152666 cpu_nmse=2.33326026895e-09 cpu_max=2.63116339237e-06 old_nmse=1.20826074389e-09 old_max=1.62422657013e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=1024 H=32 HK=1 chunks=4 block=256 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2044",
+      "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.119689 old_ms=0.157457 cpu_nmse=1.92432447658e-09 cpu_max=2.29634694717e-06 old_nmse=2.90527359522e-09 old_max=2.61329114437e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=1024 H=32 HK=1 chunks=8 block=128 waves=1 workspace=270336 storage=L3 pool=270336 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2048",
+      "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.167899 old_ms=0.155883 cpu_nmse=2.0053529648e-09 cpu_max=2.34906391056e-06 old_nmse=2.86963424748e-09 old_max=1.77323818207e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=2048 H=32 HK=1 chunks=1 block=1024 waves=2 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.282903 old_ms=0.292626 cpu_nmse=9.49178072797e-10 cpu_max=1.22112950677e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=2048 H=32 HK=1 chunks=2 block=1024 waves=1 workspace=296960 storage=L3 pool=296960 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2039",
+      "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.170380 old_ms=0.284859 cpu_nmse=1.14569490097e-09 cpu_max=1.58433742182e-06 old_nmse=4.59106432384e-10 old_max=1.26892700791e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=2048 H=32 HK=1 chunks=4 block=512 waves=1 workspace=331776 storage=L3 pool=331776 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.166860 old_ms=0.284865 cpu_nmse=1.28668175701e-09 cpu_max=1.54522187368e-06 old_nmse=8.6702350066e-10 old_max=1.32620334625e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=2048 H=32 HK=1 chunks=8 block=256 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.200986 old_ms=0.285615 cpu_nmse=9.35516827296e-10 cpu_max=1.25006589296e-06 old_nmse=1.14059045553e-09 old_max=1.27777457237e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4096 H=32 HK=1 chunks=1 block=1024 waves=4 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.528141 old_ms=0.552889 cpu_nmse=8.9722219191e-10 cpu_max=1.20748452779e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4096 H=32 HK=1 chunks=2 block=1024 waves=2 workspace=296960 storage=L3 pool=296960 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2027",
+      "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.309104 old_ms=0.540695 cpu_nmse=1.00388399888e-09 cpu_max=1.27733372089e-06 old_nmse=3.33267860933e-10 old_max=9.27597284317e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4096 H=32 HK=1 chunks=4 block=1024 waves=1 workspace=593920 storage=L3 pool=593920 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2045",
+      "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.254850 old_ms=0.554435 cpu_nmse=1.08386704898e-09 cpu_max=1.44869707462e-06 old_nmse=5.82491975902e-10 old_max=8.34465026855e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk1-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4096 H=32 HK=1 chunks=8 block=512 waves=1 workspace=663552 storage=L3 pool=663552 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.290826 old_ms=0.552541 cpu_nmse=1.23364746594e-09 cpu_max=1.51854626771e-06 old_nmse=8.61226035005e-10 old_max=9.685754776e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=256 H=32 HK=4 chunks=1 block=256 waves=1 workspace=50176 storage=L3 pool=50176 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.073987 old_ms=0.073963 cpu_nmse=1.86732223074e-10 cpu_max=4.85913502649e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=256 H=32 HK=4 chunks=2 block=128 waves=1 workspace=67584 storage=L3 pool=67584 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2036",
+      "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.084775 old_ms=0.100499 cpu_nmse=1.71224417488e-10 cpu_max=4.77147725682e-06 old_nmse=9.65462591946e-11 old_max=3.22714913636e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=256 H=32 HK=4 chunks=4 block=64 waves=1 workspace=102400 storage=L3 pool=102400 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.101796 old_ms=0.073937 cpu_nmse=1.96454567692e-10 cpu_max=4.69410585761e-06 old_nmse=1.77858326442e-10 old_max=4.92483377457e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=256 H=32 HK=4 chunks=8 block=32 waves=1 workspace=172032 storage=L3 pool=172032 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.149909 old_ms=0.077616 cpu_nmse=1.85766814051e-10 cpu_max=5.61425256133e-06 old_nmse=2.18847765419e-10 old_max=6.0573220253e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=512 H=32 HK=4 chunks=1 block=512 waves=1 workspace=82944 storage=L3 pool=82944 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.111448 old_ms=0.097427 cpu_nmse=1.19937440371e-10 cpu_max=3.04273354741e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=512 H=32 HK=4 chunks=2 block=256 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2039",
+      "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.102775 old_ms=0.101275 cpu_nmse=1.09473909265e-10 cpu_max=3.15931624491e-06 old_nmse=7.49572351317e-11 old_max=2.01910734177e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=512 H=32 HK=4 chunks=4 block=128 waves=1 workspace=135168 storage=L3 pool=135168 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2043",
+      "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.145041 old_ms=0.098628 cpu_nmse=1.24091077815e-10 cpu_max=3.13983059465e-06 old_nmse=1.13393356613e-10 old_max=2.05636024475e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=512 H=32 HK=4 chunks=8 block=64 waves=1 workspace=204800 storage=L3 pool=204800 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2044",
+      "FLASH_UNIT pd=1 D=64 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.166150 old_ms=0.102358 cpu_nmse=1.17107472481e-10 cpu_max=2.9069814764e-06 old_nmse=1.56713884888e-10 old_max=4.01958823204e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=1024 H=32 HK=4 chunks=1 block=1024 waves=1 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.163711 old_ms=0.151119 cpu_nmse=1.70584480291e-09 cpu_max=2.00350150477e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=1024 H=32 HK=4 chunks=2 block=512 waves=1 workspace=165888 storage=L3 pool=165888 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.162095 old_ms=0.146370 cpu_nmse=1.32118794311e-09 cpu_max=1.7521135356e-06 old_nmse=1.01890581622e-09 old_max=1.52154825628e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=1024 H=32 HK=4 chunks=4 block=256 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.148457 old_ms=0.146771 cpu_nmse=1.35021937251e-09 cpu_max=1.91404472542e-06 old_nmse=2.02668442738e-09 old_max=2.03959643841e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=1024 H=32 HK=4 chunks=8 block=128 waves=1 workspace=270336 storage=L3 pool=270336 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.199570 old_ms=0.150274 cpu_nmse=1.49473374753e-09 cpu_max=2.03443936368e-06 old_nmse=1.94185824417e-09 old_max=2.19116918743e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=2048 H=32 HK=4 chunks=1 block=1024 waves=2 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.273715 old_ms=0.271354 cpu_nmse=1.26403457468e-09 cpu_max=1.3799307611e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=2048 H=32 HK=4 chunks=2 block=1024 waves=1 workspace=296960 storage=L3 pool=296960 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1957",
+      "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.197008 old_ms=0.269973 cpu_nmse=1.09853445629e-09 cpu_max=1.38179340625e-06 old_nmse=3.93968496024e-10 old_max=1.20885670185e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=2048 H=32 HK=4 chunks=4 block=512 waves=1 workspace=331776 storage=L3 pool=331776 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.216020 old_ms=0.268553 cpu_nmse=1.06276811543e-09 cpu_max=1.79574785279e-06 old_nmse=1.39962243328e-09 old_max=1.68569386005e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=2048 H=32 HK=4 chunks=8 block=256 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2045",
+      "FLASH_UNIT pd=1 D=64 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.263877 old_ms=0.268351 cpu_nmse=9.2261868889e-10 cpu_max=1.17256407345e-06 old_nmse=1.68774074154e-09 old_max=1.57952308655e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4096 H=32 HK=4 chunks=1 block=1024 waves=4 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.536249 old_ms=0.519690 cpu_nmse=1.32785304581e-09 cpu_max=1.20837643024e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=296960 storage=L3 pool=296960 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2033",
+      "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.365140 old_ms=0.523662 cpu_nmse=1.30871379043e-09 cpu_max=9.61689382576e-07 old_nmse=1.78837882616e-10 old_max=5.73694705963e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=593920 storage=L3 pool=593920 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2045",
+      "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.372844 old_ms=0.519300 cpu_nmse=1.39847560335e-09 cpu_max=1.29748399798e-06 old_nmse=4.71618281654e-10 old_max=6.00703060627e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d64-hk4-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=663552 storage=L3 pool=663552 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=1 D=64 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.396718 old_ms=0.523327 cpu_nmse=1.21330032211e-09 cpu_max=1.51174898644e-06 old_nmse=1.26347119576e-09 old_max=9.89995896816e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=1 chunks=1 block=256 waves=1 workspace=66560 storage=L3 pool=66560 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.106959 old_ms=0.094975 cpu_nmse=6.82554861903e-11 cpu_max=3.50642284605e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=1 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4080",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.097717 old_ms=0.094945 cpu_nmse=6.20677159952e-11 cpu_max=2.7551920751e-06 old_nmse=3.18183969027e-11 old_max=2.1755695343e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=1 chunks=4 block=64 waves=1 workspace=167936 storage=L3 pool=167936 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4076",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.104307 old_ms=0.098130 cpu_nmse=7.59209663591e-11 cpu_max=3.45203996927e-06 old_nmse=5.99981863986e-11 old_max=2.87592411041e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=1 chunks=8 block=32 waves=1 workspace=303104 storage=L3 pool=303104 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4079",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=1 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.168849 old_ms=0.095770 cpu_nmse=7.49421374791e-11 cpu_max=4.009157268e-06 old_nmse=7.13855608456e-11 old_max=2.77161598206e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=1 chunks=1 block=512 waves=1 workspace=99328 storage=L3 pool=99328 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.128612 old_ms=0.120587 cpu_nmse=5.11673038959e-11 cpu_max=1.94147724744e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=1 chunks=2 block=256 waves=1 workspace=133120 storage=L3 pool=133120 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4081",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.100027 old_ms=0.120549 cpu_nmse=6.2202983108e-11 cpu_max=2.11234931431e-06 old_nmse=4.33226470162e-11 old_max=1.56462192535e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=1 chunks=4 block=128 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4076",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.105887 old_ms=0.123164 cpu_nmse=6.42193491404e-11 cpu_max=2.20057637385e-06 old_nmse=6.8382236408e-11 old_max=1.94157473743e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=1 chunks=8 block=64 waves=1 workspace=335872 storage=L3 pool=335872 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4082",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=1 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.146146 old_ms=0.122285 cpu_nmse=5.82957880016e-11 cpu_max=2.36221451422e-06 old_nmse=8.066519991e-11 old_max=2.43633985519e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=1 chunks=1 block=1024 waves=1 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.173031 old_ms=0.172185 cpu_nmse=8.18202270059e-10 cpu_max=1.21276652797e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=1 chunks=2 block=512 waves=1 workspace=198656 storage=L3 pool=198656 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4084",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.132857 old_ms=0.189598 cpu_nmse=5.6103721741e-10 cpu_max=1.13371461929e-06 old_nmse=5.1621673485e-10 old_max=1.11758708954e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=1 chunks=4 block=256 waves=1 workspace=266240 storage=L3 pool=266240 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.148610 old_ms=0.171521 cpu_nmse=9.7671727068e-10 cpu_max=1.75676942171e-06 old_nmse=1.08510409164e-09 old_max=1.53016299009e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=1 chunks=8 block=128 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=1 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.171985 old_ms=0.172736 cpu_nmse=7.6783146188e-10 cpu_max=1.31252855362e-06 old_nmse=1.3525105854e-09 old_max=1.49942934513e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=1 chunks=1 block=1024 waves=2 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.313342 old_ms=0.313161 cpu_nmse=4.86883057811e-10 cpu_max=1.00300115525e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=1 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3831",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.189987 old_ms=0.322902 cpu_nmse=4.84284098716e-10 cpu_max=1.00672644555e-06 old_nmse=1.33949016297e-10 old_max=8.7870284915e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=1 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4091",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.184609 old_ms=0.313176 cpu_nmse=3.83761209164e-10 cpu_max=1.09649230927e-06 old_nmse=4.00302842985e-10 old_max=1.00210309029e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=1 chunks=8 block=256 waves=1 workspace=532480 storage=L3 pool=532480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=1 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.226842 old_ms=0.311277 cpu_nmse=5.28715241779e-10 cpu_max=1.54911508053e-06 old_nmse=6.81068342202e-10 old_max=1.37183815241e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=1 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.591303 old_ms=0.594878 cpu_nmse=4.33130812631e-10 cpu_max=5.87975060773e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=1 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3916",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.350843 old_ms=0.596243 cpu_nmse=3.93934264757e-10 cpu_max=6.01533659496e-07 old_nmse=2.0655132951e-10 old_max=5.51342964172e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=1 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4089",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.294926 old_ms=0.598674 cpu_nmse=3.75107085667e-10 cpu_max=5.78818635291e-07 old_nmse=3.48345691189e-10 old_max=7.04079866409e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk1-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=1 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=1 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.368182 old_ms=0.595119 cpu_nmse=3.57266150242e-10 cpu_max=5.72399031883e-07 old_nmse=5.08878675157e-10 old_max=6.38887286186e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=4 chunks=1 block=256 waves=1 workspace=66560 storage=L3 pool=66560 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.085447 old_ms=0.084402 cpu_nmse=6.87493734657e-11 cpu_max=3.45068380719e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=4 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4077",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.101470 old_ms=0.098554 cpu_nmse=8.34458714287e-11 cpu_max=3.48048612958e-06 old_nmse=4.52899995744e-11 old_max=2.68220901489e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=4 chunks=4 block=64 waves=1 workspace=167936 storage=L3 pool=167936 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4084",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.113268 old_ms=0.084217 cpu_nmse=8.30934898573e-11 cpu_max=3.89279113211e-06 old_nmse=7.34578061332e-11 old_max=3.03238630295e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=4 chunks=8 block=32 waves=1 workspace=303104 storage=L3 pool=303104 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4084",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.182949 old_ms=0.082069 cpu_nmse=8.88555869868e-11 cpu_max=3.52387043868e-06 old_nmse=6.82304457793e-11 old_max=2.75671482086e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=4 chunks=1 block=512 waves=1 workspace=99328 storage=L3 pool=99328 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.116559 old_ms=0.114657 cpu_nmse=5.73470913333e-11 cpu_max=2.17698356569e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=4 chunks=2 block=256 waves=1 workspace=133120 storage=L3 pool=133120 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4076",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.110448 old_ms=0.112693 cpu_nmse=4.51962813907e-11 cpu_max=1.81224220867e-06 old_nmse=3.54953971218e-11 old_max=1.55717134476e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=4 chunks=4 block=128 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4076",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.155313 old_ms=0.112864 cpu_nmse=6.89214377722e-11 cpu_max=2.42373186596e-06 old_nmse=7.03680013013e-11 old_max=1.94157473743e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=4 chunks=8 block=64 waves=1 workspace=335872 storage=L3 pool=335872 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4079",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=4 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.187592 old_ms=0.112861 cpu_nmse=6.59385471777e-11 cpu_max=2.66139397173e-06 old_nmse=8.72517623923e-11 old_max=2.6673078537e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=4 chunks=1 block=1024 waves=1 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.179822 old_ms=0.183288 cpu_nmse=6.06671875262e-10 cpu_max=1.28297406611e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=4 chunks=2 block=512 waves=1 workspace=198656 storage=L3 pool=198656 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4080",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.155557 old_ms=0.179031 cpu_nmse=7.08445428852e-10 cpu_max=1.25795266572e-06 old_nmse=5.53904030943e-10 old_max=1.14366412163e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=4 chunks=4 block=256 waves=1 workspace=266240 storage=L3 pool=266240 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.183371 old_ms=0.181900 cpu_nmse=6.14870464268e-10 cpu_max=1.21819950075e-06 old_nmse=8.05179962167e-10 old_max=1.32340937853e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=4 chunks=8 block=128 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.235587 old_ms=0.180665 cpu_nmse=7.50822522246e-10 cpu_max=1.32764826916e-06 old_nmse=1.14488023915e-09 old_max=1.42306089401e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=4 chunks=1 block=1024 waves=2 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.342415 old_ms=0.339456 cpu_nmse=3.71401791367e-10 cpu_max=9.77074236273e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=4 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3916",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.284425 old_ms=0.338746 cpu_nmse=3.08243399923e-10 cpu_max=8.48551720976e-07 old_nmse=1.27585490879e-10 old_max=6.16535544395e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=4 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4089",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.272379 old_ms=0.337643 cpu_nmse=4.58206624564e-10 cpu_max=1.07614191726e-06 old_nmse=5.64323941581e-10 old_max=1.15856528282e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=4 chunks=8 block=256 waves=1 workspace=532480 storage=L3 pool=532480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.326765 old_ms=0.339376 cpu_nmse=5.50748424636e-10 cpu_max=1.19472462982e-06 old_nmse=7.86842802158e-10 old_max=1.42492353916e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.658976 old_ms=0.654723 cpu_nmse=4.34018393218e-10 cpu_max=7.76160016203e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3998",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.504288 old_ms=0.657232 cpu_nmse=4.52699963011e-10 cpu_max=7.70572080755e-07 old_nmse=2.39882138881e-10 old_max=6.34230673313e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4091",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.482818 old_ms=0.655859 cpu_nmse=4.42718319794e-10 cpu_max=7.43655196582e-07 old_nmse=2.82251764164e-10 old_max=5.83939254284e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk4-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4090",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.534655 old_ms=0.655128 cpu_nmse=3.98238060614e-10 cpu_max=6.55916390957e-07 old_nmse=5.55779293667e-10 old_max=9.70438122749e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s256-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=32 chunks=1 block=256 waves=1 workspace=66560 storage=L3 pool=66560 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=32 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.229017 old_ms=0.206079 cpu_nmse=1.14147825836e-10 cpu_max=4.22705188351e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=32 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4067",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=32 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.253601 old_ms=0.205952 cpu_nmse=1.0523290915e-10 cpu_max=3.33187836879e-06 old_nmse=6.50162218176e-11 old_max=3.65823507309e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s256-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=32 chunks=4 block=64 waves=1 workspace=167936 storage=L3 pool=167936 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4085",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=32 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.338112 old_ms=0.206059 cpu_nmse=9.61357655727e-11 cpu_max=2.91634337629e-06 old_nmse=1.09897046773e-10 old_max=3.89665365219e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s256-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=32 chunks=8 block=32 waves=1 workspace=303104 storage=L3 pool=303104 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4083",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=32 H=32 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.488063 old_ms=0.205782 cpu_nmse=1.02911084574e-10 cpu_max=3.75846928742e-06 old_nmse=1.31144000074e-10 old_max=4.52250242233e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s512-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=32 chunks=1 block=512 waves=1 workspace=99328 storage=L3 pool=99328 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.340061 old_ms=0.339842 cpu_nmse=5.01243815627e-11 cpu_max=2.22889154766e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s512-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=32 chunks=2 block=256 waves=1 workspace=133120 storage=L3 pool=133120 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4085",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=32 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.380410 old_ms=0.337069 cpu_nmse=6.2970778253e-11 cpu_max=2.55721885653e-06 old_nmse=4.54839896375e-11 old_max=1.99675559998e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s512-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=32 chunks=4 block=128 waves=1 workspace=200704 storage=L3 pool=200704 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4070",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=32 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.453675 old_ms=0.336304 cpu_nmse=5.82158070114e-11 cpu_max=2.72946773922e-06 old_nmse=4.70464246864e-11 old_max=1.6987323761e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s512-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=512 H=32 HK=32 chunks=8 block=64 waves=1 workspace=335872 storage=L3 pool=335872 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4070",
+      "FLASH_UNIT pd=1 D=128 S=512 M=1 HK=32 H=32 batch=1 pattern=12 block=64 storage=L3 flash_ms=0.607465 old_ms=0.339419 cpu_nmse=5.22662824804e-11 cpu_max=2.0009762294e-06 old_nmse=5.99268279297e-11 old_max=1.75833702087e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s1024-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=32 chunks=1 block=1024 waves=1 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.628343 old_ms=0.627411 cpu_nmse=1.11609560859e-09 cpu_max=1.62476832221e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s1024-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=32 chunks=2 block=512 waves=1 workspace=198656 storage=L3 pool=198656 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4086",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.602641 old_ms=0.629273 cpu_nmse=1.14448287461e-09 cpu_max=1.60644632579e-06 old_nmse=8.29719742581e-10 old_max=1.43609941006e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s1024-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=32 chunks=4 block=256 waves=1 workspace=266240 storage=L3 pool=266240 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=32 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=0.682213 old_ms=0.627591 cpu_nmse=1.18728679092e-09 cpu_max=1.39007503341e-06 old_nmse=1.20550089092e-09 old_max=1.54227018356e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s1024-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1024 H=32 HK=32 chunks=8 block=128 waves=1 workspace=401408 storage=L3 pool=401408 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=1 D=128 S=1024 M=1 HK=32 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.849455 old_ms=0.626325 cpu_nmse=8.18311233312e-10 cpu_max=1.45737930892e-06 old_nmse=1.30433364334e-09 old_max=1.63866207004e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s2048-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=32 chunks=1 block=1024 waves=2 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.272495 old_ms=1.281795 cpu_nmse=5.44939545337e-10 cpu_max=1.1432190469e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=32 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=3967",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.140237 old_ms=1.284503 cpu_nmse=5.19974071142e-10 cpu_max=1.03801335985e-06 old_nmse=1.50184296794e-10 old_max=6.15604221821e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=32 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4087",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=1.168207 old_ms=1.273368 cpu_nmse=6.10464087689e-10 cpu_max=1.19447555239e-06 old_nmse=6.07785875531e-10 old_max=1.01514160633e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s2048-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=32 chunks=8 block=256 waves=1 workspace=532480 storage=L3 pool=532480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=32 H=32 batch=1 pattern=12 block=256 storage=L3 flash_ms=1.337761 old_ms=1.279281 cpu_nmse=4.62009191774e-10 cpu_max=8.31866599181e-07 old_nmse=7.75382828684e-10 old_max=9.02451574802e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s4096-c1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=32 chunks=1 block=1024 waves=4 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=2.501315 old_ms=2.511862 cpu_nmse=3.43288848636e-10 cpu_max=7.67036859515e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s4096-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=32 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4039",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=2.344213 old_ms=2.522178 cpu_nmse=3.53591879616e-10 cpu_max=7.79112380278e-07 old_nmse=1.68771929887e-10 old_max=5.27477823198e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s4096-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=32 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=2.243366 old_ms=2.516638 cpu_nmse=4.14251372813e-10 cpu_max=7.54247239809e-07 old_nmse=3.46294737436e-10 old_max=6.25848770142e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "grid-p1-d128-hk32-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=32 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4090",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=2.286096 old_ms=2.526166 cpu_nmse=4.58382335102e-10 cpu_max=7.35298726993e-07 old_nmse=5.8595317509e-10 old_max=6.55651092529e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d64-hk4-s8192-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=8192 H=32 HK=4 chunks=4 block=1024 waves=2 workspace=593920 storage=L3 pool=593920 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2048",
+      "FLASH_UNIT pd=0 D=64 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.689962 old_ms=1.029081 cpu_nmse=1.57205625666e-08 cpu_max=9.93963214891e-07 old_nmse=7.60696575759e-09 old_max=6.67409040034e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d64-hk4-s8192-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=8192 H=32 HK=4 chunks=8 block=1024 waves=1 workspace=1187840 storage=L3 pool=1187840 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.687920 old_ms=1.027864 cpu_nmse=1.48642607509e-08 cpu_max=8.20737216012e-07 old_nmse=7.75257441178e-09 old_max=6.07693664278e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d64-hk4-s8192-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=8192 H=32 HK=4 chunks=16 block=512 waves=1 workspace=1327104 storage=L3 pool=1327104 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.777238 old_ms=1.027859 cpu_nmse=1.41165305037e-08 cpu_max=9.83953813378e-07 old_nmse=1.1796776865e-08 old_max=8.60025465954e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d64-hk4-s16384-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=16384 H=32 HK=4 chunks=4 block=1024 waves=4 workspace=593920 storage=L3 pool=593920 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=0 D=64 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.392014 old_ms=2.027615 cpu_nmse=1.54923899122e-08 cpu_max=7.77024070534e-07 old_nmse=4.50171324813e-09 old_max=4.44822944701e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d64-hk4-s16384-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=16384 H=32 HK=4 chunks=8 block=1024 waves=2 workspace=1187840 storage=L3 pool=1187840 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=0 D=64 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.328801 old_ms=2.024467 cpu_nmse=1.4526175195e-08 cpu_max=7.3339494695e-07 old_nmse=4.72714391943e-09 old_max=3.65444066119e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d64-hk4-s16384-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=16384 H=32 HK=4 chunks=16 block=1024 waves=1 workspace=2375680 storage=L3 pool=2375680 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=0 D=64 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.310962 old_ms=2.023675 cpu_nmse=1.3466848592e-08 cpu_max=7.71210432146e-07 old_nmse=5.84715258945e-09 old_max=4.33763489127e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk4-s8192-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=8192 H=32 HK=4 chunks=4 block=1024 waves=2 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=0 D=128 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.967682 old_ms=1.289717 cpu_nmse=3.55779027904e-09 cpu_max=4.88435443192e-07 old_nmse=4.55987272255e-09 old_max=5.42728230357e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk4-s8192-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=8192 H=32 HK=4 chunks=8 block=1024 waves=1 workspace=1318912 storage=L3 pool=1318912 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=0 D=128 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.940632 old_ms=1.286721 cpu_nmse=3.12719003864e-09 cpu_max=4.16257943659e-07 old_nmse=4.33951536715e-09 old_max=5.34346327186e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk4-s8192-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=8192 H=32 HK=4 chunks=16 block=512 waves=1 workspace=1589248 storage=L3 pool=1589248 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=0 D=128 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=1.002715 old_ms=1.286757 cpu_nmse=3.96393469578e-09 cpu_max=5.63514591024e-07 old_nmse=6.82886833618e-09 old_max=5.09957317263e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk4-s16384-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=16384 H=32 HK=4 chunks=4 block=1024 waves=4 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4091",
+      "FLASH_UNIT pd=0 D=128 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.892362 old_ms=2.539061 cpu_nmse=3.78722480328e-09 cpu_max=3.27933619046e-07 old_nmse=4.17575554836e-09 old_max=3.15834768116e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk4-s16384-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=16384 H=32 HK=4 chunks=8 block=1024 waves=2 workspace=1318912 storage=L3 pool=1318912 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=0 D=128 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.879385 old_ms=2.539155 cpu_nmse=3.11632610265e-09 cpu_max=3.25838143253e-07 old_nmse=5.48838056335e-09 old_max=3.58151737601e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk4-s16384-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=16384 H=32 HK=4 chunks=16 block=1024 waves=1 workspace=2637824 storage=L3 pool=2637824 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=0 D=128 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.801781 old_ms=2.534558 cpu_nmse=3.63557355758e-09 cpu_max=3.77633544905e-07 old_nmse=5.79218030169e-09 old_max=3.35392542183e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk32-s8192-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=8192 H=32 HK=32 chunks=4 block=1024 waves=2 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=0 D=128 S=8192 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=4.595885 old_ms=4.968426 cpu_nmse=1.53627285334e-08 cpu_max=4.92159742445e-07 old_nmse=1.44198387773e-08 old_max=4.08384948969e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk32-s8192-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=8192 H=32 HK=32 chunks=8 block=1024 waves=1 workspace=1318912 storage=L3 pool=1318912 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=0 D=128 S=8192 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=4.389731 old_ms=4.970637 cpu_nmse=1.74920842513e-08 cpu_max=4.71187126527e-07 old_nmse=1.79397449491e-08 old_max=4.65894117951e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk32-s8192-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=8192 H=32 HK=32 chunks=16 block=512 waves=1 workspace=1589248 storage=L3 pool=1589248 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4096",
+      "FLASH_UNIT pd=0 D=128 S=8192 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=4.486792 old_ms=5.000468 cpu_nmse=1.50318607213e-08 cpu_max=4.14128577479e-07 old_nmse=2.56609512349e-08 old_max=4.67640347779e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk32-s16384-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=16384 H=32 HK=32 chunks=4 block=1024 waves=4 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=0 D=128 S=16384 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=9.092462 old_ms=9.876202 cpu_nmse=3.12423856556e-09 cpu_max=4.0110131671e-07 old_nmse=2.99662298358e-09 old_max=3.65078449249e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk32-s16384-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=16384 H=32 HK=32 chunks=8 block=1024 waves=2 workspace=1318912 storage=L3 pool=1318912 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=0 D=128 S=16384 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=9.030814 old_ms=9.869287 cpu_nmse=2.7291319887e-09 cpu_max=3.82120552663e-07 old_nmse=3.24868942104e-09 old_max=3.98373231292e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p0-d128-hk32-s16384-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=16384 H=32 HK=32 chunks=16 block=1024 waves=1 workspace=2637824 storage=L3 pool=2637824 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=0 D=128 S=16384 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=8.679997 old_ms=9.893900 cpu_nmse=2.94704318602e-09 cpu_max=4.06959463113e-07 old_nmse=3.44428833391e-09 old_max=3.49711626768e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d64-hk4-s8192-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=8192 H=32 HK=4 chunks=4 block=1024 waves=2 workspace=593920 storage=L3 pool=593920 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2048",
+      "FLASH_UNIT pd=1 D=64 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.703019 old_ms=1.021714 cpu_nmse=1.57205625666e-08 cpu_max=9.93963214891e-07 old_nmse=7.60696575759e-09 old_max=6.67409040034e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d64-hk4-s8192-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=8192 H=32 HK=4 chunks=8 block=1024 waves=1 workspace=1187840 storage=L3 pool=1187840 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.686058 old_ms=1.020708 cpu_nmse=1.48642607509e-08 cpu_max=8.20737216012e-07 old_nmse=7.75257441178e-09 old_max=6.07693664278e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d64-hk4-s8192-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=8192 H=32 HK=4 chunks=16 block=512 waves=1 workspace=1327104 storage=L3 pool=1327104 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.780958 old_ms=1.021416 cpu_nmse=1.41165305037e-08 cpu_max=9.83953813378e-07 old_nmse=1.1796776865e-08 old_max=8.60025465954e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d64-hk4-s16384-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=16384 H=32 HK=4 chunks=4 block=1024 waves=4 workspace=593920 storage=L3 pool=593920 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=1 D=64 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.381963 old_ms=2.013470 cpu_nmse=1.54923899122e-08 cpu_max=7.77024070534e-07 old_nmse=4.50171324813e-09 old_max=4.44822944701e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d64-hk4-s16384-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=16384 H=32 HK=4 chunks=8 block=1024 waves=2 workspace=1187840 storage=L3 pool=1187840 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2046",
+      "FLASH_UNIT pd=1 D=64 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.324269 old_ms=2.017565 cpu_nmse=1.4526175195e-08 cpu_max=7.3339494695e-07 old_nmse=4.72714391943e-09 old_max=3.65444066119e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d64-hk4-s16384-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=16384 H=32 HK=4 chunks=16 block=1024 waves=1 workspace=2375680 storage=L3 pool=2375680 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=2047",
+      "FLASH_UNIT pd=1 D=64 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.309510 old_ms=2.014089 cpu_nmse=1.3466848592e-08 cpu_max=7.71210432146e-07 old_nmse=5.84715258945e-09 old_max=4.33763489127e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk4-s8192-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=8192 H=32 HK=4 chunks=4 block=1024 waves=2 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=1 D=128 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.968862 old_ms=1.278277 cpu_nmse=3.55779027904e-09 cpu_max=4.88435443192e-07 old_nmse=4.55987272255e-09 old_max=5.42728230357e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk4-s8192-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=8192 H=32 HK=4 chunks=8 block=1024 waves=1 workspace=1318912 storage=L3 pool=1318912 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=1 D=128 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.934371 old_ms=1.278637 cpu_nmse=3.12719003864e-09 cpu_max=4.16257943659e-07 old_nmse=4.33951536715e-09 old_max=5.34346327186e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk4-s8192-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=8192 H=32 HK=4 chunks=16 block=512 waves=1 workspace=1589248 storage=L3 pool=1589248 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4094",
+      "FLASH_UNIT pd=1 D=128 S=8192 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=1.000910 old_ms=1.276030 cpu_nmse=3.96393469578e-09 cpu_max=5.63514591024e-07 old_nmse=6.82886833618e-09 old_max=5.09957317263e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk4-s16384-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=16384 H=32 HK=4 chunks=4 block=1024 waves=4 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4091",
+      "FLASH_UNIT pd=1 D=128 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.888958 old_ms=2.519958 cpu_nmse=3.78722480328e-09 cpu_max=3.27933619046e-07 old_nmse=4.17575554836e-09 old_max=3.15834768116e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk4-s16384-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=16384 H=32 HK=4 chunks=8 block=1024 waves=2 workspace=1318912 storage=L3 pool=1318912 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=1 D=128 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.887940 old_ms=2.520832 cpu_nmse=3.11632610265e-09 cpu_max=3.25838143253e-07 old_nmse=5.48838056335e-09 old_max=3.58151737601e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk4-s16384-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=16384 H=32 HK=4 chunks=16 block=1024 waves=1 workspace=2637824 storage=L3 pool=2637824 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=1 D=128 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.803605 old_ms=2.517853 cpu_nmse=3.63557355758e-09 cpu_max=3.77633544905e-07 old_nmse=5.79218030169e-09 old_max=3.35392542183e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk32-s8192-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=8192 H=32 HK=32 chunks=4 block=1024 waves=2 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=1 D=128 S=8192 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=4.565378 old_ms=4.928760 cpu_nmse=1.53627285334e-08 cpu_max=4.92159742445e-07 old_nmse=1.44198387773e-08 old_max=4.08384948969e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk32-s8192-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=8192 H=32 HK=32 chunks=8 block=1024 waves=1 workspace=1318912 storage=L3 pool=1318912 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=1 D=128 S=8192 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=4.363072 old_ms=4.975466 cpu_nmse=1.74920842513e-08 cpu_max=4.71187126527e-07 old_nmse=1.79397449491e-08 old_max=4.65894117951e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk32-s8192-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=8192 H=32 HK=32 chunks=16 block=512 waves=1 workspace=1589248 storage=L3 pool=1589248 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4096",
+      "FLASH_UNIT pd=1 D=128 S=8192 M=1 HK=32 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=4.465011 old_ms=4.955638 cpu_nmse=1.50318607213e-08 cpu_max=4.14128577479e-07 old_nmse=2.56609512349e-08 old_max=4.67640347779e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk32-s16384-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=16384 H=32 HK=32 chunks=4 block=1024 waves=4 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4092",
+      "FLASH_UNIT pd=1 D=128 S=16384 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=9.018089 old_ms=9.843678 cpu_nmse=3.12423856556e-09 cpu_max=4.0110131671e-07 old_nmse=2.99662298358e-09 old_max=3.65078449249e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk32-s16384-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=16384 H=32 HK=32 chunks=8 block=1024 waves=2 workspace=1318912 storage=L3 pool=1318912 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=1 D=128 S=16384 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=8.885009 old_ms=9.807363 cpu_nmse=2.7291319887e-09 cpu_max=3.82120552663e-07 old_nmse=3.24868942104e-09 old_max=3.98373231292e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "long-p1-d128-hk32-s16384-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=16384 H=32 HK=32 chunks=16 block=1024 waves=1 workspace=2637824 storage=L3 pool=2637824 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4093",
+      "FLASH_UNIT pd=1 D=128 S=16384 M=1 HK=32 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=8.579653 old_ms=9.802589 cpu_nmse=2.94704318602e-09 cpu_max=4.06959463113e-07 old_nmse=3.44428833391e-09 old_max=3.49711626768e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p0-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=4 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD0 D=128 S=256 H=32 HK=4 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.089236 old_ms=0.090797 cpu_nmse=8.34458714287e-11 cpu_max=3.48048612958e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p0-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=4 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=4 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.257612 old_ms=0.258046 cpu_nmse=3.08243399923e-10 cpu_max=8.48551720976e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p0-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=4 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD0 D=128 S=2048 H=32 HK=4 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.278034 old_ms=0.278992 cpu_nmse=4.58206624564e-10 cpu_max=1.07614191726e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p0-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.535197 old_ms=0.535485 cpu_nmse=3.98238060614e-10 cpu_max=6.55916390957e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p0-s16384-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=16384 H=32 HK=4 chunks=16 block=1024 waves=1 workspace=2637824 storage=L3 pool=2637824 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD0 D=128 S=16384 H=32 HK=4 chunks=16 block=1024 waves=1 workspace=2637824 storage=L3 pool=2637824 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.803312 old_ms=1.807605 cpu_nmse=3.63557355758e-09 cpu_max=3.77633544905e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=1 block=160 storage=L3 flash_ms=0.141221 old_ms=0.141091 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat3",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=3 block=160 storage=L3 flash_ms=0.180959 old_ms=0.214278 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1023",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=4 block=160 storage=L3 flash_ms=0.144203 old_ms=0.143792 cpu_nmse=1.20330880062e-07 cpu_max=9.90285219669e-06 old_nmse=7.6744277632e-09 old_max=1.74948945642e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat5",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=5 block=160 storage=L3 flash_ms=0.105362 old_ms=0.139766 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat6",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=6 block=160 storage=L3 flash_ms=0.100211 old_ms=0.137336 cpu_nmse=0 cpu_max=0 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat7",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=7 block=160 storage=L3 flash_ms=0.133325 old_ms=0.143649 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=924",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=8 block=160 storage=L3 flash_ms=0.109777 old_ms=0.141527 cpu_nmse=9.10761824531e-11 cpu_max=1.45385098291e-07 old_nmse=5.24849283872e-13 old_max=1.25728547573e-08 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat9",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=924",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=9 block=160 storage=L3 flash_ms=0.108956 old_ms=0.141404 cpu_nmse=9.10761824531e-11 cpu_max=1.45385098291e-07 old_nmse=5.24849283872e-13 old_max=1.25728547573e-08 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat10",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=10 block=160 storage=L3 flash_ms=0.149776 old_ms=0.141924 cpu_nmse=2.69828604733e-06 cpu_max=2.6911899703e-05 old_nmse=2.27068585244e-08 old_max=2.20793299377e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat11",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=11 block=160 storage=L3 flash_ms=0.155405 old_ms=0.152142 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat13",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=434176 storage=L3 pool=434176 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=4 pattern=13 block=160 storage=L3 flash_ms=0.286319 old_ms=0.215325 cpu_nmse=4.82253191465e-09 cpu_max=1.17489761021e-06 old_nmse=8.92172029226e-09 old_max=1.55018642545e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat14",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=14 block=160 storage=L3 flash_ms=0.145287 old_ms=0.141129 cpu_nmse=3.89300510204e-09 cpu_max=6.3627184657e-06 old_nmse=1.42548429936e-08 old_max=2.03363597393e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=16 block=160 storage=L3 flash_ms=0.143305 old_ms=0.141198 cpu_nmse=4.44966854351e-28 cpu_max=2.10942374679e-14 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat17",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1022",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=17 block=160 storage=L3 flash_ms=0.151058 old_ms=0.141343 cpu_nmse=2.31793432597e-08 cpu_max=7.23451375961e-06 old_nmse=3.91046782192e-09 old_max=3.46638262272e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat18",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=434176 storage=L3 pool=434176 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4096",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=4 pattern=18 block=160 storage=L3 flash_ms=0.299313 old_ms=0.228220 cpu_nmse=5.01448510537e-09 cpu_max=1.42558673247e-06 old_nmse=9.90389674821e-09 old_max=1.51665881276e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat20",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=20 block=160 storage=L3 flash_ms=0.147100 old_ms=0.137539 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat21",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=924",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=21 block=160 storage=L3 flash_ms=0.146972 old_ms=0.140920 cpu_nmse=9.10761824531e-11 cpu_max=1.45385098291e-07 old_nmse=5.24849283872e-13 old_max=1.25728547573e-08 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat22",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1023",
+      "FLASH_UNIT pd=0 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=22 block=160 storage=L3 flash_ms=0.108004 old_ms=0.143107 cpu_nmse=6.40012635446e-10 cpu_max=1.34810792307e-06 old_nmse=9.40188306896e-10 old_max=1.73039734364e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p0-pat23",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=8 HK=2 chunks=4 block=1024 waves=1 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=2 H=8 batch=1 pattern=23 block=1024 storage=L3 flash_ms=0.233405 old_ms=0.393907 cpu_nmse=1.41485023707e-09 cpu_max=9.36761487247e-07 old_nmse=1.37452187203e-12 old_max=3.72529029846e-08 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "ragged-p0-s32-c64",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=32 H=8 HK=1 chunks=1 block=32 waves=1 workspace=5376 storage=L3 pool=5376 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=0 D=64 S=32 M=1 HK=1 H=8 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.063873 old_ms=0.056254 cpu_nmse=5.74171537489e-11 cpu_max=1.52192255515e-05 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "ragged-p0-s544-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=544 H=8 HK=1 chunks=2 block=288 waves=1 workspace=27136 storage=L3 pool=27136 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=510",
+      "FLASH_UNIT pd=0 D=64 S=544 M=1 HK=1 H=8 batch=1 pattern=12 block=288 storage=L3 flash_ms=0.070269 old_ms=0.086509 cpu_nmse=9.45673293695e-11 cpu_max=2.64282755727e-06 old_nmse=9.17497621081e-11 old_max=1.80304050446e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "ragged-p0-s4128-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=64 S=4128 H=8 HK=1 chunks=4 block=1024 waves=2 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=510",
+      "FLASH_UNIT pd=0 D=64 S=4128 M=1 HK=1 H=8 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.220794 old_ms=0.464594 cpu_nmse=9.9837910746e-10 cpu_max=1.01941264391e-06 old_nmse=4.23611568287e-10 old_max=5.34579157829e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "trace-p0-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=2",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=3",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=4",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=5",
+      "DECODE_COMPARE mode=on bitdiff=3998",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.570635 old_ms=0.766420 cpu_nmse=4.52699963011e-10 cpu_max=7.70572080755e-07 old_nmse=2.39882138881e-10 old_max=6.34230673313e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "trace-p0-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=2",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=3",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=4",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=5",
+      "DECODE_COMPARE mode=on bitdiff=4091",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.521901 old_ms=0.766072 cpu_nmse=4.42718319794e-10 cpu_max=7.43655196582e-07 old_nmse=2.82251764164e-10 old_max=5.83939254284e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "trace-p0-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=2",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=3",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=4",
+      "KUNLUN Flash-Decoding PD0 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=5",
+      "DECODE_COMPARE mode=on bitdiff=4090",
+      "FLASH_UNIT pd=0 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.560909 old_ms=0.767423 cpu_nmse=3.98238060614e-10 cpu_max=6.55916390957e-07 old_nmse=5.55779293667e-10 old_max=9.70438122749e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p1-s256-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=4 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD1 D=128 S=256 H=32 HK=4 chunks=2 block=128 waves=1 workspace=100352 storage=L3 pool=100352 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=256 M=1 HK=4 H=32 batch=1 pattern=12 block=128 storage=L3 flash_ms=0.089207 old_ms=0.087219 cpu_nmse=8.34458714287e-11 cpu_max=3.48048612958e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p1-s2048-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=4 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=4 chunks=2 block=1024 waves=1 workspace=329728 storage=L3 pool=329728 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.254515 old_ms=0.255412 cpu_nmse=3.08243399923e-10 cpu_max=8.48551720976e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p1-s2048-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=4 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD1 D=128 S=2048 H=32 HK=4 chunks=4 block=512 waves=1 workspace=397312 storage=L3 pool=397312 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=2048 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.286561 old_ms=0.274773 cpu_nmse=4.58206624564e-10 cpu_max=1.07614191726e-06 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p1-s4096-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.535297 old_ms=0.535437 cpu_nmse=3.98238060614e-10 cpu_max=6.55916390957e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "layout-p1-s16384-c16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=16384 H=32 HK=4 chunks=16 block=1024 waves=1 workspace=2637824 storage=L3 pool=2637824 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD1 D=128 S=16384 H=32 HK=4 chunks=16 block=1024 waves=1 workspace=2637824 storage=L3 pool=2637824 layout=chunk calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=16384 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=1.802126 old_ms=1.793809 cpu_nmse=3.63557355758e-09 cpu_max=3.77633544905e-07 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat1",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=1 block=160 storage=L3 flash_ms=0.146419 old_ms=0.137611 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat3",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=3 block=160 storage=L3 flash_ms=0.185316 old_ms=0.207168 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1023",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=4 block=160 storage=L3 flash_ms=0.137756 old_ms=0.137161 cpu_nmse=1.20330880062e-07 cpu_max=9.90285219669e-06 old_nmse=7.6744277632e-09 old_max=1.74948945642e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat5",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=5 block=160 storage=L3 flash_ms=0.112613 old_ms=0.136329 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat6",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=6 block=160 storage=L3 flash_ms=0.108163 old_ms=0.134062 cpu_nmse=0 cpu_max=0 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat7",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=7 block=160 storage=L3 flash_ms=0.146395 old_ms=0.141149 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=924",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=8 block=160 storage=L3 flash_ms=0.115288 old_ms=0.138005 cpu_nmse=9.10761824531e-11 cpu_max=1.45385098291e-07 old_nmse=5.24849283872e-13 old_max=1.25728547573e-08 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat9",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=924",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=9 block=160 storage=L3 flash_ms=0.142974 old_ms=0.137221 cpu_nmse=9.10761824531e-11 cpu_max=1.45385098291e-07 old_nmse=5.24849283872e-13 old_max=1.25728547573e-08 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat10",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=10 block=160 storage=L3 flash_ms=0.138379 old_ms=0.138768 cpu_nmse=2.69828604733e-06 cpu_max=2.6911899703e-05 old_nmse=2.27068585244e-08 old_max=2.20793299377e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat11",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=11 block=160 storage=L3 flash_ms=0.149279 old_ms=0.149057 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat13",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=434176 storage=L3 pool=434176 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4095",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=4 pattern=13 block=160 storage=L3 flash_ms=0.284017 old_ms=0.212531 cpu_nmse=4.82253191465e-09 cpu_max=1.17489761021e-06 old_nmse=8.92172029226e-09 old_max=1.55018642545e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat14",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=14 block=160 storage=L3 flash_ms=0.145479 old_ms=0.138313 cpu_nmse=3.89300510204e-09 cpu_max=6.3627184657e-06 old_nmse=1.42548429936e-08 old_max=2.03363597393e-05 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat16",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=16 block=160 storage=L3 flash_ms=0.122110 old_ms=0.138011 cpu_nmse=4.44966854351e-28 cpu_max=2.10942374679e-14 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat17",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1022",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=17 block=160 storage=L3 flash_ms=0.141389 old_ms=0.139729 cpu_nmse=2.31793432597e-08 cpu_max=7.23451375961e-06 old_nmse=3.91046782192e-09 old_max=3.46638262272e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat18",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=434176 storage=L3 pool=434176 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=4096",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=4 pattern=18 block=160 storage=L3 flash_ms=0.310470 old_ms=0.221341 cpu_nmse=5.01448510537e-09 cpu_max=1.42558673247e-06 old_nmse=9.90389674821e-09 old_max=1.51665881276e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat20",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=20 block=160 storage=L3 flash_ms=0.106415 old_ms=0.139126 cpu_nmse=4.24662635056e-09 cpu_max=1.29349930277e-06 old_nmse=9.35983627283e-09 old_max=1.37975439429e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat21",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=924",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=21 block=160 storage=L3 flash_ms=0.116642 old_ms=0.137092 cpu_nmse=9.10761824531e-11 cpu_max=1.45385098291e-07 old_nmse=5.24849283872e-13 old_max=1.25728547573e-08 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat22",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=1056 H=8 HK=2 chunks=8 block=160 waves=1 workspace=108544 storage=L3 pool=108544 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1023",
+      "FLASH_UNIT pd=1 D=128 S=1056 M=1 HK=2 H=8 batch=1 pattern=22 block=160 storage=L3 flash_ms=0.145678 old_ms=0.139454 cpu_nmse=6.40012635446e-10 cpu_max=1.34810792307e-06 old_nmse=9.40188306896e-10 old_max=1.73039734364e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "edge-p1-pat23",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=8 HK=2 chunks=4 block=1024 waves=1 workspace=164864 storage=L3 pool=164864 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=1024",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=2 H=8 batch=1 pattern=23 block=1024 storage=L3 flash_ms=0.206824 old_ms=0.391345 cpu_nmse=1.41485023707e-09 cpu_max=9.36761487247e-07 old_nmse=1.37452187203e-12 old_max=3.72529029846e-08 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "ragged-p1-s32-c64",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=32 H=8 HK=1 chunks=1 block=32 waves=1 workspace=5376 storage=L3 pool=5376 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=0",
+      "FLASH_UNIT pd=1 D=64 S=32 M=1 HK=1 H=8 batch=1 pattern=12 block=32 storage=L3 flash_ms=0.043055 old_ms=0.042156 cpu_nmse=5.74171537489e-11 cpu_max=1.52192255515e-05 old_nmse=0 old_max=0 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "ragged-p1-s544-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=544 H=8 HK=1 chunks=2 block=288 waves=1 workspace=27136 storage=L3 pool=27136 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=510",
+      "FLASH_UNIT pd=1 D=64 S=544 M=1 HK=1 H=8 batch=1 pattern=12 block=288 storage=L3 flash_ms=0.070933 old_ms=0.086901 cpu_nmse=9.45673293695e-11 cpu_max=2.64282755727e-06 old_nmse=9.17497621081e-11 old_max=1.80304050446e-06 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "ragged-p1-s4128-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=64 S=4128 H=8 HK=1 chunks=4 block=1024 waves=2 workspace=148480 storage=L3 pool=148480 layout=head calls=1",
+      "DECODE_COMPARE mode=on bitdiff=510",
+      "FLASH_UNIT pd=1 D=64 S=4128 M=1 HK=1 H=8 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.197725 old_ms=0.459393 cpu_nmse=9.9837910746e-10 cpu_max=1.01941264391e-06 old_nmse=4.23611568287e-10 old_max=5.34579157829e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "trace-p1-c2",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=2",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=3",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=4",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=2 block=1024 waves=2 workspace=329728 storage=L3 pool=329728 layout=head calls=5",
+      "DECODE_COMPARE mode=on bitdiff=3998",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.567889 old_ms=0.763411 cpu_nmse=4.52699963011e-10 cpu_max=7.70572080755e-07 old_nmse=2.39882138881e-10 old_max=6.34230673313e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "trace-p1-c4",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=2",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=3",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=4",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=4 block=1024 waves=1 workspace=659456 storage=L3 pool=659456 layout=head calls=5",
+      "DECODE_COMPARE mode=on bitdiff=4091",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=1024 storage=L3 flash_ms=0.574682 old_ms=0.759396 cpu_nmse=4.42718319794e-10 cpu_max=7.43655196582e-07 old_nmse=2.82251764164e-10 old_max=5.83939254284e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  },
+  {
+    "name": "trace-p1-c8",
+    "lines": [
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=1",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=2",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=3",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=4",
+      "KUNLUN Flash-Decoding PD1 D=128 S=4096 H=32 HK=4 chunks=8 block=512 waves=1 workspace=794624 storage=L3 pool=794624 layout=head calls=5",
+      "DECODE_COMPARE mode=on bitdiff=4090",
+      "FLASH_UNIT pd=1 D=128 S=4096 M=1 HK=4 H=32 batch=1 pattern=12 block=512 storage=L3 flash_ms=0.557034 old_ms=0.762686 cpu_nmse=3.98238060614e-10 cpu_max=6.55916390957e-07 old_nmse=5.55779293667e-10 old_max=9.70438122749e-07 input_same=1 guard=0 pass=1 qt=128 sampled=0 full_q=0 old_full=1"
+    ]
+  }
+]

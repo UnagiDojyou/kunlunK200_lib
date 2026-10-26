@@ -1,0 +1,7 @@
+{
+  "version": "0.7.3",
+  "auto": "M1 D64 H32 HK4 B1, grouped, default block1024, interleaved compact KV, F16 mask/no ALiBi, padded S2048..4352",
+  "long": "S>4096 fixed1024 + head affinity; otherwise balanced",
+  "seven_b": "0.7.2 fallback: no measured LLM gain",
+  "reason": "both-PD long Tiny gains, bitwise worker mapping, controlled PPL and teacher-forced quality"
+}

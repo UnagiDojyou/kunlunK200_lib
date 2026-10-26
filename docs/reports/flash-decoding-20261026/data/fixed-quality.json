@@ -1,0 +1,96 @@
+[
+  {
+    "test": "fixed-ab-7b-p0",
+    "model": "7b",
+    "pd": 0,
+    "mode": "fixed",
+    "tps": 3.671405336,
+    "gain": -0.02354148196396011,
+    "nmse": 2.5959462813621682e-05,
+    "mean_kl": 1.5259064304337833e-05,
+    "max_kl": 0.000191873321790674,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "fixed-ab-7b-p0",
+    "model": "7b",
+    "pd": 0,
+    "mode": "fixhead",
+    "tps": 3.742849666,
+    "gain": -0.004539923103154986,
+    "nmse": 2.5959462813621682e-05,
+    "mean_kl": 1.5259064304337833e-05,
+    "max_kl": 0.000191873321790674,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "corpus-fixed-7b",
+    "bitwise": true,
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0 mean_KL=0 max_KL=0 max_abs=0 greedy_equal=1020",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=1 mean_nll=2.10613586535 perplexity=8.21643046992"
+    ]
+  },
+  {
+    "test": "fixed-ab-tiny-p0",
+    "model": "tiny",
+    "pd": 0,
+    "mode": "fixed",
+    "tps": 18.014504636,
+    "gain": 0.04577965441367349,
+    "nmse": 4.785189466100832e-06,
+    "mean_kl": 4.01750437699437e-05,
+    "max_kl": 0.00010017461602016548,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "fixed-ab-tiny-p0",
+    "model": "tiny",
+    "pd": 0,
+    "mode": "fixhead",
+    "tps": 18.803876868,
+    "gain": 0.09160436270651329,
+    "nmse": 4.785189466100832e-06,
+    "mean_kl": 4.01750437699437e-05,
+    "max_kl": 0.00010017461602016548,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "fixed-ab-tiny-p1",
+    "model": "tiny",
+    "pd": 1,
+    "mode": "fixed",
+    "tps": 18.703063332,
+    "gain": 0.05508126309546757,
+    "nmse": 4.785189466100832e-06,
+    "mean_kl": 4.01750437699437e-05,
+    "max_kl": 0.00010017461602016548,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "fixed-ab-tiny-p1",
+    "model": "tiny",
+    "pd": 1,
+    "mode": "fixhead",
+    "tps": 18.776672347,
+    "gain": 0.0592337108064549,
+    "nmse": 4.785189466100832e-06,
+    "mean_kl": 4.01750437699437e-05,
+    "max_kl": 0.00010017461602016548,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "corpus-fixed-tiny",
+    "bitwise": true,
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0 mean_KL=0 max_KL=0 max_abs=0 greedy_equal=1020",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=1 mean_nll=2.38056294538 perplexity=10.8109871464"
+    ]
+  }
+]

@@ -1,0 +1,28 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+#include "xpu/kernel/math.h"
+#include "flash-decode-config.h"
+__global__ void kunlun_flash_profile_decode_reduce(unsigned char *y,const float *acc,const float *partial,const float *stats,const FlashDecodeConfig *cfg){
+ __local__ unsigned int meta[8],transfer[8];meta[1]=meta[2]=0;unsigned int kernel_begin=get_clock();
+
+ __local__ FlashDecodeConfig fd;GM2LM(cfg,&fd,sizeof(fd));
+ __local__ float a[1024],part[1024],sum[128],st[512];
+ int rows=fd.p.h*fd.p.b,d=fd.p.d,tid=core_id()*cluster_num()+cluster_id(),workers=core_num()*cluster_num();
+ for(int row=tid;row<rows;row+=workers){meta[1]++;meta[2]+=fd.chunks;
+  GM2LM(stats+row*fd.chunks*8,st,fd.chunks*32);float maximum=-__builtin_inff();
+  for(int c=0;c<fd.chunks;++c)if(st[c*8]>maximum)maximum=st[c*8];
+  for(int j=0;j<d;++j)sum[j]=0;float denom=0;
+  if(maximum!=-__builtin_inff())for(int first=0;first<fd.chunks;first+=8){
+   int n=fd.chunks-first;if(n>8)n=8;
+   GM2LM(acc+(row*fd.chunks+first)*d,a,n*d*4);GM2LM(partial+(row*fd.chunks+first)*d,part,n*d*4);
+   for(int c=0;c<n;++c){int i=first+c;if(st[i*8+1]<=0||st[i*8]==-__builtin_inff())continue;
+    float weight=st[i*8]==maximum?1.0f:expf(st[i*8]-maximum);denom+=weight*st[i*8+1];
+    for(int j=0;j<d;j+=8){_x256_vvadd_ls(a+c*d+j,part+c*d+j,a+c*d+j);if(weight!=1)_x256_svmul_ls(weight,a+c*d+j,a+c*d+j);_x256_vvadd_ls(sum+j,a+c*d+j,sum+j);}
+   }
+  }
+  float inv=denom>0?1.0f/denom:0;for(int j=0;j<d;j+=8)_x256_svmul_ls(inv,sum+j,sum+j);
+  int h=row%fd.p.h,b=row/fd.p.h;LM2GM(sum,y+h*fd.p.y[1]+b*fd.p.y[3],d*4);
+ }
+meta[0]=(unsigned int)get_clock()-kernel_begin;int physical=cluster_id()*core_num()+core_id();
+ for(int j=0;j<3;++j){int slot=physical*3+j,index=slot/6*8+slot%6+2;transfer[0]=meta[j];LM2GM(transfer,(_global_ptr_ unsigned int*)stats+index,4);}
+}

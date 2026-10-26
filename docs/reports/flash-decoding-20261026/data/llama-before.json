@@ -1,0 +1,6 @@
+{
+  "head": "736fad58aa9209b38c5aced9ce11948ed7a0561f\n",
+  "branch": "codex/k200-flash-kq-20261026\n",
+  "status": " m vendor/KunlunK200\n?? docs/backend/kunlun-flash-kq.md\n?? docs/backend/kunlun-flash-online.md\n",
+  "remotes": "origin\tgit@github.com:UnagiDojyou/kunlunK200_llama.cpp.git (fetch)\norigin\tgit@github.com:UnagiDojyou/kunlunK200_llama.cpp.git (push)\nupstream\thttps://github.com/ggml-org/llama.cpp.git (fetch)\nupstream\thttps://github.com/ggml-org/llama.cpp.git (push)\n"
+}

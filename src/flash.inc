@@ -2,19 +2,19 @@
 namespace {
 struct FlashState {
     int id;
-    Kernel::Impl kq,kq1024,pv,pv_wide,online,online_ordered,qpack,kpack,vpack,range;
+    Kernel::Impl kq,kq1024,pv,pv_wide,online,online_ordered,decode_kq,decode_kq_head,decode_pv,decode_online,decode_reduce,decode_pv_head,decode_pv_head_affinity,decode_online_head,decode_reduce_head,profile_kq,profile_pv,profile_online,profile_decode_kq,profile_decode_kq_head,profile_decode_pv,profile_decode_pv_head,profile_decode_online,profile_decode_reduce,qpack,kpack,vpack,range;
     std::shared_ptr<NativeL3> l3;
     std::unique_ptr<Buffer> config,peaks,ranges,hbm;
     std::vector<unsigned char> config_cache;
     xdnn::Context *vendor=nullptr;
-    size_t workspace=0,calls=0;
+    size_t workspace=0,calls=0,decode_calls=0;
     bool last_l3=false;
     int last_block=0,last_qt=0;
     explicit FlashState(int pd):id(pd){}
     ~FlashState(){
         std::lock_guard<std::recursive_mutex> lock(mutex);select(id);check(xpu_wait());
         if(vendor)xdnn::destroy_context(vendor);
-        for(auto *s:{&kq,&kq1024,&pv,&pv_wide,&online,&online_ordered,&qpack,&kpack,&vpack,&range}){
+        for(auto *s:{&kq,&kq1024,&pv,&pv_wide,&online,&online_ordered,&decode_kq,&decode_kq_head,&decode_pv,&decode_online,&decode_reduce,&decode_pv_head,&decode_pv_head_affinity,&decode_online_head,&decode_reduce_head,&profile_kq,&profile_pv,&profile_online,&profile_decode_kq,&profile_decode_kq_head,&profile_decode_pv,&profile_decode_pv_head,&profile_decode_online,&profile_decode_reduce,&qpack,&kpack,&vpack,&range}){
             if(s->vendor)xdnn::destroy_context(s->vendor);
             release(id,s->quant,s->quant_size);release(id,s->scratch,s->scratch_size);release(id,s->alias_input,s->alias_input_size);
             if(s->code)check(xpu_free(s->code));
@@ -37,6 +37,8 @@ int flash_block(int queries=128,int groups=1){
     return 256;
 }
 }
+#include "flash-profile.inc"
+#include "flash-decode.inc"
 const char *flash_attention_reason(const Flash4Layout &p){
     for(auto *t:{&p.q,&p.k,&p.v,&p.y})if(*tensor4_reason(*t))return tensor4_reason(*t);
     if(p.k.type!=InputType::f16 || p.v.type!=InputType::f16 || p.y.type!=InputType::f32)return "flash types";
@@ -61,8 +63,9 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     kernel.impl_->id=id;select(id);
     if(!kernel.impl_->flash)kernel.impl_->flash=std::make_shared<FlashState>(id);
     auto &s=*std::static_pointer_cast<FlashState>(kernel.impl_->flash);
-    bool trace=std::getenv("KUNLUN_FLASH_TRACE")!=nullptr;auto start=std::chrono::steady_clock::now(),tick=start;
-    auto stage=[&](const char *name){if(trace){check(xpu_wait());auto now=std::chrono::steady_clock::now();std::fprintf(stderr,"FLASH_STAGE stage=%s ms=%.6f\n",name,std::chrono::duration<double,std::milli>(now-tick).count());tick=now;}};
+    bool profile=std::getenv("KUNLUN_FLASH_DECODING_PROFILE")&&p.q.ne[1]==1&&p.q.ne[2]*p.q.ne[3]>=32;
+    bool trace=std::getenv("KUNLUN_FLASH_TRACE")!=nullptr||profile;auto start=std::chrono::steady_clock::now(),tick=start;
+    auto stage=[&](const char *name){if(trace){check(xpu_wait());auto now=std::chrono::steady_clock::now();std::fprintf(stderr,"FLASH_STAGE stage=%s ms=%.6f\n",name,std::chrono::duration<double,std::milli>(now-tick).count());tick=now;if(profile){flash_profile_report(name,s);tick=std::chrono::steady_clock::now();}}};
     auto pq=p.q,pk=p.k,pv=p.v;
     // Each owner survives all enqueued blocks. Recompute on every call for KV updates.
     auto half=[&](Kernel::Impl &state,const void *src,Tensor4Layout &layout){
@@ -90,6 +93,7 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     KunlunFlashConfig cfg{};cfg.d=pq.ne[0];cfg.s=pk.ne[1];cfg.m=pq.ne[1];cfg.h=pq.ne[2];cfg.hk=pk.ne[2];cfg.b=pq.ne[3];cfg.bk=pk.ne[3];cfg.bv=pv.ne[3];cfg.block=std::min(flash_block(cfg.m,cfg.h/cfg.hk),cfg.s);cfg.qt=flash_query_tile();
     std::copy(pq.nb,pq.nb+4,cfg.q);std::copy(pk.nb,pk.nb+4,cfg.k);std::copy(pv.nb,pv.nb+4,cfg.v);std::copy(p.y.nb,p.y.nb+4,cfg.y);
     if(p.has_mask){std::copy(p.mask.nb,p.mask.nb+4,cfg.mask);std::copy(p.mask.ne,p.mask.ne+4,cfg.mask_ne);cfg.mask_type=p.mask.type==InputType::f16;}else for(int d=0;d<4;++d)cfg.mask_ne[d]=1;cfg.tg_group=!std::getenv("KUNLUN_FLASH_TG_GROUP")||std::strcmp(std::getenv("KUNLUN_FLASH_TG_GROUP"),"0");cfg.has_mask=p.has_mask;cfg.scale=p.scale;cfg.max_bias=p.max_bias;
+    if(flash_decode(s,id,y,q,k,v,p.has_mask?mask:nullptr,cfg))return true;
     native_reserve(s.config,id,256);if(s.config_cache.size()!=sizeof(cfg)||std::memcmp(s.config_cache.data(),&cfg,sizeof(cfg))){check(xpu_memcpy(s.config->data(),&cfg,sizeof(cfg),XPU_HOST_TO_DEVICE));check(xpu_wait());s.config_cache.assign((unsigned char*)&cfg,(unsigned char*)&cfg+sizeof(cfg));}
     size_t rows=(size_t)cfg.m*cfg.h*cfg.b,sc=rows*cfg.block*4,pr=0,ou=rows*cfg.d*4,total=sc+pr+2*ou+rows*32;
     if(!s.l3){s.l3=native_l3[id].lock();if(!s.l3){s.l3=std::make_shared<NativeL3>(id);native_l3[id]=s.l3;}}
@@ -104,13 +108,14 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     // With only one key tile per SDNN part there is no Q reuse to amortize.
     bool automatic=!kq_mode||!std::strcmp(kq_mode,"auto");
     bool kq_optimized=(automatic&&key_tiles>partitions)||(kq_mode&&!std::strcmp(kq_mode,"reuse1024"));
-    auto *kq_program=kq_optimized?&s.kq1024:&s.kq;
-    load_kernel(*kq_program,kq_optimized?"kunlun-flash-kq-reuse1024":"kunlun-flash-kq",id,true);bool wide=!std::getenv("KUNLUN_FLASH_PV")||std::strcmp(std::getenv("KUNLUN_FLASH_PV"),"narrow");auto &pv_program=wide?s.pv_wide:s.pv;load_kernel(pv_program,wide?"kunlun-flash-pv-wide":"kunlun-flash-pv",id,true);const char *mode=std::getenv("KUNLUN_FLASH_ONLINE");
+    if(profile&&!kq_optimized)profile=false;
+    auto *kq_program=profile?&s.profile_kq:(kq_optimized?&s.kq1024:&s.kq);
+    load_kernel(*kq_program,profile?"kunlun-flash-profile-kq":(kq_optimized?"kunlun-flash-kq-reuse1024":"kunlun-flash-kq"),id,true);bool wide=!std::getenv("KUNLUN_FLASH_PV")||std::strcmp(std::getenv("KUNLUN_FLASH_PV"),"narrow");auto &pv_program=profile?s.profile_pv:(wide?s.pv_wide:s.pv);load_kernel(pv_program,profile?"kunlun-flash-profile-pv":(wide?"kunlun-flash-pv-wide":"kunlun-flash-pv"),id,true);const char *mode=std::getenv("KUNLUN_FLASH_ONLINE");
     // Ordered FP32 sum preserves the 0.7.0 probability and running-state results.
     // Unknown settings select the conservative reference implementation.
     bool optimized=!mode||!std::strcmp(mode,"auto")||!std::strcmp(mode,"ordered");
-    auto &online=optimized?s.online_ordered:s.online;
-    load_kernel(online,optimized?"kunlun-flash-online-ordered":"kunlun-flash-online",id,false);
+    auto &online=profile?s.profile_online:(optimized?s.online_ordered:s.online);
+    load_kernel(online,profile?"kunlun-flash-profile-online":(optimized?"kunlun-flash-online-ordered":"kunlun-flash-online"),id,false);
     stage("workspace");
     for(int s0=0;s0<cfg.s;s0+=cfg.block){int count=std::min(cfg.block,cfg.s-s0);
         native_launch(*kq_program,{native_arg(score),native_arg(k),native_arg(q),native_arg(kp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},8);stage("kq");

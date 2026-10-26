@@ -1,0 +1,22 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+#include "xpu/kernel/math.h"
+#include "flash-decode-config.h"
+__global__ void kunlun_flash_decode_reduce(unsigned char *y,const float *acc,const float *partial,const float *stats,const FlashDecodeConfig *cfg){
+ __local__ FlashDecodeConfig fd;GM2LM(cfg,&fd,sizeof(fd));
+ __local__ float a[128],part[128],sum[128],st[8],maxima[64],denoms[64];
+ int rows=fd.p.h*fd.p.b,d=fd.p.d,tid=core_id()*cluster_num()+cluster_id(),workers=core_num()*cluster_num();
+ for(int row=tid;row<rows;row+=workers){
+  float maximum=-__builtin_inff();
+  for(int c=0;c<fd.chunks;++c){GM2LM(stats+(c*rows+row)*8,st,32);maxima[c]=st[0];denoms[c]=st[1];if(st[0]>maximum)maximum=st[0];}
+  for(int j=0;j<d;++j)sum[j]=0;float denom=0;
+  if(maximum!=-__builtin_inff())for(int c=0;c<fd.chunks;++c){
+   if(denoms[c]<=0||maxima[c]==-__builtin_inff())continue;
+   float weight=maxima[c]==maximum?1.0f:expf(maxima[c]-maximum);denom+=weight*denoms[c];
+   GM2LM(acc+(c*rows+row)*d,a,d*4);GM2LM(partial+(c*rows+row)*d,part,d*4);
+   for(int j=0;j<d;j+=8){_x256_vvadd_ls(a+j,part+j,a+j);if(weight!=1)_x256_svmul_ls(weight,a+j,a+j);_x256_vvadd_ls(sum+j,a+j,sum+j);}
+  }
+  float inv=denom>0?1.0f/denom:0;for(int j=0;j<d;j+=8)_x256_svmul_ls(inv,sum+j,sum+j);
+  int h=row%fd.p.h,b=row/fd.p.h;LM2GM(sum,y+h*fd.p.y[1]+b*fd.p.y[3],d*4);
+ }
+}

@@ -1,0 +1,38 @@
+[
+  {
+    "test": "work-ab-7b-p0",
+    "work_bitwise": true,
+    "nmse": 3.166427384486242e-05,
+    "mean_kl": 1.4580356976076707e-05,
+    "max_kl": 0.0002462970163685866,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "work-ab-7b-p1",
+    "work_bitwise": true,
+    "nmse": 3.166427384486242e-05,
+    "mean_kl": 1.4580356976076707e-05,
+    "max_kl": 0.0002462970163685866,
+    "greedy_equal": 64,
+    "positions": 64
+  },
+  {
+    "test": "work-ab-tiny-p0",
+    "work_bitwise": true,
+    "nmse": 4.611948383038958e-06,
+    "mean_kl": 3.977028747531608e-05,
+    "max_kl": 0.00010547144226229953,
+    "greedy_equal": 63,
+    "positions": 64
+  },
+  {
+    "test": "work-ab-tiny-p1",
+    "work_bitwise": true,
+    "nmse": 4.611948383038958e-06,
+    "mean_kl": 3.977028747531608e-05,
+    "max_kl": 0.00010547144226229953,
+    "greedy_equal": 63,
+    "positions": 64
+  }
+]

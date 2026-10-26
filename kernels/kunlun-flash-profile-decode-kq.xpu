@@ -1,0 +1,64 @@
+#include "xpu/kernel/sdcdnn_header.h"
+#include "flash-decode-config.h"
+static inline __device__ void load(_global_ptr_ const unsigned char *p,int rows,int k,int stride,int port,float peak,unsigned int *t){
+ int engine=port?DMAIN_1:DMAIN_0,bank=port?DMA_L2_1:DMA_L2_0;
+ {unsigned int phase_begin=get_clock();xfence_lock(engine);dma_cfg(bank|DMA_INT16,DMA_GM|DMA_FP16|highptr(p),peak>0?peak:1.0f);
+ dma_cfg_2d(rows,k*2,stride);dma_i_2d((void*)0,lowptr(p),k*2);xfence_unlock(engine);t[port?2:0]+=(unsigned int)get_clock()-phase_begin;t[port?11:10]++;}
+ {unsigned int phase_begin=get_clock();xfence_lock(port?DS_1:DS_0);ds_shuffle_cfg_datatype(DS_INT16);ds_shuffle_cfg_blkx(k);ds_cfg_output_bank(16);
+ for(int j=0;j<(rows+15)/16;++j)ds_shuffle_batch(&((v16i16*)0)[j*k][0],(short*)0+j*16*k,k,port?DS_L1W:DS_L1D);
+ xfence_unlock(port?DS_1:DS_0);t[port?3:1]+=(unsigned int)get_clock()-phase_begin;t[port?13:12]+=(rows+15)/16;}
+}
+
+__global__ void kunlun_flash_profile_decode_kq(float *score,const unsigned char *k,const unsigned char *q,const float *peaks,const float *ranges,const FlashDecodeConfig *cfg,int step){
+ if(core_id()!=0)return;
+ __local__ unsigned int t[16];for(int i=0;i<16;++i)t[i]=0;unsigned int kernel_begin=get_clock();
+ __local__ FlashDecodeConfig fd;GM2LM(cfg,&fd,sizeof(fd));__local__ KunlunFlashConfig p;p=fd.p;
+ __local__ float a[8],r[8];GM2LM(peaks,a,32);for(int j=1;j<4;++j)if(a[j]>a[0])a[0]=a[j];
+ int mt=1,groups=p.h/p.hk,units=p.b*p.hk*fd.chunks;
+ bool grouped=groups>1&&p.tg_group;
+ int maxparts=(cluster_num()+units-1)/units;if(maxparts>p.block/32)maxparts=p.block/32;
+ for(int task=cluster_id();task<units*maxparts;task+=cluster_num()){
+  int part=task%maxparts,unit=task/maxparts,c=unit%fd.chunks,hk=unit/fd.chunks%p.hk,b=unit/fd.chunks/p.hk;
+  int begin=fd.chunk_keys?c*fd.chunk_keys:(p.s/32*c/fd.chunks)*32,end=fd.chunk_keys?begin+fd.chunk_keys:(p.s/32*(c+1)/fd.chunks)*32;if(end>p.s)end=p.s;
+  int s0=begin+step*p.block,count=end-s0;if(count>p.block)count=p.block;if(count<=0)continue;
+  int nt=count/32,parts=maxparts;if(parts>nt)parts=nt;if(part>=parts)continue;
+  int first=(part*nt/parts)*32,nkeys=((part+1)*nt/parts)*32-first;
+  // Each input DMA is bounded by the 128 KiB L2_1 bank. L1W keeps all chunks.
+  for(int offset=0;offset<nkeys;){
+   int kk=nkeys-offset,limit=65536/p.d;if(kk>limit)kk=limit;
+   _global_ptr_ const unsigned char *src=k+(s0+first+offset)*p.k[1]+hk*p.k[2]+(b/(p.b/p.bk))*p.k[3];
+   {unsigned int phase_begin=get_clock();xfence_lock(DMAIN_1);dma_cfg(DMA_L2_1|DMA_INT16,DMA_GM|DMA_FP16|highptr(src),a[0]>0?a[0]:1.0f);dma_cfg_2d(kk,p.d*2,p.k[1]);dma_i_2d((void*)0,lowptr(src),p.d*2);xfence_unlock(DMAIN_1);t[2]+=(unsigned int)get_clock()-phase_begin;t[11]++;}
+   {unsigned int phase_begin=get_clock();xfence_lock(DS_1);ds_shuffle_cfg_datatype(DS_INT16);ds_shuffle_cfg_blkx(p.d);ds_cfg_output_bank(16);
+   for(int j=0;j<kk/16;++j)ds_shuffle_batch(&((v16i16*)0)[(offset/16+j)*p.d][0],(short*)0+j*16*p.d,p.d,DS_L1W);xfence_unlock(DS_1);t[3]+=(unsigned int)get_clock()-phase_begin;t[13]+=kk/16;}
+   offset+=kk;
+  }
+  for(int hg=0;hg<groups;hg+=grouped?groups:1)for(int mi=0;mi<mt;++mi){
+   int h=hk*groups+hg,m0=mi*p.qt,rows=p.m-m0;if(rows>p.qt)rows=p.qt;if(grouped)rows=groups;
+   GM2LM(ranges+((b*p.h+h)*mt+mi)*8,r,32);
+   if(grouped){
+    for(int g=0;g<groups;++g){
+     GM2LM(ranges+((b*p.h+h+g)*mt+mi)*8,r,32);
+     _global_ptr_ const unsigned char *src=q+(h+g)*p.q[2]+b*p.q[3];
+     {unsigned int phase_begin=get_clock();xfence_lock(DMAIN_0);dma_cfg(DMA_L2_0|DMA_INT16,DMA_GM|DMA_FP16|highptr(src),r[0]>0?r[0]:1.0f);dma_i((short*)0+g*p.d,lowptr(src),p.d*2);xfence_unlock(DMAIN_0);t[0]+=(unsigned int)get_clock()-phase_begin;t[10]++;}
+    }
+    {unsigned int phase_begin=get_clock();xfence_lock(DS_0);ds_shuffle_cfg_datatype(DS_INT16);ds_shuffle_cfg_blkx(p.d);ds_cfg_output_bank(16);
+    for(int j=0;j<(groups+15)/16;++j)ds_shuffle_batch(&((v16i16*)0)[j*p.d][0],(short*)0+j*16*p.d,p.d,DS_L1D);xfence_unlock(DS_0);t[1]+=(unsigned int)get_clock()-phase_begin;t[12]+=(groups+15)/16;}
+    r[0]=1.0f;
+   }else load(q+m0*p.q[1]+h*p.q[2]+b*p.q[3],rows,p.d,p.q[1],0,r[0],t);
+   // L1D is unchanged by MAC/EW/RS/DMAOUT and by the independent L1W bank.
+   int width=1024,capacity=32768/rows;capacity=capacity/32*32;if(width>capacity)width=capacity;
+   for(int n0=0;n0<nkeys;n0+=width){
+    int cols=nkeys-n0;if(cols>width)cols=width;int vectors=cols/16;
+    {unsigned int phase_begin=get_clock();xfence_lock(MAC);mm_cfg_stride(1);mm_cfg_dequant_scale(a[0]*r[0]*(1.0f/(32767.0f*32767.0f)));mm_cfg_basic_int16(p.d,rows);
+    for(int j=0;j<vectors;++j)mm_int16((v16f32*)0+j*rows,(v16i16*)0,(v16i16*)0+(n0/16+j)*p.d);xfence_unlock(MAC);t[4]+=(unsigned int)get_clock()-phase_begin;t[14]+=vectors;}
+    v16f32 *e=(v16f32*)0;
+    {unsigned int phase_begin=get_clock();xfence_lock(EW);ew_cfg_activation_type(EW_NOACT);ew_cfg_coeff_scalar(1.0f,0.0f,0.0f);ew_cfg_findmax(0,0.0f);ew_cfg_stream_size(rows*vectors);ew_cfg_col_size(16);ew_dsmadd(e,e,e,EW_L2E);xfence_unlock(EW);t[5]+=(unsigned int)get_clock()-phase_begin;}
+    {unsigned int phase_begin=get_clock();xfence_lock(RS);rs_row_cfg_stride(1,vectors);rs_row_cfg_loop(rows);for(int j=0;j<vectors;++j)rs_row_batch(&e[j][0],&e[j*rows][0],16);xfence_unlock(RS);t[6]+=(unsigned int)get_clock()-phase_begin;}
+    _global_ptr_ float *out=score+(c*p.h*p.b+(b*p.h+h))*p.block+first+n0;
+    {unsigned int phase_begin=get_clock();xfence_lock(DMAOUT);dma_cfg(DMA_GM|DMA_FP32|highptr(out),DMA_L2R|DMA_FP32,0.0f);dma_cfg_2d(rows,p.block*4,cols*4);dma_o_2d(lowptr(out),e,cols*4);xfence_unlock(DMAOUT);t[7]+=(unsigned int)get_clock()-phase_begin;t[15]++;}
+   }
+  }
+ }
+t[9]=(unsigned int)get_clock()-kernel_begin;unsigned int used=0;for(int i=0;i<8;++i)used+=t[i];t[8]=t[9]>used?t[9]-used:0;
+ LM2GM(t,(_global_ptr_ unsigned int*)(peaks+128)+cluster_id()*16,64);
+}
