@@ -1,0 +1,22 @@
+[
+  {
+    "test": "corpus-tiny-ordered",
+    "bitwise": true,
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0 mean_KL=0 max_KL=0 max_abs=0 greedy_equal=1020",
+      "QUALITY reference=1 positions=1020 nmse=0.00235080948668 mean_KL=0.0110532692832 max_KL=0.19227025116 max_abs=3.9464224577 greedy_equal=973",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.40916528227 perplexity=11.1246713081"
+    ],
+    "sha256": "45c11b7613fff5db0b23b3e8cc46d6eac69f120b45acf75fa45b04b7f095f810"
+  },
+  {
+    "test": "corpus-7b-ordered",
+    "bitwise": true,
+    "lines": [
+      "QUALITY reference=0 positions=1020 nmse=0 mean_KL=0 max_KL=0 max_abs=0 greedy_equal=1020",
+      "QUALITY reference=1 positions=1020 nmse=0.00613515166406 mean_KL=0.00957425453486 max_KL=0.693960308991 max_abs=5.03655427694 greedy_equal=963",
+      "CORPUS input_tokens=1024 scored=1020 context=256 batch=128 mean_nll=2.12177597136 perplexity=8.34594649553"
+    ],
+    "sha256": "a8161559bb221f9a3c7a722c120dcac10f88ad01ce957e3609f9e7c3c4ad3152"
+  }
+]

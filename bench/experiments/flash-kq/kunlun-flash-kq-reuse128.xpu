@@ -1,0 +1,3 @@
+#define KQ_NAME kunlun_flash_kq_reuse128
+#define KQ_OUTPUT_KEYS 128
+#include "../../../kernels/flash-kq-device.h"

@@ -1,0 +1,4 @@
+#define ONLINE_NAME kunlun_flash_online_reuse
+#define ONLINE_REDUCE 1
+#define ONLINE_REUSE 1
+#include "../../../kernels/flash-online-device.h"

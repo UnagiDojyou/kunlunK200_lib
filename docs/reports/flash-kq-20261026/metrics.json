@@ -1,0 +1,370 @@
+{
+  "api_unit_count": 151,
+  "api_old_nmse_max": 0,
+  "api_cpu_nmse_max": 5.74004273116e-08,
+  "api_cpu_max_abs": 3.51313254471e-05,
+  "kq_count": 304,
+  "kq_bitdiff_max": 0,
+  "kq_cpu_nmse_max": 8.40305976327e-09,
+  "kq_cpu_max_abs": 2.54980934231,
+  "comparisons": [
+    {
+      "series": "main",
+      "model": "7b",
+      "pd": 0,
+      "context": 128,
+      "legacy_pp": 71.09720473171825,
+      "new_pp": 70.64671147940575,
+      "pp_gain_pct": -0.633630047780942,
+      "legacy_tg": 6.999743047835068,
+      "new_tg": 7.2338794053321465,
+      "tg_gain_pct": 3.344927890881566
+    },
+    {
+      "series": "main",
+      "model": "7b",
+      "pd": 0,
+      "context": 512,
+      "legacy_pp": 70.93791189992334,
+      "new_pp": 70.19892660281329,
+      "pp_gain_pct": -1.0417353391407702,
+      "legacy_tg": 5.8818642213441095,
+      "new_tg": 6.541309604015417,
+      "tg_gain_pct": 11.21150298366822
+    },
+    {
+      "series": "main",
+      "model": "7b",
+      "pd": 0,
+      "context": 2048,
+      "legacy_pp": 65.52459431749944,
+      "new_pp": 67.3625026365608,
+      "pp_gain_pct": 2.804913694170752,
+      "legacy_tg": 4.1297095069099585,
+      "new_tg": 4.953470091310573,
+      "tg_gain_pct": 19.94717989297485
+    },
+    {
+      "series": "main",
+      "model": "7b",
+      "pd": 1,
+      "context": 128,
+      "legacy_pp": 70.59975620278749,
+      "new_pp": 71.63388889216756,
+      "pp_gain_pct": 1.464782238637885,
+      "legacy_tg": 7.068395760925201,
+      "new_tg": 7.140781618078061,
+      "tg_gain_pct": 1.0240775927264467
+    },
+    {
+      "series": "main",
+      "model": "7b",
+      "pd": 1,
+      "context": 512,
+      "legacy_pp": 70.12791061641619,
+      "new_pp": 70.9599535836457,
+      "pp_gain_pct": 1.1864647897191771,
+      "legacy_tg": 6.056240930871223,
+      "new_tg": 6.624447998106135,
+      "tg_gain_pct": 9.38217408654467
+    },
+    {
+      "series": "main",
+      "model": "7b",
+      "pd": 1,
+      "context": 2048,
+      "legacy_pp": 65.81731650024295,
+      "new_pp": 66.85442458314198,
+      "pp_gain_pct": 1.5757374169079075,
+      "legacy_tg": 4.191057904750421,
+      "new_tg": 5.100165009379049,
+      "tg_gain_pct": 21.691590173406716
+    },
+    {
+      "series": "main",
+      "model": "tiny",
+      "pd": 0,
+      "context": 128,
+      "legacy_pp": 281.3573582591306,
+      "new_pp": 297.9135179944526,
+      "pp_gain_pct": 5.8843883940912445,
+      "legacy_tg": 21.93165230886422,
+      "new_tg": 21.978452935511697,
+      "tg_gain_pct": 0.21339307220624715
+    },
+    {
+      "series": "main",
+      "model": "tiny",
+      "pd": 0,
+      "context": 512,
+      "legacy_pp": 276.7386010825056,
+      "new_pp": 293.3331496645629,
+      "pp_gain_pct": 5.996470502179729,
+      "legacy_tg": 20.171901173989212,
+      "new_tg": 20.445660577919334,
+      "tg_gain_pct": 1.3571323871203633
+    },
+    {
+      "series": "main",
+      "model": "tiny",
+      "pd": 0,
+      "context": 2048,
+      "legacy_pp": 242.57387517793768,
+      "new_pp": 255.11768871644782,
+      "pp_gain_pct": 5.1711312808556675,
+      "legacy_tg": 15.817681424535735,
+      "new_tg": 19.1114897610002,
+      "tg_gain_pct": 20.82358499998138
+    },
+    {
+      "series": "main",
+      "model": "tiny",
+      "pd": 1,
+      "context": 128,
+      "legacy_pp": 283.11425224081717,
+      "new_pp": 284.7787852104872,
+      "pp_gain_pct": 0.5879368334498869,
+      "legacy_tg": 22.011034183625284,
+      "new_tg": 23.047963427000532,
+      "tg_gain_pct": 4.7109519467588346
+    },
+    {
+      "series": "main",
+      "model": "tiny",
+      "pd": 1,
+      "context": 512,
+      "legacy_pp": 277.6916119939339,
+      "new_pp": 281.2600661268341,
+      "pp_gain_pct": 1.2850421038205884,
+      "legacy_tg": 20.039732809252946,
+      "new_tg": 21.966218601111276,
+      "tg_gain_pct": 9.6133307274876
+    },
+    {
+      "series": "main",
+      "model": "tiny",
+      "pd": 1,
+      "context": 2048,
+      "legacy_pp": 243.52884393640863,
+      "new_pp": 250.77092258387535,
+      "pp_gain_pct": 2.973807344709356,
+      "legacy_tg": 16.04574472854632,
+      "new_tg": 19.97781166017665,
+      "tg_gain_pct": 24.5053563929317
+    },
+    {
+      "series": "repeat",
+      "model": "7b",
+      "pd": 0,
+      "context": 128,
+      "legacy_pp": 70.42049469839662,
+      "new_pp": 70.61593105699124,
+      "pp_gain_pct": 0.27752767064708195,
+      "legacy_tg": 6.990918122967696,
+      "new_tg": 7.223896666353826,
+      "tg_gain_pct": 3.3325886426950335
+    },
+    {
+      "series": "repeat",
+      "model": "7b",
+      "pd": 0,
+      "context": 512,
+      "legacy_pp": 69.77742175592762,
+      "new_pp": 70.154514195317,
+      "pp_gain_pct": 0.5404218583890952,
+      "legacy_tg": 5.9733284124576,
+      "new_tg": 6.494104845145901,
+      "tg_gain_pct": 8.718362640202448
+    },
+    {
+      "series": "repeat",
+      "model": "7b",
+      "pd": 1,
+      "context": 128,
+      "legacy_pp": 70.60331656487098,
+      "new_pp": 71.18309992463456,
+      "pp_gain_pct": 0.8211843125398577,
+      "legacy_tg": 7.083167726904332,
+      "new_tg": 7.162683717429527,
+      "tg_gain_pct": 1.1226049359690515
+    },
+    {
+      "series": "repeat",
+      "model": "7b",
+      "pd": 1,
+      "context": 512,
+      "legacy_pp": 70.34885878295768,
+      "new_pp": 70.37928219381622,
+      "pp_gain_pct": 0.043246488123438453,
+      "legacy_tg": 5.9810486359010016,
+      "new_tg": 6.61884776550283,
+      "tg_gain_pct": 10.663667333742533
+    },
+    {
+      "series": "repeat",
+      "model": "tiny",
+      "pd": 0,
+      "context": 128,
+      "legacy_pp": 280.96474909798513,
+      "new_pp": 283.3598738226818,
+      "pp_gain_pct": 0.852464493281091,
+      "legacy_tg": 21.585445069083097,
+      "new_tg": 22.68867804834823,
+      "tg_gain_pct": 5.111004085087401
+    },
+    {
+      "series": "repeat",
+      "model": "tiny",
+      "pd": 0,
+      "context": 512,
+      "legacy_pp": 279.0244217149649,
+      "new_pp": 279.65552809840773,
+      "pp_gain_pct": 0.22618320631717648,
+      "legacy_tg": 19.945830873164688,
+      "new_tg": 21.966979169546935,
+      "tg_gain_pct": 10.133186775896696
+    },
+    {
+      "series": "repeat",
+      "model": "tiny",
+      "pd": 0,
+      "context": 2048,
+      "legacy_pp": 242.75020037055512,
+      "new_pp": 253.0514874351048,
+      "pp_gain_pct": 4.243575102646635,
+      "legacy_tg": 15.709384085728471,
+      "new_tg": 19.678419544579004,
+      "tg_gain_pct": 25.26537919749692
+    },
+    {
+      "series": "repeat",
+      "model": "tiny",
+      "pd": 1,
+      "context": 128,
+      "legacy_pp": 281.7385448167182,
+      "new_pp": 286.08417850832035,
+      "pp_gain_pct": 1.5424349176038854,
+      "legacy_tg": 22.161770297340453,
+      "new_tg": 22.620669258920966,
+      "tg_gain_pct": 2.070678269035131
+    },
+    {
+      "series": "repeat",
+      "model": "tiny",
+      "pd": 1,
+      "context": 512,
+      "legacy_pp": 277.57756652457573,
+      "new_pp": 280.0909855872783,
+      "pp_gain_pct": 0.9054834993230676,
+      "legacy_tg": 20.337005218491807,
+      "new_tg": 22.156873723611746,
+      "tg_gain_pct": 8.948557005164105
+    },
+    {
+      "series": "repeat",
+      "model": "tiny",
+      "pd": 1,
+      "context": 2048,
+      "legacy_pp": 244.81000380296206,
+      "new_pp": 256.0848888115375,
+      "pp_gain_pct": 4.6055654725818185,
+      "legacy_tg": 15.727938076817805,
+      "new_tg": 18.639417091447797,
+      "tg_gain_pct": 18.511511174636208
+    }
+  ],
+  "baseline_product_kernels_unchanged": {
+    "kunlun-flash-set-rows.bin": true,
+    "kunlun-attention-range.bin": true,
+    "kunlun-native-q4.bin": true,
+    "kunlun-flash-pv.bin": true,
+    "kunlun-common-rows64.bin": true,
+    "kunlun-attention-softmax-fast.bin": true,
+    "kunlun-attention-rope.bin": true,
+    "kunlun-common-combo2.bin": true,
+    "kunlun-common-main.bin": true,
+    "kunlun-flash-kq.bin": true,
+    "kunlun-native-q4-sum.bin": true,
+    "kunlun-rms-output.bin": true,
+    "kunlun-common-combined.bin": true,
+    "kunlun-flash-online.bin": true,
+    "kunlun-combine.bin": true,
+    "kunlun-native-q4-residual.bin": true,
+    "kunlun-attention-copy.bin": true,
+    "kunlun-attention-pack.bin": true,
+    "kunlun-attention-rope-phase.bin": true,
+    "kunlun-copy-rows.bin": true,
+    "kunlun-common-quant-row-serial-fused.bin": true,
+    "kunlun-set-rows.bin": true,
+    "kunlun-elementwise-broadcast.bin": true,
+    "kunlun-common-sum.bin": true,
+    "kunlun-common-quant-row-fused.bin": true,
+    "kunlun-flash-pv-wide.bin": true,
+    "kunlun-attention-softmax.bin": true,
+    "kunlun-common-io.bin": true,
+    "kunlun-common-gemv.bin": true,
+    "kunlun-common-max.bin": true,
+    "kunlun-native-q4-main.bin": true,
+    "kunlun-swiglu.bin": true,
+    "kunlun-rms-partial.bin": true,
+    "kunlun-native-q4-fallback.bin": true,
+    "kunlun-common-rows128.bin": true,
+    "kunlun-matvec.bin": true,
+    "kunlun-common-wide.bin": true,
+    "kunlun-common-quant-partial.bin": true,
+    "kunlun-flash-range.bin": true,
+    "kunlun-attention-sdnn.bin": true,
+    "kunlun-flash-online-ordered.bin": true,
+    "kunlun-attention-matmul.bin": true,
+    "kunlun-common-residual.bin": true,
+    "kunlun-elementwise.bin": true,
+    "kunlun-common-fallback.bin": true,
+    "kunlun-common-join-slices.bin": true,
+    "kunlun-common-combo4.bin": true,
+    "kunlun-native-q4-n32.bin": true,
+    "kunlun-native-q4-max.bin": true,
+    "kunlun-attention-range-dma.bin": true,
+    "kunlun-attention-softmax-typed.bin": true
+  },
+  "baseline_experimental_not_built": [
+    "kunlun-flash-online-reuse.bin",
+    "kunlun-flash-online-reduce.bin",
+    "kunlun-flash-online-fast.bin"
+  ],
+  "states": {
+    "0": {
+      "state": "RUNNING",
+      "errinfo": "no error"
+    },
+    "1": {
+      "state": "RUNNING",
+      "errinfo": "no error"
+    }
+  },
+  "frames": {
+    "kunlun-flash-kq": {
+      "frame": [
+        "-352"
+      ],
+      "bytes": 2652,
+      "sha256": "4962cd4636cf228fd94ffec654992ce475d6646441014d9093ca6573c42fc00d"
+    },
+    "kunlun-flash-kq-reuse1024": {
+      "frame": [
+        "-384"
+      ],
+      "bytes": 3172,
+      "sha256": "a6d0f4ff24a22e77d561d6573958c239b5accbc221724fe59b7fd91d20895c42"
+    }
+  },
+  "source": {
+    "library": {
+      "head": "780fb6933fe3d4ee06e686438f5f37fc7826d901",
+      "status": " M CMakeLists.txt\n M docs/flash-attention.md\n M src/flash.inc\n?? bench/experiments/\n?? bench/flash-kq-api-bench.cpp\n?? bench/flash-kq-bench.cpp\n?? bench/flash-online-api-bench.cpp\n?? bench/flash-online-bench.cpp\n?? docs/flash-kq.md\n?? docs/flash-online.md\n?? docs/reports/flash-online-20261026/\n?? kernels/flash-kq-device.h\n?? kernels/flash-online-device.h\n?? kernels/kunlun-flash-kq-reuse1024.xpu\n?? kernels/kunlun-flash-online-ordered.xpu\n"
+    },
+    "llama": {
+      "head": "736fad58aa9209b38c5aced9ce11948ed7a0561f",
+      "status": " m vendor/KunlunK200\n?? docs/backend/kunlun-flash-kq.md\n?? docs/backend/kunlun-flash-online.md\n"
+    }
+  }
+}

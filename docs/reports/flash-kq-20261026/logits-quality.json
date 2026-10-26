@@ -1,0 +1,98 @@
+[
+  {
+    "test": "tiny-p0-p128",
+    "nmse": 0.0,
+    "mean_kl": -1.4313289530336272e-19,
+    "max_kl": 9.045885225973232e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "tiny-p0-p512",
+    "nmse": 0.0,
+    "mean_kl": 4.458366916963906e-20,
+    "max_kl": 7.8092006297218e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "tiny-p0-p2048",
+    "nmse": 0.0,
+    "mean_kl": -3.655960499789495e-21,
+    "max_kl": 8.08955843138226e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "tiny-p1-p128",
+    "nmse": 0.0,
+    "mean_kl": -1.4313289530336272e-19,
+    "max_kl": 9.045885225973232e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "tiny-p1-p512",
+    "nmse": 0.0,
+    "mean_kl": 4.458366916963906e-20,
+    "max_kl": 7.8092006297218e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "tiny-p1-p2048",
+    "nmse": 0.0,
+    "mean_kl": -3.655960499789495e-21,
+    "max_kl": 8.08955843138226e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "7b-p0-p128",
+    "nmse": 0.0,
+    "mean_kl": -5.90590502682866e-20,
+    "max_kl": 1.1029776634064433e-18,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "7b-p0-p512",
+    "nmse": 0.0,
+    "mean_kl": -5.217073040136009e-20,
+    "max_kl": 0.0,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "7b-p0-p2048",
+    "nmse": 0.0,
+    "mean_kl": -4.2062851146070056e-20,
+    "max_kl": 8.168322482569538e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "7b-p1-p128",
+    "nmse": 0.0,
+    "mean_kl": -5.90590502682866e-20,
+    "max_kl": 1.1029776634064433e-18,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "7b-p1-p512",
+    "nmse": 0.0,
+    "mean_kl": -5.217073040136009e-20,
+    "max_kl": 0.0,
+    "greedy_equal": 16,
+    "positions": 16
+  },
+  {
+    "test": "7b-p1-p2048",
+    "nmse": 0.0,
+    "mean_kl": -4.2062851146070056e-20,
+    "max_kl": 8.168322482569538e-19,
+    "greedy_equal": 16,
+    "positions": 16
+  }
+]

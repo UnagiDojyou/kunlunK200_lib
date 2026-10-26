@@ -2,7 +2,7 @@
 namespace {
 struct FlashState {
     int id;
-    Kernel::Impl kq,pv,pv_wide,online,qpack,kpack,vpack,range;
+    Kernel::Impl kq,kq1024,pv,pv_wide,online,online_ordered,qpack,kpack,vpack,range;
     std::shared_ptr<NativeL3> l3;
     std::unique_ptr<Buffer> config,peaks,ranges,hbm;
     std::vector<unsigned char> config_cache;
@@ -14,7 +14,7 @@ struct FlashState {
     ~FlashState(){
         std::lock_guard<std::recursive_mutex> lock(mutex);select(id);check(xpu_wait());
         if(vendor)xdnn::destroy_context(vendor);
-        for(auto *s:{&kq,&pv,&pv_wide,&online,&qpack,&kpack,&vpack,&range}){
+        for(auto *s:{&kq,&kq1024,&pv,&pv_wide,&online,&online_ordered,&qpack,&kpack,&vpack,&range}){
             if(s->vendor)xdnn::destroy_context(s->vendor);
             release(id,s->quant,s->quant_size);release(id,s->scratch,s->scratch_size);release(id,s->alias_input,s->alias_input_size);
             if(s->code)check(xpu_free(s->code));
@@ -98,17 +98,29 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     else{native_reserve(s.hbm,id,total);workspace=s.hbm->data();hbm=true;}
     s.workspace=total;s.last_l3=!hbm;s.last_block=cfg.block;s.last_qt=cfg.qt;
     void *score=workspace,*prob=score,*partial=(char*)score+sc,*acc=(char*)partial+ou,*stats=(char*)acc+ou,*cp=s.config->data(),*kp=s.peaks->data(),*qr=s.ranges->data();
-    load_kernel(s.kq,"kunlun-flash-kq",id,true);bool wide=!std::getenv("KUNLUN_FLASH_PV")||std::strcmp(std::getenv("KUNLUN_FLASH_PV"),"narrow");auto &pv_program=wide?s.pv_wide:s.pv;load_kernel(pv_program,wide?"kunlun-flash-pv-wide":"kunlun-flash-pv",id,true);load_kernel(s.online,"kunlun-flash-online",id,false);
+    const char *kq_mode=std::getenv("KUNLUN_FLASH_KQ");
+    int key_tiles=cfg.block/32,partitions=(4+cfg.b*cfg.hk-1)/(cfg.b*cfg.hk);
+    if(partitions>key_tiles)partitions=key_tiles;
+    // With only one key tile per SDNN part there is no Q reuse to amortize.
+    bool automatic=!kq_mode||!std::strcmp(kq_mode,"auto");
+    bool kq_optimized=(automatic&&key_tiles>partitions)||(kq_mode&&!std::strcmp(kq_mode,"reuse1024"));
+    auto *kq_program=kq_optimized?&s.kq1024:&s.kq;
+    load_kernel(*kq_program,kq_optimized?"kunlun-flash-kq-reuse1024":"kunlun-flash-kq",id,true);bool wide=!std::getenv("KUNLUN_FLASH_PV")||std::strcmp(std::getenv("KUNLUN_FLASH_PV"),"narrow");auto &pv_program=wide?s.pv_wide:s.pv;load_kernel(pv_program,wide?"kunlun-flash-pv-wide":"kunlun-flash-pv",id,true);const char *mode=std::getenv("KUNLUN_FLASH_ONLINE");
+    // Ordered FP32 sum preserves the 0.7.0 probability and running-state results.
+    // Unknown settings select the conservative reference implementation.
+    bool optimized=!mode||!std::strcmp(mode,"auto")||!std::strcmp(mode,"ordered");
+    auto &online=optimized?s.online_ordered:s.online;
+    load_kernel(online,optimized?"kunlun-flash-online-ordered":"kunlun-flash-online",id,false);
     stage("workspace");
     for(int s0=0;s0<cfg.s;s0+=cfg.block){int count=std::min(cfg.block,cfg.s-s0);
-        native_launch(s.kq,{native_arg(score),native_arg(k),native_arg(q),native_arg(kp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},8);stage("kq");
+        native_launch(*kq_program,{native_arg(score),native_arg(k),native_arg(q),native_arg(kp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},8);stage("kq");
         const void *mp=p.has_mask?mask:nullptr;
-        native_launch(s.online,{native_arg(y),native_arg(prob),native_arg(acc),native_arg(stats),native_arg(partial),native_arg(score),native_arg(mp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},16);stage("online");
+        native_launch(online,{native_arg(y),native_arg(prob),native_arg(acc),native_arg(stats),native_arg(partial),native_arg(score),native_arg(mp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},16);stage("online");
         native_launch(pv_program,{native_arg(partial),native_arg(v),native_arg(prob),native_arg(vmax),native_arg(cp),native_arg(s0),native_arg(count)},8);stage("pv");
     }
     int s0=cfg.s,count=0;const void *mp=nullptr;
-    native_launch(s.online,{native_arg(y),native_arg(prob),native_arg(acc),native_arg(stats),native_arg(partial),native_arg(score),native_arg(mp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},16);check(xpu_wait());stage("final");
-    if(!s.calls++||trace)std::fprintf(stderr,"KUNLUN Flash PD%d D=%d S=%d M=%d H=%d block=%d workspace=%zu storage=%s calls=%zu\n",id,cfg.d,cfg.s,cfg.m,cfg.h,cfg.block,total,hbm?"HBM":"L3",s.calls);
+    native_launch(online,{native_arg(y),native_arg(prob),native_arg(acc),native_arg(stats),native_arg(partial),native_arg(score),native_arg(mp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},16);check(xpu_wait());stage("final");
+    if(!s.calls++||trace)std::fprintf(stderr,"KUNLUN Flash PD%d D=%d S=%d M=%d H=%d block=%d workspace=%zu storage=%s kq=%s calls=%zu\n",id,cfg.d,cfg.s,cfg.m,cfg.h,cfg.block,total,hbm?"HBM":"L3",kq_optimized?"reuse1024":"legacy",s.calls);
     return true;
 }
 

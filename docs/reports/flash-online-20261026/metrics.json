@@ -1,0 +1,177 @@
+{
+  "unit_count": 109,
+  "cpu_nmse_max": 5.74004273116e-08,
+  "cpu_max_abs": 3.51313254471e-05,
+  "old_nmse_max": 0,
+  "old_max_abs": 0,
+  "comparisons": [
+    {
+      "model": "7b",
+      "pd": 0,
+      "context": 128,
+      "legacy_pp": 68.98308247173533,
+      "new_pp": 70.64821800885909,
+      "pp_gain_pct": 2.413831735927463,
+      "legacy_tg": 7.097035543996764,
+      "new_tg": 7.12723330136191,
+      "tg_gain_pct": 0.4254981841071537
+    },
+    {
+      "model": "7b",
+      "pd": 0,
+      "context": 512,
+      "legacy_pp": 67.59021019637916,
+      "new_pp": 70.13397482251699,
+      "pp_gain_pct": 3.763510453284691,
+      "legacy_tg": 6.005995454836638,
+      "new_tg": 6.0197674312144445,
+      "tg_gain_pct": 0.2293038095244615
+    },
+    {
+      "model": "7b",
+      "pd": 0,
+      "context": 2048,
+      "legacy_pp": 59.866324071603174,
+      "new_pp": 65.53371013991398,
+      "pp_gain_pct": 9.466734689660129,
+      "legacy_tg": 4.136222629492252,
+      "new_tg": 4.182876242576087,
+      "tg_gain_pct": 1.1279279976658563
+    },
+    {
+      "model": "7b",
+      "pd": 1,
+      "context": 128,
+      "legacy_pp": 69.12449045841038,
+      "new_pp": 70.69645680916881,
+      "pp_gain_pct": 2.2741091331504704,
+      "legacy_tg": 7.097151677649396,
+      "new_tg": 7.127653728819682,
+      "tg_gain_pct": 0.42977876978935736
+    },
+    {
+      "model": "7b",
+      "pd": 1,
+      "context": 512,
+      "legacy_pp": 67.84078902321885,
+      "new_pp": 70.1344904612586,
+      "pp_gain_pct": 3.3810064285288766,
+      "legacy_tg": 6.024238185815165,
+      "new_tg": 6.09987168849736,
+      "tg_gain_pct": 1.2554865918197544
+    },
+    {
+      "model": "7b",
+      "pd": 1,
+      "context": 2048,
+      "legacy_pp": 60.03877373184628,
+      "new_pp": 65.86286325605997,
+      "pp_gain_pct": 9.700547100155754,
+      "legacy_tg": 4.150312724194116,
+      "new_tg": 4.217699744919888,
+      "tg_gain_pct": 1.6236612805811346
+    },
+    {
+      "model": "tiny",
+      "pd": 0,
+      "context": 128,
+      "legacy_pp": 265.723572381872,
+      "new_pp": 282.3630701270831,
+      "pp_gain_pct": 6.261957716456745,
+      "legacy_tg": 21.999709519308674,
+      "new_tg": 21.93654768780422,
+      "tg_gain_pct": -0.2871030249241069
+    },
+    {
+      "model": "tiny",
+      "pd": 0,
+      "context": 512,
+      "legacy_pp": 255.07120469485307,
+      "new_pp": 279.3043819523782,
+      "pp_gain_pct": 9.5005538890663,
+      "legacy_tg": 19.965180391174304,
+      "new_tg": 20.23259139736642,
+      "tg_gain_pct": 1.3393868773172946
+    },
+    {
+      "model": "tiny",
+      "pd": 0,
+      "context": 2048,
+      "legacy_pp": 196.1427713704236,
+      "new_pp": 244.1856685870179,
+      "pp_gain_pct": 24.493840318929383,
+      "legacy_tg": 15.375790027659322,
+      "new_tg": 15.987853063942794,
+      "tg_gain_pct": 3.9806932533706485
+    },
+    {
+      "model": "tiny",
+      "pd": 1,
+      "context": 128,
+      "legacy_pp": 264.3851717605737,
+      "new_pp": 283.11879417028604,
+      "pp_gain_pct": 7.085731126659933,
+      "legacy_tg": 22.008763311793796,
+      "new_tg": 22.043213925071612,
+      "tg_gain_pct": 0.15653134521809164
+    },
+    {
+      "model": "tiny",
+      "pd": 1,
+      "context": 512,
+      "legacy_pp": 254.55686481863236,
+      "new_pp": 277.98110624875255,
+      "pp_gain_pct": 9.201968073738499,
+      "legacy_tg": 19.779408028821244,
+      "new_tg": 20.211795821090007,
+      "tg_gain_pct": 2.18605021767444
+    },
+    {
+      "model": "tiny",
+      "pd": 1,
+      "context": 2048,
+      "legacy_pp": 196.1502926848582,
+      "new_pp": 243.8830252934959,
+      "pp_gain_pct": 24.334775113145902,
+      "legacy_tg": 15.216047666276026,
+      "new_tg": 16.00592507479709,
+      "tg_gain_pct": 5.191081323119828
+    }
+  ],
+  "states": {
+    "0": {
+      "state": "RUNNING",
+      "errinfo": "no error"
+    },
+    "1": {
+      "state": "RUNNING",
+      "errinfo": "no error"
+    }
+  },
+  "source": {
+    "library": {
+      "head": "780fb6933fe3d4ee06e686438f5f37fc7826d901",
+      "status": " M CMakeLists.txt\n M docs/flash-attention.md\n M src/flash.inc\n?? bench/experiments/\n?? bench/flash-online-api-bench.cpp\n?? bench/flash-online-bench.cpp\n?? docs/flash-online.md\n?? docs/reports/flash-online-20261026/\n?? kernels/flash-online-device.h\n?? kernels/kunlun-flash-online-ordered.xpu\n"
+    },
+    "llama": {
+      "head": "736fad58aa9209b38c5aced9ce11948ed7a0561f",
+      "status": " m vendor/KunlunK200\n?? docs/backend/kunlun-flash-online.md\n"
+    }
+  },
+  "frames": {
+    "kunlun-flash-online": {
+      "frame": [
+        "-11584"
+      ],
+      "bytes": 3276,
+      "sha256": "b40d01bf9fce4fccb055c171df3d4b29cf5b8893e8d5ee3d773b74284b74a69f"
+    },
+    "kunlun-flash-online-ordered": {
+      "frame": [
+        "-9568"
+      ],
+      "bytes": 4476,
+      "sha256": "7a21d2e7a4a836320ab6b7f2d65b562d1d7052090c27dadd0f74dfc7c29b1656"
+    }
+  }
+}

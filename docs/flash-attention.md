@@ -69,3 +69,11 @@ Next candidates are larger KQ residency in L1W/L1D, double-buffered L3 with veri
 ## Hardware evaluation
 
 See the [Japanese implementation and evaluation report](reports/flash-attention-20261026/REPORT.ja.md) and its raw summary tables for the measured comparison and limitations.
+
+## 0.7.1 Online Softmax
+
+`KUNLUN_FLASH_ONLINE=auto` (default) selects the optimized ordered-sum CL kernel; `legacy` retains the unmodified 0.7.0 kernel. See [Online Softmax](flash-online.md) for benchmarks, numerical guarantees and the Japanese evaluation report. The FlashAttention opt-in flags above remain required.
+
+## 0.7.2 KQ reuse
+
+`KUNLUN_FLASH_KQ=auto/legacy/reuse1024` controls Q/L1D and K/L1W reuse. See [KQ implementation and benchmarks](flash-kq.md). Online Softmax and all other attention components retain the 0.7.1 implementation.

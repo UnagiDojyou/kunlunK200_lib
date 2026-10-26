@@ -1,0 +1,3 @@
+#define ONLINE_NAME kunlun_flash_online_fast
+#define ONLINE_REDUCE 0
+#include "../../../kernels/flash-online-device.h"
