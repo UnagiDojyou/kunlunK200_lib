@@ -15,4 +15,3 @@ for model,file in [('tiny','tinyllama-q4_0.gguf'),('7b','llama2-7b-q4_0.gguf')]:
    row=dict(test=f'{model}-p{pd}-p{n}',**quality(O/f'final-perf-{model}-p{pd}-legacy.bin.p{n}',O/f'final-perf-{model}-p{pd}-ordered.bin.p{n}'));results.append(row);print(row,flush=True)
   (O/'logits-quality.json').write_text(json.dumps(results,indent=2))
 print('PERFORMANCE COMPLETE',flush=True)
-

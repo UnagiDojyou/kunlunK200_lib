@@ -17,4 +17,3 @@ for pd in [0,1]:runner.run(f'frozen-flash-p{pd}',[R/'build/flash-kq-lib/k200-fla
 (A/'recovery-reviewed.json').write_text(json.dumps(dict(cause='diagnostic-only LM2GM(meta+j) unaligned LM pointer; changed to aligned transfer[0]',reset_count=1,checks='both PD RUNNING/no error; frozen 0.7.2 CPU reference comparison PASS'),indent=2))
 (O/'XPU_ABORT').rename(A/'XPU_ABORT-recovered.json')
 print('RECOVERY COMPLETE',flush=True)
-

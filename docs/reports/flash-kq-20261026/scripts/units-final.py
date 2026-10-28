@@ -18,4 +18,3 @@ for pd in [0,1]:
   unit(f'edge-p{pd}-pat{pattern}',pd,128,544,m,2,8,pattern,b,pattern in [3,11,18])
  unit(f'mutate-real-p{pd}',pd,128,2048,128,8,32,11,1,True)
 print('FINAL UNITS COMPLETE',len(rows),flush=True)
-

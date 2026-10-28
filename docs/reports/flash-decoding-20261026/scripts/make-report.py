@@ -116,5 +116,3 @@ w('診断専用CLのLM2GM(meta+j)がLMアラインメント違反となり、他
 w('残る主要項目はK/Vのstrided DMAとDS、毎tokenの全KV findmax/range、GQAなしTGの小さいMAC行数、SDNN/CL段階間の待ち。次段階ではKV更新・rollback/state restoreと整合する増分range、1-waveのzero acc転送削減、Score/P ring buffer、double bufferとevent/pipeline、未評価context/modelの拡充を優先する。pipelineにはL1/L2所有権とstream保証の最小実験が必要で、今回実現したと扱わない。\n')
 w('ソース、差分、baseline snapshot、shader/image hash、ベンチマーク、入力ID、通常/診断ログ、CSV/JSON、[再現手順](REPRODUCE.ja.md)を保存。SDKとモデルweightは配布へ含めない。過去のソース書換え用scriptsは開発履歴であり、完成treeへ一括再実行しない。\n')
 (D/'REPORT.ja.md').write_text(re.sub(r'\n{3,}', '\n\n', '\n'.join(out)));print('REPORT',D/'REPORT.ja.md')
-
-

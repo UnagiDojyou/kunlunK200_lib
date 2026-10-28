@@ -27,4 +27,3 @@ for pd in [0,1]:
 for target in ['k200-flash-contract','k200-attention-contract','k200-common-q4-layout']:
  t=runner.run('regression-'+target,[R/'build/flash-kq-lib'/target],{},120);print(target,'pass',flush=True)
 print('COMPATIBILITY COMPLETE',flush=True)
-

@@ -50,4 +50,3 @@ env=os.environ.copy();env.update(XRE=str(R/'external/xre'),XDNN=str(R/'external/
 for build,targets in [('flash-decode-lib',['k200-flash-decode-bench','k200-flash-contract','k200-attention-contract','k200-common-q4-layout']),('flash-decode-llama',['kunlun-flash-decoding-bench','kunlun-llm-smoke','kunlun-quality-eval','kunlun-attention-test','kunlun-swiglu-test','kunlun-backend-contract'])]:subprocess.run(['cmake','--build',str(R/'build'/build),'-j4','--target',*targets],env=env,check=True)
 after={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in D.glob('*.bin')};before=json.loads((O/'pre-adoption-images.json').read_text());assert after==before
 print('ADOPTED; kernel images identical to measured fixed/worker builds',flush=True)
-
