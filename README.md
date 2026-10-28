@@ -103,3 +103,15 @@ Auto starts at S512 for D*HK >= 1024, and S8192 for 256 <= D*HK < 1024.
 Smaller features are opt-in only. Capacity below the threshold also retains the
 original writer. See [Japanese evaluation](docs/reports/kv-max-0.7.4.ja.md) and
 [reproduction](docs/reports/kv-max-0.7.4-reproduce.ja.md).
+
+### 0.7.5: SDNN/CL pipeline
+
+Version 0.7.5 overlaps next-block KQ with ordered online softmax using two Score/P slots and separate streams. Automatic selection is limited to the measured D128 and long-context D64 TG families; PP and other shapes remain sequential. See [pipeline controls, ownership and benchmarks](docs/flash-pipeline.md).
+
+Additional bit-preserving KL1 Online Softmax is available explicitly with `KUNLUN_FLASH_ONLINE=simd8`; defaults are unchanged. See [docs/flash-online-extra.md](docs/flash-online-extra.md).
+
+<!-- KV_DMA_076 -->
+
+## FlashAttention K/V DMA 0.7.6
+
+`KUNLUN_FLASH_KV_DMA=auto/legacy/coalesced` selects the validated TG path or the retained transfer kernels. Small-KV-head decoding experiments use explicit `decode2/decode4`. Online auto remains Ordered. See [evaluation](docs/flash-kv-dma.md) and [reproduction](docs/flash-kv-dma.md#build-and-comparison).

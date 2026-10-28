@@ -504,6 +504,12 @@ void native_launch(Kernel::Impl & program, std::initializer_list<NativeArgument>
     for (auto arg : args) { check(xpu_launch_argument_set(arg.value,arg.size,offset)); offset+=arg.size; }
     check(xpu_launch_config(4,cores)); check(xpu_launch_async(program.fn));
 }
+void native_launch_stream(Kernel::Impl & program, std::initializer_list<NativeArgument> args, int cores, XPUStream stream, const void *timeline=nullptr, int slot=0) {
+    size_t offset=0;
+    for (auto arg : args) { check(xpu_launch_argument_set(arg.value,arg.size,offset)); offset+=arg.size; }
+    if(timeline){check(xpu_launch_argument_set(&timeline,8,offset));offset+=8;check(xpu_launch_argument_set(&slot,4,offset));}
+    check(xpu_launch_config(4,cores,stream)); check(xpu_launch_async(program.fn));
+}
 void native_reserve(std::unique_ptr<Buffer> & buffer, int id, size_t size) {
     if (!buffer || buffer->size() < size) { check(xpu_wait()); buffer.reset(new Buffer(id,size)); }
 }
@@ -614,5 +620,5 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
 #include "flash.inc"
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.7.4"; }
+const char * version() { return "0.7.6"; }
 } // namespace kunlun

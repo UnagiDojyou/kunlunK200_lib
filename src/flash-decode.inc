@@ -5,7 +5,7 @@ bool flash_decode(FlashState &s,int id,void *y,const void *q,const void *k,const
  const char *mode=std::getenv("KUNLUN_FLASH_DECODING");bool automatic=!mode||!std::strcmp(mode,"auto"),forced=mode&&!std::strcmp(mode,"on");
  if(!automatic&&!forced)return false;
  const char *kq_mode=std::getenv("KUNLUN_FLASH_KQ"),*online_mode=std::getenv("KUNLUN_FLASH_ONLINE"),*pv_mode=std::getenv("KUNLUN_FLASH_PV");
- if((kq_mode&&std::strcmp(kq_mode,"auto")&&std::strcmp(kq_mode,"reuse1024"))||(online_mode&&std::strcmp(online_mode,"auto"))||(pv_mode&&!std::strcmp(pv_mode,"narrow")))return false;
+ if((kq_mode&&std::strcmp(kq_mode,"auto")&&std::strcmp(kq_mode,"reuse1024"))||(online_mode&&std::strcmp(online_mode,"auto")&&std::strcmp(online_mode,"unroll16")&&std::strcmp(online_mode,"simd8"))||(pv_mode&&!std::strcmp(pv_mode,"narrow")))return false;
  // Only adopt the real-LLM shape/layout with measured end-to-end gains.
  // Nongrouped 7B TG already fills all four SDNNs and did not improve.
  bool measured=base.d==64&&base.h==32&&base.hk==4&&base.b==1&&base.tg_group&&base.block==1024&&base.s>=2048&&base.s<=4352&&base.has_mask&&base.mask_type&&base.max_bias==0&&base.k[1]==base.d*base.hk*2&&base.k[2]==base.d*2&&base.v[1]==base.d*base.hk*2&&base.v[2]==base.d*2;
@@ -37,15 +37,22 @@ bool flash_decode(FlashState &s,int id,void *y,const void *q,const void *k,const
  bool head=!std::getenv("KUNLUN_FLASH_DECODING_LAYOUT")||std::strcmp(std::getenv("KUNLUN_FLASH_DECODING_LAYOUT"),"chunk");
  if(profile)head=true;
  const char *work=std::getenv("KUNLUN_FLASH_DECODING_WORK");bool affinity=head&&((!work||!std::strcmp(work,"auto"))?tuned_fixed:!std::strcmp(work,"head"));
- auto &online=profile?s.profile_decode_online:(head?s.decode_online_head:s.decode_online);auto &pv=profile?(affinity?s.profile_decode_pv_head:s.profile_decode_pv):(head?(affinity?s.decode_pv_head_affinity:s.decode_pv_head):s.decode_pv);auto &reduce=profile?s.profile_decode_reduce:(head?s.decode_reduce_head:s.decode_reduce);
- auto &kq_program=profile?(affinity?s.profile_decode_kq_head:s.profile_decode_kq):(affinity?s.decode_kq_head:s.decode_kq);load_kernel(kq_program,profile?(affinity?"kunlun-flash-profile-decode-kq-head":"kunlun-flash-profile-decode-kq"):(affinity?"kunlun-flash-decode-kq-head":"kunlun-flash-decode-kq"),id,true);load_kernel(pv,profile?(affinity?"kunlun-flash-profile-decode-pv-head":"kunlun-flash-profile-decode-pv"):(head?(affinity?"kunlun-flash-decode-pv-head-affinity":"kunlun-flash-decode-pv-head"):"kunlun-flash-decode-pv"),id,true);load_kernel(online,profile?"kunlun-flash-profile-decode-online":(head?"kunlun-flash-decode-online-head":"kunlun-flash-decode-online"),id,false);load_kernel(reduce,profile?"kunlun-flash-profile-decode-reduce":(head?"kunlun-flash-decode-reduce-head":"kunlun-flash-decode-reduce"),id,false);
+ bool simd8=online_mode&&!std::strcmp(online_mode,"simd8");
+ auto &online=profile?s.profile_decode_online:(simd8?(head?s.decode_online_head_simd8:s.decode_online_simd8):(head?s.decode_online_head:s.decode_online));auto &pv=profile?(affinity?s.profile_decode_pv_head:s.profile_decode_pv):(head?(affinity?s.decode_pv_head_affinity:s.decode_pv_head):s.decode_pv);auto &reduce=profile?s.profile_decode_reduce:(head?s.decode_reduce_head:s.decode_reduce);
+ auto &kq_program=profile?(affinity?s.profile_decode_kq_head:s.profile_decode_kq):(affinity?s.decode_kq_head:s.decode_kq);load_kernel(kq_program,profile?(affinity?"kunlun-flash-profile-decode-kq-head":"kunlun-flash-profile-decode-kq"):(affinity?"kunlun-flash-decode-kq-head":"kunlun-flash-decode-kq"),id,true);load_kernel(pv,profile?(affinity?"kunlun-flash-profile-decode-pv-head":"kunlun-flash-profile-decode-pv"):(head?(affinity?"kunlun-flash-decode-pv-head-affinity":"kunlun-flash-decode-pv-head"):"kunlun-flash-decode-pv"),id,true);load_kernel(online,profile?"kunlun-flash-profile-decode-online":(simd8?(head?"kunlun-flash-decode-online-head-simd8":"kunlun-flash-decode-online-simd8"):(head?"kunlun-flash-decode-online-head":"kunlun-flash-decode-online")),id,false);load_kernel(reduce,profile?"kunlun-flash-profile-decode-reduce":(head?"kunlun-flash-decode-reduce-head":"kunlun-flash-decode-reduce"),id,false);
+ bool kv_work_override=work&&std::strcmp(work,"auto");
+ int kv_kg=!profile&&!kv_work_override?flash_kv_group(fd.p,fd.p.k,chunks,true):0,kv_vg=!profile&&!kv_work_override?flash_kv_group(fd.p,fd.p.v,chunks,true):0;
+ if(kv_kg&&!flash_kv_load(s.kv_dma_decode_kq,"kunlun-flash-decode-kq-kv-group",id))kv_kg=0;
+ if(kv_vg&&!flash_kv_load(head?s.kv_dma_decode_pv_head:s.kv_dma_decode_pv,head?"kunlun-flash-decode-pv-head-kv-group":"kunlun-flash-decode-pv-kv-group",id))kv_vg=0;
+ auto &selected_kq=kv_kg?s.kv_dma_decode_kq:kq_program;auto &selected_pv=kv_vg?(head?s.kv_dma_decode_pv_head:s.kv_dma_decode_pv):pv;
+ if(std::getenv("KUNLUN_FLASH_KV_DMA_TRACE"))std::fprintf(stderr,"DECODE_KV_DMA pd=%d D=%d S=%d HK=%d chunks=%d Kstride=%d,%d,%d Vstride=%d,%d,%d kg=%d vg=%d\n",id,base.d,base.s,base.hk,chunks,base.k[0],base.k[1],base.k[2],base.v[0],base.v[1],base.v[2],kv_kg,kv_vg);
  bool trace=std::getenv("KUNLUN_FLASH_TRACE")||profile;auto tick=std::chrono::steady_clock::now();
  auto stage=[&](const char *name){if(trace){check(xpu_wait());auto now=std::chrono::steady_clock::now();std::fprintf(stderr,"DECODE_STAGE stage=%s ms=%.6f\n",name,std::chrono::duration<double,std::milli>(now-tick).count());tick=now;if(profile){flash_profile_report(name,s,stats);tick=std::chrono::steady_clock::now();}}};
  int waves=(maxkeys+fd.p.block-1)/fd.p.block;
  for(int step=0;step<waves;++step){
-  native_launch(kq_program,{native_arg(score),native_arg(k),native_arg(q),native_arg(kp),native_arg(qr),native_arg(cp),native_arg(step)},8);stage("kq");
+  flash_kv_launch(selected_kq,{native_arg(score),native_arg(k),native_arg(q),native_arg(kp),native_arg(qr),native_arg(cp),native_arg(step)},kv_kg);stage("kq");
   native_launch(online,{native_arg(y),native_arg(prob),native_arg(acc),native_arg(stats),native_arg(partial),native_arg(score),native_arg(mask),native_arg(qr),native_arg(cp),native_arg(step)},16);stage("online");
-  native_launch(pv,{native_arg(partial),native_arg(v),native_arg(prob),native_arg(vp),native_arg(cp),native_arg(step)},8);stage("pv");
+  flash_kv_launch(selected_pv,{native_arg(partial),native_arg(v),native_arg(prob),native_arg(vp),native_arg(cp),native_arg(step)},kv_vg);stage("pv");
  }
  native_launch(reduce,{native_arg(y),native_arg(acc),native_arg(partial),native_arg(stats),native_arg(cp)},16);check(xpu_wait());stage("reduce");
  ++s.calls;if(!s.decode_calls++||trace)std::fprintf(stderr,"KUNLUN Flash-Decoding PD%d D=%d S=%d H=%d HK=%d chunks=%d fixed=%d block=%d waves=%d workspace=%zu storage=%s pool=%zu layout=%s work=%s calls=%zu\n",id,base.d,base.s,base.h,base.hk,chunks,fixed,fd.p.block,waves,total,hbm?"HBM":"L3",hbm?0:s.l3->bytes,head?"head":"chunk",affinity?"head":"chunk",s.calls);

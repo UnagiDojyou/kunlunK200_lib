@@ -1,0 +1,109 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+#include "xpu/kernel/math.h"
+#include "fp16-device.h"
+#include "flash-config.h"
+// KL1: eight FP32 arithmetic lanes; exp and comparisons remain scalar.
+// Decode in reverse so packed F16 input can share the F32 mask workspace.
+static __device__ float flash_mask_half(unsigned int h){
+ if(h==0)return 0.0f;
+ if(h==0xfc00)return -__builtin_inff();
+ return kunlun_from_half(h);
+}
+__global__ void ONLINE_NAME(unsigned char *y,float *prob,float *acc,float *stats,const float *partial,const float *score,const unsigned char *mask,const float *qscale,const KunlunFlashConfig *cfg,int s0,int count){
+ __local__ KunlunFlashConfig p;GM2LM(cfg,&p,sizeof(p));
+ __local__ float logits[1024],a[128],part[128],st[8],qpeak[8];
+ __local__ union {float f[1024];unsigned int w[1024];} maskbuf;
+ int tid=core_id()*cluster_num()+cluster_id(),step=cluster_num()*core_num(),rows=p.m*p.h*p.b;
+ int cached_off=-1;
+ for(int task=tid;task<rows;task+=step){
+  int row=task;
+#if ONLINE_REUSE
+  // For full PP query tiles, keep one query's broadcast mask in LM across heads.
+  if(p.m%step==0){int qb=(task/(step*p.h))*step+task%step;row=(qb/p.m)*(p.m*p.h)+(task/step%p.h)*p.m+qb%p.m;}
+#endif
+  int q=row%p.m,h=row/p.m%p.h,b=row/(p.m*p.h);
+  if(s0){GM2LM(acc+row*p.d,a,p.d*4);GM2LM(partial+row*p.d,part,p.d*4);GM2LM(stats+row*8,st,32);for(int j=0;j<p.d;j+=8)_x256_vvadd_ls(a+j,part+j,a+j);}
+  else{for(int j=0;j<p.d;++j)a[j]=0;st[0]=-__builtin_inff();st[1]=0;}
+  if(count==0){float inv=st[1]>0?1.0f/st[1]:0;for(int j=0;j<p.d;j+=8)_x256_svmul_ls(inv,a+j,a+j);LM2GM(a,y+q*p.y[2]+h*p.y[1]+b*p.y[3],p.d*4);continue;}
+  GM2LM(score+row*p.block,logits,count*4);
+  if(mask){
+   int off=s0*p.mask[0]+q*p.mask[1]+(h%p.mask_ne[2])*p.mask[2]+(b%p.mask_ne[3])*p.mask[3];
+#if ONLINE_REUSE
+   if(off!=cached_off||p.max_bias>0){
+   cached_off=off;
+#endif
+   if(p.mask_type){GM2LM(mask+off,maskbuf.w,count*2);for(int j=count/2-1;j>=0;--j){unsigned int word=maskbuf.w[j];
+#if ONLINE_REUSE
+   if(word==0){maskbuf.f[j*2]=0;maskbuf.f[j*2+1]=0;}
+   else if(word==0xfc00fc00u){maskbuf.f[j*2]=-__builtin_inff();maskbuf.f[j*2+1]=-__builtin_inff();}
+   else
+#endif
+   {maskbuf.f[j*2]=flash_mask_half(word&65535);maskbuf.f[j*2+1]=flash_mask_half(word>>16);}}}
+   else GM2LM(mask+off,maskbuf.f,count*4);
+#if ONLINE_REUSE
+   }
+#endif
+  }
+  float slope=1;
+  if(p.max_bias>0){int nh=1;while(nh*2<=p.h)nh*=2;float b0=pow(2.0f,-p.max_bias/nh),b1=pow(2.0f,-p.max_bias/(2*nh));slope=h<nh?pow(b0,(float)(h+1)):pow(b1,(float)(2*(h-nh)+1));}
+  float maximum=st[0],coefficient=p.scale;
+  if(p.m==1&&p.h>p.hk&&p.tg_group){GM2LM(qscale+row*8,qpeak,32);coefficient*=qpeak[0];}
+  for(int j=0;j<count;j+=8){_x256_svmul_ls(coefficient,logits+j,logits+j);if(mask){if(slope!=1)_x256_svmul_ls(slope,maskbuf.f+j,maskbuf.f+j);_x256_vvadd_ls(logits+j,maskbuf.f+j,logits+j);}}
+#if ONLINE_REDUCE
+  float m0=maximum,m1=maximum,m2=maximum,m3=maximum;
+  int j=0;for(;j+16<=count;j+=16){
+   float v0=logits[j+0];if(v0>m0)m0=v0;
+   float v1=logits[j+1];if(v1>m1)m1=v1;
+   float v2=logits[j+2];if(v2>m2)m2=v2;
+   float v3=logits[j+3];if(v3>m3)m3=v3;
+   float v4=logits[j+4];if(v4>m0)m0=v4;
+   float v5=logits[j+5];if(v5>m1)m1=v5;
+   float v6=logits[j+6];if(v6>m2)m2=v6;
+   float v7=logits[j+7];if(v7>m3)m3=v7;
+   float v8=logits[j+8];if(v8>m0)m0=v8;
+   float v9=logits[j+9];if(v9>m1)m1=v9;
+   float v10=logits[j+10];if(v10>m2)m2=v10;
+   float v11=logits[j+11];if(v11>m3)m3=v11;
+   float v12=logits[j+12];if(v12>m0)m0=v12;
+   float v13=logits[j+13];if(v13>m1)m1=v13;
+   float v14=logits[j+14];if(v14>m2)m2=v14;
+   float v15=logits[j+15];if(v15>m3)m3=v15;
+  }
+  for(;j<count;j+=4){float x0=logits[j],x1=logits[j+1],x2=logits[j+2],x3=logits[j+3];if(x0>m0)m0=x0;if(x1>m1)m1=x1;if(x2>m2)m2=x2;if(x3>m3)m3=x3;}
+  maximum=m0;if(m1>maximum)maximum=m1;if(m2>maximum)maximum=m2;if(m3>maximum)maximum=m3;
+#else
+  for(int j=0;j<count;++j)if(logits[j]>maximum)maximum=logits[j];
+#endif
+  // Keep legacy NaN/+Inf semantics. Only finite, unchanged maxima skip exp(0).
+  float alpha=1;
+  if(maximum!=-__builtin_inff() && !(maximum==st[0]&&maximum<__builtin_inff()))alpha=expf(st[0]-maximum);
+  float sum=st[1]*alpha;
+  if(alpha!=1)for(int j=0;j<p.d;j+=8)_x256_svmul_ls(alpha,a+j,a+j);
+  if(maximum==-__builtin_inff()){for(int j=0;j<count;++j)logits[j]=0;}
+  else {
+   // Whole trailing SIMD groups of -Inf contribute exactly +0 to the legacy sum.
+   int end=count;while(end>=8 && logits[end-1]==-__builtin_inff()&&logits[end-2]==-__builtin_inff()&&logits[end-3]==-__builtin_inff()&&logits[end-4]==-__builtin_inff()&&logits[end-5]==-__builtin_inff()&&logits[end-6]==-__builtin_inff()&&logits[end-7]==-__builtin_inff()&&logits[end-8]==-__builtin_inff())end-=8;
+   for(int j=end;j<count;++j)logits[j]=0;
+#if ONLINE_REDUCE == 1
+   __local__ float sums[8];for(int j=0;j<8;++j)sums[j]=0;
+#endif
+   for(int j=0;j<end;j+=8){
+    float e0=expf(logits[j]-maximum),e1=expf(logits[j+1]-maximum),e2=expf(logits[j+2]-maximum),e3=expf(logits[j+3]-maximum);
+    float e4=expf(logits[j+4]-maximum),e5=expf(logits[j+5]-maximum),e6=expf(logits[j+6]-maximum),e7=expf(logits[j+7]-maximum);
+    logits[j]=e0;logits[j+1]=e1;logits[j+2]=e2;logits[j+3]=e3;logits[j+4]=e4;logits[j+5]=e5;logits[j+6]=e6;logits[j+7]=e7;
+#if ONLINE_REDUCE == 1
+    _x256_vvadd_ls(sums,logits+j,sums);
+#else
+    sum+=e0;sum+=e1;sum+=e2;sum+=e3;sum+=e4;sum+=e5;sum+=e6;sum+=e7;
+#endif
+   }
+#if ONLINE_REDUCE == 1
+   for(int j=0;j<8;++j)sum+=sums[j];
+#endif
+  }
+  st[0]=maximum;st[1]=sum;
+  for(int j=count;j<p.block;++j)logits[j]=0;
+  LM2GM(logits,prob+row*p.block,p.block*4);LM2GM(a,acc+row*p.d,p.d*4);LM2GM(st,stats+row*8,32);
+ }
+}

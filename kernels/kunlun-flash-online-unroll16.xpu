@@ -1,0 +1,4 @@
+#define ONLINE_NAME kunlun_flash_online_unroll16
+#define ONLINE_REDUCE 2
+#define ONLINE_REUSE 1
+#include "flash-online-unroll16.h"
