@@ -115,3 +115,7 @@ Additional bit-preserving KL1 Online Softmax is available explicitly with `KUNLU
 ## FlashAttention K/V DMA 0.7.6
 
 `KUNLUN_FLASH_KV_DMA=auto/legacy/coalesced` selects the validated TG path or the retained transfer kernels. Small-KV-head decoding experiments use explicit `decode2/decode4`. Online auto remains Ordered. See [evaluation](docs/flash-kv-dma.md) and [reproduction](docs/flash-kv-dma.md#build-and-comparison).
+
+## Common Q4 Activation snapshots (0.7.7)
+
+The optional prepared-activation API reuses identical quantization results across QKV and FFN gate/up projections. It keeps common weight ABI v1 and the validated 0.7.6 kernels unchanged. See [ownership, limits and benchmarks](docs/q4-activation-sharing.md). Existing matmul APIs remain available.

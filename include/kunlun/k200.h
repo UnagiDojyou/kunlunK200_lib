@@ -192,6 +192,20 @@ struct CommonQ4Info {
 };
 bool common_q4_supported(int k, int n);
 size_t common_q4_size(int k, int n);
+
+struct CommonQ4ActivationStatistics {
+    size_t prepare_calls, quantized_chunks, quant_kernel_launches;
+    size_t prepared_matmuls, prepared_chunks, invalidations, rejected_calls;
+    size_t hbm_activation_bytes;
+    uint64_t quantization_ns, preparation_ns;
+};
+struct CommonQ4ActivationChunk {
+    const void * values; const void * scales;
+    int first, rows, padded_rows, kp, components;
+    size_t values_bytes, scales_bytes;
+};
+class CommonQ4ActivationLease;
+
 struct CommonQ4WeightStatistics { size_t uploads, upload_bytes; double pack_ms, upload_ms; };
 class CommonQ4Weight {
 public:
@@ -209,6 +223,8 @@ public:
 private:
     Impl * impl_;
     friend void common_q4_matmul(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const void *, int, InputType);
+    friend bool common_q4_matmul_shared(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
+
 };
 struct CommonQ4Statistics {
     // GEMV, Combined, Wide, Rows64, Rows128, Combo2, Combo4, exact CL.
@@ -223,18 +239,48 @@ public:
     CommonQ4Workspace(const CommonQ4Workspace &) = delete;
     CommonQ4Workspace & operator=(const CommonQ4Workspace &) = delete;
     CommonQ4Statistics statistics() const;
+    CommonQ4ActivationStatistics activation_statistics() const;
     // Borrowed device buffers, valid until the next call or workspace destruction.
     CommonQ4Quantization quantization() const;
     struct Impl;
 private:
     Impl * impl_;
     friend void common_q4_matmul(CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const void *, int, InputType);
+    friend bool common_q4_prepare(CommonQ4Workspace &, int, const void *, int, int, InputType, uint64_t, CommonQ4ActivationLease &);
+    friend bool common_q4_matmul_shared(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
+
 };
 // Contiguous X[M,K], Y[M,N]. Synchronous under runtime_mutex, one workspace/PD.
 // M>1 uses Row A8, M=1 uses two-component A8. Original weight scales are exact.
 // Invalid type, PD ownership, overlap or element alignment is rejected before launch.
 void common_q4_matmul(CommonQ4Workspace &, int device, void * y, const CommonQ4Weight &,
                        const void * input, int m, InputType type = InputType::f32);
+
+// A synchronous snapshot, not a pointer-keyed cache. The owner supplies a new
+// nonzero generation after writes or buffer reuse. One live snapshot/workspace.
+class CommonQ4ActivationLease {
+public:
+    CommonQ4ActivationLease();
+    ~CommonQ4ActivationLease();
+    CommonQ4ActivationLease(const CommonQ4ActivationLease &) = delete;
+    CommonQ4ActivationLease & operator=(const CommonQ4ActivationLease &) = delete;
+    void reset();
+    bool matches(int device, int k, int rows, InputType, uint64_t generation) const;
+    size_t chunks() const;
+    CommonQ4ActivationChunk chunk(size_t index) const;
+    struct Impl;
+private:
+    Impl * impl_;
+    friend bool common_q4_prepare(CommonQ4Workspace &, int, const void *, int, int, InputType, uint64_t, CommonQ4ActivationLease &);
+    friend bool common_q4_matmul_shared(CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
+};
+// Unsupported descriptors return false before launch. No CPU readback occurs.
+bool common_q4_prepare(CommonQ4Workspace &, int device, const void * input, int k, int rows,
+                       InputType, uint64_t generation, CommonQ4ActivationLease &);
+// False means no output was written. Fallback requires a raw input that meets
+// the ordinary API type/shape/non-overlap contract.
+bool common_q4_matmul_shared(CommonQ4Workspace &, int device, void * y, const CommonQ4Weight &,
+                             const CommonQ4ActivationLease &, uint64_t generation);
 
 struct Statistics {
     size_t matmuls[2];
