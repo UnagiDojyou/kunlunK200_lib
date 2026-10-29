@@ -620,5 +620,5 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
 #include "flash.inc"
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.7.8"; }
+const char * version() { return "0.7.9"; }
 } // namespace kunlun

@@ -10,6 +10,9 @@
 #include "common-q4/source/adapt-gemv/experiments/weight-ds/transfers/ew_group-base-normal-9c3f8f1a.h"
 #include "common-q4/source/adapt-gemv/experiments/weight-ds/transfers/rs_group-base-normal-9099e3a9.h"
 #include "common-q4/source/adapt-gemv/experiments/weight-ds/transfers/output_dma-base-normal-124c2a3c.h"
+#ifndef Q4_GEMV_NMAJOR
+#define Q4_GEMV_NMAJOR 0
+#endif
 #ifndef STREAM_PROFILE
 #define STREAM_PROFILE 0
 #endif
@@ -26,13 +29,21 @@ template<int cid> static __device__ __attribute__((noinline)) void stream_owner(
     const int batch=1,k=blocks*32;
     int engine=cid==0?DMAIN_0:cid==1?DMAIN_1:cid==2?MAC:cid==3?DS_0:cid==4?DS_1:cid==5?EW:cid==6?RS:DMAOUT;
     int delay=cid==3||cid==4?1:cid==2?2:cid==5?3:cid==6?4:cid==7?5:0;
+#if Q4_GEMV_NMAJOR
+        int tasks=((resident+15)/16)*tiles,held=0,pair=0,half=0,base=cache_base;
+#else
         int tasks=((resident+15)/16)*tiles,held=0,item=0,base=cache_base;
+#endif
         for(int step=0;step<tasks+5;++step){
             if(held){STREAM_MEASURE(2,xfence_unlock(engine));held=0;}
             STREAM_MEASURE(3,sync());
             int t=step-delay;if(t<0 || t>=tasks)continue;
             int count=blocks-base;if(count>16)count=16;
+    #if Q4_GEMV_NMAJOR
+            int buf=t&1,tile=4*(cl+pair*nc)+2*half;
+#else
             int buf=t&1,tile=4*(cl+(item/2)*nc)+2*(item%2);
+#endif
             STREAM_MEASURE(1,{
                 xfence_lock(engine);
                 if(cid==0)weight_dma(gptr_i8(weights,((long long)tile*blocks+base)*512),buf,count,blocks);
@@ -45,7 +56,11 @@ template<int cid> static __device__ __attribute__((noinline)) void stream_owner(
                 if(cid==7)output_dma(gptr_f32(partial,((long long)tile*blocks+base)*32),buf,count,batch,blocks);
             });
             STREAM_COUNT(5);held=1;
+    #if Q4_GEMV_NMAJOR
+            if(++half==2){half=0;base+=16;if(base>=cache_base+resident){base=cache_base;++pair;}}
+#else
             if(++item==tiles){item=0;base+=16;}
+#endif
         }
         if(held){STREAM_MEASURE(2,xfence_unlock(engine));}
 }

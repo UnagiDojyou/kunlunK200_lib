@@ -72,7 +72,7 @@ struct CommonQ4ActivationLease::Impl {
 
 struct CommonQ4Workspace::Impl {
     int id=-1;
-    Kernel::Impl programs[18];
+    Kernel::Impl programs[19];
     std::unique_ptr<Buffer> input, output, peaks, rest, peak1, slice, ticks;
     std::shared_ptr<CommonActivationStorage> activation=std::make_shared<CommonActivationStorage>();
     const void * last_values=nullptr, * last_scales=nullptr;
@@ -80,7 +80,7 @@ struct CommonQ4Workspace::Impl {
     bool l3_unavailable=false;
     CommonQ4Statistics stats{};
     CommonQ4MacStatistics mac_stats{};
-    bool mac_invalid_logged=false, mac_shape_logged=false;
+    bool mac_invalid_logged=false, mac_shape_logged=false, nmajor_invalid_logged=false, nmajor_shape_logged=false;
     int last_rows=0, last_kp=0, last_components=0;
 };
 CommonQ4Workspace::CommonQ4Workspace(): impl_(new Impl{}) {}
@@ -130,6 +130,17 @@ bool common_stream_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
     ++s.mac_stats.shape_fallbacks;
     if(!s.mac_shape_logged)std::fprintf(stderr,"Kunlun Q4 MAC/DMA PD%d: unvalidated shape K=%d N=%d Kp=%d Np=%d; using stable GEMV\n",a.device,a.k,a.n,a.kp,a.np);
     s.mac_shape_logged=true;return false;
+}
+bool common_nmajor_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
+    const char * mode=std::getenv("KUNLUN_Q4_NMAJOR");
+    if(!mode || !std::strcmp(mode,"0"))return false;
+    if(!std::strcmp(mode,"1")) {
+        if((a.kp==4096 && (a.np==4096 || a.np==11008)) || (a.kp==11008 && a.np==4096))return true;
+        if(!s.nmajor_shape_logged)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: unvalidated shape K=%d Np=%d; using 0.7.8 stream order\n",s.id,a.kp,a.np);
+        s.nmajor_shape_logged=true;return false;
+    }
+    if(!s.nmajor_invalid_logged)std::fprintf(stderr,"Kunlun Q4 N-major: invalid setting; using 0.7.8 stream order\n");
+    s.nmajor_invalid_logged=true;return false;
 }
 Kernel::Impl & common_program(CommonQ4Workspace::Impl & s, int index, const char * name, bool sd=false) {
     auto & p=s.programs[index]; load_kernel(p,name,s.id,sd); return p;
@@ -182,8 +193,10 @@ bool common_gemv(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
     if (!prepared) common_quant_gemv(s,x,k,dtype,q,params);
     s.last_values=q;s.last_scales=params;float zero=0,one=1;
     bool stream=common_stream_enabled(s,a);
-    if(stream && !s.programs[17].fn)std::fprintf(stderr,"Kunlun Q4 MAC/DMA stream PD%d: ABI=1 K=%d N=%d resident_L1D<=524288; original MAC order\n",s.id,a.k,a.n);
-    native_launch(common_program(s,stream?17:3,stream?"kunlun-common-gemv-stream":"kunlun-common-gemv",true),{native_arg(partial),native_arg(w),native_arg(q),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(components),native_arg(bits),native_arg(zero),native_arg(zero),native_arg(one),native_arg(pipelined),native_arg(scales),native_arg(fold),native_arg(params)},8);
+    bool nmajor=stream && common_nmajor_enabled(s,a);
+    if(nmajor && !s.programs[18].fn)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: opt-in, ABI=1, unchanged partial order\n",s.id);
+    if(stream && !nmajor && !s.programs[17].fn)std::fprintf(stderr,"Kunlun Q4 MAC/DMA stream PD%d: ABI=1 K=%d N=%d resident_L1D<=524288; original MAC order\n",s.id,a.k,a.n);
+    native_launch(common_program(s,nmajor?18:stream?17:3,nmajor?"kunlun-common-gemv-nmajor":stream?"kunlun-common-gemv-stream":"kunlun-common-gemv",true),{native_arg(partial),native_arg(w),native_arg(q),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(components),native_arg(bits),native_arg(zero),native_arg(zero),native_arg(one),native_arg(pipelined),native_arg(scales),native_arg(fold),native_arg(params)},8);
     check(xpu_wait());
     native_launch(common_program(s,4,"kunlun-common-sum"),{native_arg(y),native_arg(partial),native_arg(scales),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(mode)},16);
     check(xpu_wait());s.last_components=2; ++s.stats.paths[0];

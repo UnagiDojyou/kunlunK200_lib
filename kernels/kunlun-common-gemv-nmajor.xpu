@@ -1,0 +1,11 @@
+#define Q4_GEMV_NMAJOR 1
+#define COMMON_LAYOUT 1
+#define COMMON_SCALE 1
+#define GEMV_CACHE128 1
+#define NEXT_DS_PAIRS 4
+#define NEXT_MIN_CLEAR 1
+#define NEXT_A_2D 1
+#define Q4_ACT_CACHE_BLOCKS 128
+#define STREAM_PROFILE 0
+#define Q4_STREAM_ENTRY common_q4_gemv_nmajor
+#include "common-q4/gemv-stream.h"
