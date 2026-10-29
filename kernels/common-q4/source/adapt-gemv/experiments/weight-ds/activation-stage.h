@@ -7,7 +7,7 @@
 #endif
 // Only M=1; initialize every L2 byte even for a short K-window. The valid
 // row is independent of neighbouring inactive M lanes populated by DS.
-static inline __device__ void next_activation_stage(_global_ptr_ const int8_t *activation,int k,int base,int count){
+static inline __device__ void next_activation_stage(_global_ptr_ const int8_t *activation,int k,int base,int count,int destination=0){
     _global_ptr_ const int8_t *zero=gptr_i8(activation,(long long)4*k);
     for(int j=(NEXT_MIN_CLEAR && count==16?2:0);j<3;++j)dma_in_1d((int8_t *)(j*1024),zero,1024,DMA_L2_0,DMA_INT8);
 #if NEXT_A_2D
@@ -24,7 +24,7 @@ static inline __device__ void next_activation_stage(_global_ptr_ const int8_t *a
         xfence_lock(DS_0);
         ds_shuffle_cfg_datatype(DS_INT8);ds_shuffle_cfg_blkx(32);ds_cfg_output_bank(NBANKS);
         for(int j=start;j<count*2 && j<start+NEXT_DS_PAIRS;++j){
-            int b=j/2,c=j&1;v32i8 *a=&((v32i8 *)0)[b*128+c*64];int8_t *p=(int8_t *)(c*1024+b*64);
+            int b=j/2,c=j&1;v32i8 *a=&((v32i8 *)0)[(destination+b)*128+c*64];int8_t *p=(int8_t *)(c*1024+b*64);
             ds_shuffle_batch(&a[0][0],p,32,DS_L1D);
             ds_shuffle_batch(&a[0][1],p+512,32,DS_L1D);
         }

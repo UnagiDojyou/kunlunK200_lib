@@ -119,3 +119,7 @@ Additional bit-preserving KL1 Online Softmax is available explicitly with `KUNLU
 ## Common Q4 Activation snapshots (0.7.7)
 
 The optional prepared-activation API reuses identical quantization results across QKV and FFN gate/up projections. It keeps common weight ABI v1 and the validated 0.7.6 kernels unchanged. See [ownership, limits and benchmarks](docs/q4-activation-sharing.md). Existing matmul APIs remain available.
+
+## Q4 GEMV MAC/DMA stream (0.7.8)
+
+Set `KUNLUN_Q4_MAC_DMA=1` to opt into the validated common-Q4 GEMV stream; the default remains disabled. Quantization, weight ABI v1, Activation sharing and existing GEMM dispatch are unchanged. See [selection, ownership and memory limits](docs/q4-mac-dma.md). The standalone `k200-q4-mac-bench` compares stable/stream and ordinary/prepared API paths with bitwise checks and raw samples.

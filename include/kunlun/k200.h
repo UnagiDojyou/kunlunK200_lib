@@ -231,6 +231,9 @@ struct CommonQ4Statistics {
     size_t paths[8], calls, chunks;
     size_t hbm_workspace_bytes, l3_workspace_bytes, slice_bytes;
 };
+struct CommonQ4MacStatistics {
+    size_t baseline_sd_calls, stream_sd_calls, shape_fallbacks, resident_l1d_bytes;
+};
 struct CommonQ4Quantization { const void * values; const void * scales; int rows, kp, components; };
 class CommonQ4Workspace {
 public:
@@ -240,6 +243,7 @@ public:
     CommonQ4Workspace & operator=(const CommonQ4Workspace &) = delete;
     CommonQ4Statistics statistics() const;
     CommonQ4ActivationStatistics activation_statistics() const;
+    CommonQ4MacStatistics mac_statistics() const;
     // Borrowed device buffers, valid until the next call or workspace destruction.
     CommonQ4Quantization quantization() const;
     struct Impl;
