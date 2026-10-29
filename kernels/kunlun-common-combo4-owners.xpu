@@ -1,0 +1,8 @@
+#define COMMON_LAYOUT 1
+#define COMMON_SCALE 1
+#define SCALE_COMPACT 1
+#define EW_FUSED 1
+#define GEMM_PROFILE 0
+#define K_PARTS 4
+#define OWNER_ENTRY common_q4_combo4_owners
+#include "common-q4/gemm-m128-owners.h"

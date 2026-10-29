@@ -72,7 +72,7 @@ struct CommonQ4ActivationLease::Impl {
 
 struct CommonQ4Workspace::Impl {
     int id=-1;
-    Kernel::Impl programs[19];
+    Kernel::Impl programs[21];
     std::unique_ptr<Buffer> input, output, peaks, rest, peak1, slice, ticks;
     std::shared_ptr<CommonActivationStorage> activation=std::make_shared<CommonActivationStorage>();
     const void * last_values=nullptr, * last_scales=nullptr;
@@ -81,6 +81,7 @@ struct CommonQ4Workspace::Impl {
     CommonQ4Statistics stats{};
     CommonQ4MacStatistics mac_stats{};
     bool mac_invalid_logged=false, mac_shape_logged=false, nmajor_invalid_logged=false, nmajor_shape_logged=false;
+    bool gemm_owners_invalid_logged=false, gemm_owners_shape_logged=false;
     int last_rows=0, last_kp=0, last_components=0;
 };
 CommonQ4Workspace::CommonQ4Workspace(): impl_(new Impl{}) {}
@@ -204,6 +205,17 @@ bool common_gemv(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
     else ++s.mac_stats.baseline_sd_calls;
     return true;
 }
+bool common_gemm_owners_enabled(CommonQ4Workspace::Impl & s,int m,int mt,int k,int n) {
+    const char * mode=std::getenv("KUNLUN_Q4_GEMM_OWNERS");
+    if(!mode || !std::strcmp(mode,"0"))return false;
+    if(std::strcmp(mode,"1")) {
+        if(!s.gemm_owners_invalid_logged)std::fprintf(stderr,"Kunlun Q4 GEMM owners: invalid setting; existing GEMM selected\n");
+        s.gemm_owners_invalid_logged=true;return false;
+    }
+    if(m==128 && mt==128 && ((k==4096 && (n==4096 || n==11008)) || (k==11008 && n==4096)))return true;
+    if(!s.gemm_owners_shape_logged)std::fprintf(stderr,"Kunlun Q4 GEMM owners: M=%d tileM=%d Kp=%d Np=%d; existing GEMM selected\n",m,mt,k,n);
+    s.gemm_owners_shape_logged=true;return false;
+}
 void common_gemm(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, const void * w, const void * x, int m, int dtype, const CommonQ4ActivationChunk * prepared=nullptr) {
     const int k=a.kp,n=a.np;
     int path,nt,kt,parts=1;
@@ -226,7 +238,13 @@ void common_gemm(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
     if (parts>1) { native_reserve(s.slice,s.id,(size_t)parts*m*n*4); target=s.slice->data(); }
     const void * scales=(const char *)w+a.scale_offset;
     // One typed argument sequence for all SD families; ABI is validated at entry.
-    native_launch(common_program(s,8+path-1,name,true),{native_arg(target),native_arg(q),native_arg(w),native_arg(scales),native_arg(scale),native_arg(m),native_arg(n),native_arg(k),native_arg(nt),native_arg(kt),native_arg(ticks)},8);
+    const bool owners=common_gemm_owners_enabled(s,m,mt,k,n);
+    const int program=owners?(parts==4?20:19):8+path-1;
+    if(owners) {
+        name=parts==4?"kunlun-common-combo4-owners":"kunlun-common-rows128-owners";
+        if(!s.programs[program].fn)std::fprintf(stderr,"Kunlun Q4 GEMM owners PD%d: %s, M128, original FP32 order\n",s.id,name);
+    }
+    native_launch(common_program(s,program,name,true),{native_arg(target),native_arg(q),native_arg(w),native_arg(scales),native_arg(scale),native_arg(m),native_arg(n),native_arg(k),native_arg(nt),native_arg(kt),native_arg(ticks)},8);
     check(xpu_wait());
     if (parts>1) {
         // The seventh stats argument is mandatory in the non-profile join too.
