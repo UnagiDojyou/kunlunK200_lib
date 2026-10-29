@@ -259,6 +259,7 @@ bool attention_contiguous(Kernel &kernel,int id,void *y,size_t yb,const void *x,
 const char * attention_rope_reason(const Rope4Layout &p) {
     for(const auto *v:{&p.x,&p.y})if(*tensor4_reason(*v))return tensor4_reason(*v);
     if(p.x.type!=p.y.type || !std::equal(p.x.ne,p.x.ne+4,p.y.ne) || p.x.ne[3]!=1 || p.x.ne[0]>512)return "rope shape/type";
+    if(p.x.nb[0]!=tensor4_bytes(p.x) || p.y.nb[0]!=tensor4_bytes(p.y))return "rope row stride";
     if(p.n_dims<=0 || p.n_dims%2 || p.n_offs<0 || p.n_offs%2 || p.n_dims>p.x.ne[0]-p.n_offs || (p.mode!=0 && p.mode!=2))return "rope rotation";
     if(!std::isfinite(p.freq_base) || p.freq_base<=1 || !std::isfinite(p.freq_scale) || p.freq_scale<=0 || !std::isfinite(p.attn_factor) || p.attn_factor<=0)return "rope parameters";
     return "";

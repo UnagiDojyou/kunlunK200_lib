@@ -127,3 +127,5 @@ Set `KUNLUN_Q4_MAC_DMA=1` to opt into the validated common-Q4 GEMV stream; the d
 Optional N-major GEMV (0.7.9, default off): [configuration and limits](docs/q4-gemv-nmajor.md).
 
 Optional PP optimization: [M128 Q4 GEMM controllers (0.7.10)](docs/q4-gemm-owners.md).
+
+Optional PP512 offload: [large-query Flash/RoPE and tracked KV writes](docs/large-pp.md).

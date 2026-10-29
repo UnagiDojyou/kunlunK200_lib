@@ -614,11 +614,17 @@ bool native_q4_matmul(NativeQ4Workspace & workspace, int id, void * y, const voi
     check(xpu_wait()); ++s.accelerated; ++matmuls[id]; return true;
 }
 
+namespace {
+bool large_pp_enabled() {
+    const char *mode=std::getenv("KUNLUN_LARGE_PP");
+    return mode && !std::strcmp(mode,"1");
+}
+}
 #include "q4-common.inc"
 #include "attention.inc"
 #include "kv-max.inc"
 #include "flash.inc"
 
 Statistics statistics() { return {{matmuls[0].load(),matmuls[1].load()},peer_copies.load(),peer_bytes.load()}; }
-const char * version() { return "0.7.10"; }
+const char * version() { return "0.7.11"; }
 } // namespace kunlun

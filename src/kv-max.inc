@@ -55,7 +55,7 @@ void kv_max_mark_rows(int id,void *data,const int64_t *rows,size_t count){
 }
 bool kv_max_set_rows(Kernel &kernel,int id,void *dst,size_t db,const void *src,size_t sb,const void *indices,size_t ib,const SetRowsLayout &p,const int64_t *targets,size_t count){
  std::lock_guard<std::recursive_mutex>lock(mutex);auto *r=kv_find(id,dst,db);
- if(!r||r->data!=dst||db!=r->bytes||p.cache_features||p.dim2!=1||p.dim3!=1||p.width!=r->features||p.destination_rows!=r->rows||p.destination_stride[0]!=r->features*2||p.source_stride[0]!=p.source_bytes||p.index_stride[0]!=p.index_bytes||p.index_extent[0]!=1||p.index_extent[1]!=1||count!=(size_t)p.rows||p.rows>256)return false;
+ if(!r||r->data!=dst||db!=r->bytes||p.cache_features||p.dim2!=1||p.dim3!=1||p.width!=r->features||p.destination_rows!=r->rows||p.destination_stride[0]!=r->features*2||p.source_stride[0]!=p.source_bytes||p.index_stride[0]!=p.index_bytes||p.index_extent[0]!=1||p.index_extent[1]!=1||count!=(size_t)p.rows||(p.rows>256&&(!large_pp_enabled()||p.rows>1024)))return false;
  uintptr_t da=(uintptr_t)dst,sa=(uintptr_t)src,ia=(uintptr_t)indices;
  if(da+db<da||sa+sb<sa||ia+ib<ia||(da<sa+sb&&sa<da+db)||(da<ia+ib&&ia<da+db))return false;
  require(src&&indices&&targets&&count>0&&(uintptr_t)dst%2==0&&(p.source_bytes==2||p.source_bytes==4)&&(p.index_bytes==4||p.index_bytes==8));
@@ -63,6 +63,19 @@ bool kv_max_set_rows(Kernel &kernel,int id,void *dst,size_t db,const void *src,s
  require((uintptr_t)src%p.source_bytes==0&&(uintptr_t)indices%p.index_bytes==0);
  if(!std::is_sorted(targets,targets+count)){std::vector<int64_t>sorted(targets,targets+count);std::sort(sorted.begin(),sorted.end());if(std::adjacent_find(sorted.begin(),sorted.end())!=sorted.end())return false;}
  else if(std::adjacent_find(targets,targets+count)!=targets+count)return false;
+ if(p.rows>256){
+  require((size_t)(p.rows-1)*p.source_stride[1]+(size_t)p.width*p.source_bytes<=sb&&count*p.index_bytes<=ib);
+  // Keep the 512-int local index array bounded, including I64 indices. The
+  // outer mutex hides partial metadata updates; avoid TG semantics on a tail.
+  // Targets are a set, so only the completed transaction is made visible.
+  for(int first=0;first<p.rows;){
+   auto part=p;part.rows=std::min(256,p.rows-first);if(p.rows-first==257)--part.rows;
+   size_t so=(size_t)first*p.source_stride[1],io=(size_t)first*p.index_bytes;
+   require(kv_max_set_rows(kernel,id,dst,db,(const char*)src+so,sb-so,(const char*)indices+io,ib-io,part,targets+first,part.rows));
+   first+=part.rows;
+  }
+  return true;
+ }
  const char *wm=std::getenv("KUNLUN_FLASH_KV_MAX_WRITER");const char *prefill=std::getenv("KUNLUN_FLASH_KV_MAX_PREFILL");
  bool pp_max=prefill&&!std::strcmp(prefill,"fused");
  bool fused=kv_mode()==2||(kv_mode()==1&&r->rows>=kv_min_s(r->features));
