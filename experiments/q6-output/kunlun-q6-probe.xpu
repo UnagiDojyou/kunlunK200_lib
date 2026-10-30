@@ -1,0 +1,25 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+#include "../../kernels/fp16-device.h"
+// Experimental lossless Q6_K blocks padded from210 to256 bytes for aligned DMA.
+__global__ void kunlun_q6_probe(float *y,const unsigned char*w,const float*input,int k,int n){
+ __local__ __attribute__((aligned(64))) unsigned char b[256];
+ __local__ __attribute__((aligned(64))) float x[256],v[256],acc[8],prod[8];
+ int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+ for(int r=tid;r<n;r+=step){
+  for(int j=0;j<8;++j)acc[j]=0;
+  for(int block=0;block<k/256;++block){
+   GM2LM(w+((long long)r*(k/256)+block)*256,b,256);GM2LM(input+block*256,x,1024);
+   unsigned short h=(unsigned short)b[208]|((unsigned short)b[209]<<8);float d=kunlun_from_half(h);
+   for(int half=0;half<2;++half)for(int l=0;l<32;++l){
+    int lo=half*64,hi=128+half*32,is=half*8+l/16;unsigned int bits=b[hi+l];
+    int q0=((b[lo+l]&15)|((bits&3)<<4))-32,q1=((b[lo+l+32]&15)|(((bits>>2)&3)<<4))-32;
+    int q2=((b[lo+l]>>4)|(((bits>>4)&3)<<4))-32,q3=((b[lo+l+32]>>4)|(((bits>>6)&3)<<4))-32;
+    v[half*128+l]=(d*(signed char)b[192+is])*q0;v[half*128+l+32]=(d*(signed char)b[194+is])*q1;
+    v[half*128+l+64]=(d*(signed char)b[196+is])*q2;v[half*128+l+96]=(d*(signed char)b[198+is])*q3;
+   }
+   for(int j=0;j<256;j+=8){_x256_vvmul_ls(v+j,x+j,prod);_x256_vvadd_ls(acc,prod,acc);}
+  }
+  float total=0;for(int j=0;j<8;++j)total+=acc[j];acc[0]=total;LM2GM(acc,y+r,4);
+ }
+}
