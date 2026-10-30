@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <string>
 #include <vector>
 
 static float from_half(unsigned short bits) {
@@ -60,7 +61,7 @@ int main(int argc, char **argv) {
     run();
     check(copy(result.data(),dy.data(),result.size()*4,device_to_host));
     for(int j=0;j<64;++j) require(result[j]==-12345 && result[n+64+j]==-12345);
-    double err=0, energy=0, implementation_err=0, implementation_energy=0, maximum=0;
+    double err=0, energy=0, implementation_err=0, implementation_energy=0, maximum=0, implementation_maximum=0;
     float decoded[256];
     for(int r=0;r<n;++r) {
         double exact=0, quantized=0;
@@ -75,9 +76,28 @@ int main(int argc, char **argv) {
         double delta=y-exact;err+=delta*delta;energy+=exact*exact;
         maximum=std::max(maximum,std::abs(delta));
         delta=y-quantized;implementation_err+=delta*delta;
+        implementation_maximum=std::max(implementation_maximum,std::abs(delta));
         implementation_energy+=quantized*quantized;
     }
     require(implementation_err/implementation_energy<1e-10 && err/energy<1e-3);
+    const char *setting=std::getenv("KUNLUN_Q6_K_LEGACY");
+    bool was_set=setting;
+    std::string saved=setting?setting:"";
+    std::vector<float> first=result, other(result.size());
+    setenv("KUNLUN_Q6_K_LEGACY",saved=="1"?"0":"1",1);
+    run();check(copy(other.data(),dy.data(),other.size()*4,device_to_host));
+    double cross_error=0,cross_energy=0,cross_maximum=0;
+    for(int j=0;j<n;++j){
+        require(std::isfinite(other[64+j]));
+        double delta=double(other[64+j])-first[64+j];
+        cross_error+=delta*delta;cross_energy+=double(first[64+j])*first[64+j];
+        cross_maximum=std::max(cross_maximum,std::abs(delta));
+    }
+    require(cross_error/cross_energy<1e-10);
+    if(was_set)setenv("KUNLUN_Q6_K_LEGACY",saved.c_str(),1);else unsetenv("KUNLUN_Q6_K_LEGACY");
+    run();check(copy(other.data(),dy.data(),other.size()*4,device_to_host));
+    require(std::memcmp(first.data(),other.data(),first.size()*4)==0);
+    std::printf("Q6_MODE_REUSE cross_nmse=%.12g cross_maxabs=%.12g a8_f64_maxabs=%.12g repeat_bitwise=1\n",cross_error/cross_energy,cross_maximum,implementation_maximum);
     std::vector<double> elapsed;
     for(int i=0;i<3;++i) {
         auto start=std::chrono::steady_clock::now();run();
@@ -89,5 +109,28 @@ int main(int argc, char **argv) {
     check(copy(dx.data(),x.data(),k*4,host_to_device));run();
     check(copy(result.data(),dy.data(),result.size()*4,device_to_host));
     for(int j=0;j<n;++j)require(result[64+j]==0);
+    // Distinct chunk magnitudes expose an A8 scale reused across chunk256.
+    for(int j=0;j<k;++j)x[j]=float(j%17-8)*std::ldexp(1.f,(j/256)%11-5);
+    std::fill(x.begin(),x.begin()+256,0.f);
+    for(int b=0;b<k;b+=256){
+        float mx=0;for(int j=0;j<256;++j)mx=std::max(mx,std::abs(x[b+j]));
+        float inv=mx?127.f/mx:0,scale=mx/127.f;
+        for(int j=0;j<256;++j){float v=x[b+j]*inv;xa[b+j]=int(v+(v>=0?.5f:-.5f))*scale;}
+    }
+    check(copy(dx.data(),x.data(),k*4,host_to_device));run();
+    check(copy(result.data(),dy.data(),result.size()*4,device_to_host));
+    double chunk_error=0,chunk_energy=0,chunk_maximum=0;
+    for(int r=0;r<n;++r){
+        double ref=0;
+        for(int b=0;b<k/256;++b){
+            decode(raw.data()+((size_t)r*(k/256)+b)*210,decoded);
+            for(int j=0;j<256;++j)ref+=double(decoded[j])*xa[b*256+j];
+        }
+        require(std::isfinite(result[64+r]));double d=result[64+r]-ref;
+        chunk_error+=d*d;chunk_energy+=ref*ref;chunk_maximum=std::max(chunk_maximum,std::abs(d));
+    }
+    if(chunk_energy)require(chunk_error/chunk_energy<1e-10);else require(chunk_error==0);
+    for(int j=0;j<64;++j)require(result[j]==-12345 && result[n+64+j]==-12345);
+    std::printf("Q6_CHUNK_SCALE_PASS nmse=%.12g maxabs=%.12g\n",chunk_energy?chunk_error/chunk_energy:0,chunk_maximum);
     std::puts("Q6_STANDALONE_PASS");
 }

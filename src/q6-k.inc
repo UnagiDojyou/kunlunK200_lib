@@ -82,9 +82,10 @@ void Q6KWeight::upload(const void *raw, size_t bytes) {
 }
 struct Q6KWorkspace::Impl {
     int id=-1;
-    Kernel::Impl programs[3];
+    Kernel::Impl programs[4];
     std::unique_ptr<Buffer> quant,scales,partial;
     Q6KStatistics stats{};
+    size_t legacy_calls=0;
 };
 Q6KWorkspace::Q6KWorkspace(): impl_(new Impl{}) {}
 Q6KWorkspace::~Q6KWorkspace() {
@@ -101,6 +102,10 @@ Q6KStatistics Q6KWorkspace::statistics() const {
     for(auto *b:{impl_->quant.get(),impl_->scales.get(),impl_->partial.get()})if(b)stats.workspace_bytes+=b->size();
     return stats;
 }
+size_t Q6KWorkspace::legacy_calls() const {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    return impl_->legacy_calls;
+}
 void q6_k_matmul(Q6KWorkspace &workspace, int id, void *y, const Q6KWeight &weight,
                  const void *x, int m, InputType type) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
@@ -115,17 +120,23 @@ void q6_k_matmul(Q6KWorkspace &workspace, int id, void *y, const Q6KWeight &weig
     require(s.id==id);select(id);
     native_reserve(s.quant,id,(size_t)(a.k/16)*1024);
     native_reserve(s.scales,id,(a.k/16)*4);
-    native_reserve(s.partial,id,(size_t)(a.k/16)*a.n*4);
-    for(int i=0;i<3;++i)load_kernel(s.programs[i],i==0?"kunlun-q6-quant":i==1?"kunlun-q6-sdnn":"kunlun-q6-join",id,i==1);
-    void *q=s.quant->data(),*scales=s.scales->data(),*partial=s.partial->data();
+    const char *legacy_flag=std::getenv("KUNLUN_Q6_K_LEGACY");
+    bool legacy=legacy_flag && std::strcmp(legacy_flag,"1")==0;
+    if(legacy)native_reserve(s.partial,id,(size_t)(a.k/16)*a.n*4);
+    else s.partial.reset();
+    load_kernel(s.programs[0],"kunlun-q6-quant",id,false);
+    if(legacy){load_kernel(s.programs[1],"kunlun-q6-sdnn",id,true);load_kernel(s.programs[2],"kunlun-q6-join",id,false);}
+    else load_kernel(s.programs[3],"kunlun-q6-onchip",id,true);
+    void *q=s.quant->data(),*scales=s.scales->data();
     const void *w=weight.data(),*ws=(const char*)w+a.scale_offset;
     for (int row=0;row<m;++row) {
         const void *input=(const char*)x+(size_t)row*a.k*(dtype?2:4);
         void *output=(char*)y+(size_t)row*a.n*4;
         native_launch(s.programs[0],{native_arg(q),native_arg(scales),native_arg(input),native_arg(a.k),native_arg(dtype)},16);
-        native_launch(s.programs[1],{native_arg(partial),native_arg(w),native_arg(q),native_arg(a.k),native_arg(a.n),native_arg(ws),native_arg(scales)},8);
-        native_launch(s.programs[2],{native_arg(output),native_arg(partial),native_arg(a.k),native_arg(a.n)},16);
+        void *target=legacy?s.partial->data():output;
+        native_launch(s.programs[legacy?1:3],{native_arg(target),native_arg(w),native_arg(q),native_arg(a.k),native_arg(a.n),native_arg(ws),native_arg(scales)},8);
+        if(legacy)native_launch(s.programs[2],{native_arg(output),native_arg(target),native_arg(a.k),native_arg(a.n)},16);
         // Default-stream order completes every consumer before buffer reuse/free.
-        check(xpu_wait());++s.stats.calls;
+        check(xpu_wait());++s.stats.calls;if(legacy)++s.legacy_calls;
     }
 }

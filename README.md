@@ -140,4 +140,4 @@ See [SwiGLU and Large PP quality results](docs/quality-20261030.md). Both remain
 
 ## Experimental Q6_K SDNN output GEMV
 
-The opt-in typed Q6 API preserves signed-six-bit weights through a load-time W8 pack and K16 FP32 scales. It is not enabled by default; current end-to-end TG is slower than the CPU fallback. See [Q6 SDNN](docs/q6-k-sdnn/README.md).
+The opt-in typed Q6 API preserves signed-six-bit weights through a load-time W8 pack and K16 FP32 scales. It remains opt-in. EW/L1E aggregation removes HBM partials and the CL join; the tested 7B GEMV is faster than CPU, while Tiny host-output latency is approximately equal. See [Q6 SDNN](docs/q6-k-sdnn/README.md) and [on-chip results](docs/q6-onchip/REPORT.ja.md).

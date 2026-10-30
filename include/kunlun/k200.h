@@ -148,12 +148,15 @@ public:
  Q6KWorkspace();~Q6KWorkspace();
  Q6KWorkspace(const Q6KWorkspace&)=delete;Q6KWorkspace&operator=(const Q6KWorkspace&)=delete;
  Q6KStatistics statistics() const;
+ // Number of completed GEMV rows using the diagnostic HBM partial path.
+ size_t legacy_calls() const;
  struct Impl;
 private:
  Impl*impl_;friend void q6_k_matmul(Q6KWorkspace&,int,void*,const Q6KWeight&,const void*,int,InputType);
 };
 // Contiguous X[M,K], Y[M,N]. M=1..512 uses sequential SDNN GEMV per row.
 // Chunk256 symmetric A8; no host activation readback. Completes under runtime_mutex.
+// EW/L1E aggregation is the default; KUNLUN_Q6_K_LEGACY=1 keeps HBM partials.
 // Dedicated typed weight handle prevents interpreting Q4 or raw Q6 bytes as W8.
 void q6_k_matmul(Q6KWorkspace&,int device,void*y,const Q6KWeight&,const void*x,int m=1,InputType type=InputType::f32);
 
