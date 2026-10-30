@@ -1,0 +1,45 @@
+#include "common-q4/source/adapt-gemv/bench/kernels/cdnn_ref.h"
+// K16 signed-W8 groups; N32 tile-major pack, unchanged per-group FP32 scales.
+// Engines are dedicated to the same eight controller roles as common Q4.
+// Each iteration drains its previous engine command before cluster sync.
+// L2/L1W and result banks alternate; scale L1E uses three slots because
+// DS(scale) and EW(scale consumption) are separated by two pipeline stages.
+template<int C> static __device__ __attribute__((noinline)) void owner(_global_ptr_ float*partial,_global_ptr_ const int8_t*weights,_global_ptr_ const float*scales,int groups,int nt,const float*alpha){
+ int engine=C==0?DMAIN_0:C==1?DMAIN_1:C==2?MAC:C==3?DS_0:C==4?DS_1:C==5?EW:C==6?RS:DMAOUT;
+ // DMA -> DS -> MAC -> EW -> RS -> DMAOUT; sync enforces every handoff.
+ int delay=C==3||C==4?1:C==2?2:C==5?3:C==6?4:C==7?5:0;
+ int tiles=(nt+cluster_num()-1-cluster_id())/cluster_num(),chunks=groups/16,tasks=tiles*chunks,held=0;
+ for(int step=0;step<tasks+5;++step){
+  if(held){xfence_unlock(engine);held=0;}sync();int t=step-delay;if(t<0||t>=tasks)continue;
+  int tile=cluster_id()+t/chunks*cluster_num(),g=t%chunks*16,buf=t&1;v32i8*w=((v32i8*)0)+buf*512;v16f32*e=((v16f32*)0)+buf*64,*s=((v16f32*)0)+256+(t%3)*32;
+  xfence_lock(engine);
+  if(C==0){auto p=gptr_i8(weights,((long long)tile*groups+g)*512);dma_cfg(DMA_L2_0|DMA_INT8,DMA_GM|DMA_INT8|highptr(p),0.f);dma_i((void*)(buf*8192),lowptr(p),8192);}
+  if(C==1){auto p=gptr_f32c(scales,((long long)tile*groups+g)*32);dma_cfg(DMA_L2_1|DMA_FP32,DMA_GM|DMA_FP32|highptr(p),0.f);dma_i((void*)(buf*2048),lowptr(p),2048);}
+  if(C==3){ds_shuffle_cfg_datatype(DS_INT8);ds_shuffle_cfg_blkx(32);ds_cfg_output_bank(16);for(int j=0;j<16;++j){int8_t*p=(int8_t*)(buf*8192+j*512);ds_shuffle_coa(16,&w[j*32][0],p,DS_L1W);ds_shuffle_coa(16,&w[j*32+16][0],p+16,DS_L1W);}}
+  if(C==4){ds_shuffle_cfg_datatype(DS_FP32);ds_shuffle_cfg_blkx(32);ds_cfg_output_bank(16);float*p=(float*)(buf*2048);ds_shuffle_coa(16,&s[0][0],p,DS_L1E);ds_shuffle_coa(16,&s[16][0],p+16,DS_L1E);}
+  // Reserve the second MAC output bank separately: it must not overwrite
+  // an earlier K16 group. Only the selected 16 columns from each call are used.
+  if(C==2){mm_cfg_stride(1);mm_cfg_basic_int8(16,1,16);for(int j=0;j<16;++j){mm_cfg_dequant_scale(alpha[g+j]);mm_int8(e+j,((v32i8*)0)+(g+j)*32,w+j*32);mm_int8(e+32+j,((v32i8*)0)+(g+j)*32,w+j*32+16);}}
+  if(C==5){ew_cfg_activation_type(EW_NOACT);ew_cfg_coeff_scalar(0,0,1);ew_cfg_findmax(0,0);ew_cfg_stream_size(16);ew_cfg_col_size(16);ew_dsmul(e,e,s,EW_L2E);ew_dsmul(e+32,e+32,s+16,EW_L2E);}
+  if(C==6){rs_row_cfg_stride(1,2);rs_row_cfg_loop(16);rs_row_batch(&e[0][0],&e[0][0],16);rs_row_batch(&e[1][0],&e[32][0],16);}
+  if(C==7){auto p=gptr_f32(partial,((long long)tile*groups+g)*32);dma_cfg(DMA_GM|DMA_FP32|highptr(p),DMA_L2R|DMA_FP32,0.f);dma_o(lowptr(p),e,2048);}
+  held=1;
+ }
+ if(held){xfence_unlock(engine);}
+}
+__global__ void q6_sdnn(float*partial,const int8_t*weights,const int8_t*activation,int k,int n,const float*scales,const float*as){
+ if(core_num()!=8||k%256||k>4096||n%32)return;
+ int cid=core_id(),groups=k/16;__local__ __attribute__((aligned(64))) float alpha[256];if(cid==2)GM2LM(as,alpha,groups*4);
+ // Complete resident L1D population before any MAC owner starts.
+ if(cid==0)for(int g=0;g<groups;g+=16){auto p=gptr_i8(activation,(long long)g*1024);xfence_lock(DMAIN_1);dma_cfg(DMA_L2_1|DMA_INT8,DMA_GM|DMA_INT8|highptr(p),0.f);dma_i((void*)0,lowptr(p),16384);xfence_unlock(DMAIN_1);xfence_lock(DS_1);ds_shuffle_cfg_datatype(DS_INT8);ds_shuffle_cfg_blkx(32);ds_cfg_output_bank(16);for(int j=0;j<16;++j){v32i8*d=((v32i8*)0)+(g+j)*32;ds_shuffle_batch(&d[0][0],(int8_t*)(j*1024),32,DS_L1D);ds_shuffle_batch(&d[0][1],(int8_t*)(j*1024+512),32,DS_L1D);}xfence_unlock(DS_1);}
+ sync();
+ if(cid==0)owner<0>(partial,weights,scales,groups,n/32,alpha);
+ else if(cid==1)owner<1>(partial,weights,scales,groups,n/32,alpha);
+ else if(cid==2)owner<2>(partial,weights,scales,groups,n/32,alpha);
+ else if(cid==3)owner<3>(partial,weights,scales,groups,n/32,alpha);
+ else if(cid==4)owner<4>(partial,weights,scales,groups,n/32,alpha);
+ else if(cid==5)owner<5>(partial,weights,scales,groups,n/32,alpha);
+ else if(cid==6)owner<6>(partial,weights,scales,groups,n/32,alpha);
+ else owner<7>(partial,weights,scales,groups,n/32,alpha);
+ sync();
+}

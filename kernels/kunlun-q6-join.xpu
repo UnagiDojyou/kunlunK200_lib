@@ -1,0 +1,7 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+__global__ void q6_join(float*out,const float*partial,int k,int n){
+ __local__ __attribute__((aligned(64))) float v[512],sum[32];int groups=k/16;
+ int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+ for(int tile=tid;tile<n/32;tile+=step){for(int r=0;r<32;++r)sum[r]=0;for(int g=0;g<groups;g+=16){GM2LM(partial+((long long)tile*groups+g)*32,v,2048);for(int b=0;b<16;++b)for(int r=0;r<32;r+=8)_x256_vvadd_ls(sum+r,v+b*32+r,sum+r);}LM2GM(sum,out+tile*32,128);}
+}

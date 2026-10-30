@@ -1,0 +1,24 @@
+#include "../../kernels/common-q4/source/adapt-gemv/bench/kernels/cdnn_ref.h"
+// K16 groups are independent: W8 and A8 use 16 useful +16 zero lanes.
+__global__ void q6_sdnn(float *partial,const int8_t*weights,const int8_t*activation,int k,int n,const float*scales,const float*as){
+ if(core_id()!=0)return;
+ __local__ __attribute__((aligned(64))) float alpha[256];GM2LM(as,alpha,k/16*4);
+ v32i8*d=(v32i8*)0,*w=(v32i8*)0;v16f32*e=(v16f32*)0,*s=((v16f32*)0)+16;
+ for(int g=0;g<k/16;++g){
+  auto ap=gptr_i8(activation,(long long)g*1024);
+  xfence_lock(DMAIN_1);dma_cfg(DMA_L2_1|DMA_INT8,DMA_GM|DMA_INT8|highptr(ap),0.f);dma_i((void*)0,lowptr(ap),1024);xfence_unlock(DMAIN_1);
+  xfence_lock(DS_1);ds_shuffle_cfg_datatype(DS_INT8);ds_shuffle_cfg_blkx(32);ds_cfg_output_bank(16);ds_shuffle_batch(&d[0][0],(int8_t*)0,32,DS_L1D);ds_shuffle_batch(&d[0][1],(int8_t*)512,32,DS_L1D);xfence_unlock(DS_1);
+  for(int tile=cluster_id();tile<n/32;tile+=cluster_num()){
+   auto wp=gptr_i8(weights,((long long)g*(n/32)+tile)*1024);
+   dma_in_1d((void*)0,wp,1024,DMA_L2_0,DMA_INT8);
+   xfence_lock(DS_0);ds_shuffle_cfg_datatype(DS_INT8);ds_shuffle_cfg_blkx(32);ds_cfg_output_bank(16);ds_shuffle_coa(32,&w[0][0],(int8_t*)0,DS_L1W);ds_shuffle_coa(32,&w[32][0],(int8_t*)16,DS_L1W);xfence_unlock(DS_0);
+   auto sp=gptr_f32c(scales,(long long)g*n+tile*32);
+   xfence_lock(DMAIN_1);dma_cfg(DMA_L2_1|DMA_FP32,DMA_GM|DMA_FP32|highptr(sp),0.f);dma_i((void*)0,lowptr(sp),128);xfence_unlock(DMAIN_1);
+   xfence_lock(DS_1);ds_shuffle_cfg_datatype(DS_FP32);ds_shuffle_cfg_blkx(32);ds_cfg_output_bank(16);ds_shuffle_coa(1,&s[0][0],(float*)0,DS_L1E);ds_shuffle_coa(1,&s[1][0],(float*)64,DS_L1E);xfence_unlock(DS_1);
+   xfence_lock(MAC);mm_cfg_stride(1);mm_cfg_dequant_scale(alpha[g]);mm_cfg_basic_int8(32,1,1);mm_int8(e,d,w);mm_int8(e+1,d,w+32);xfence_unlock(MAC);
+   xfence_lock(EW);ew_cfg_activation_type(EW_NOACT);ew_cfg_coeff_scalar(0,0,1);ew_cfg_findmax(0,0);ew_cfg_stream_size(1);ew_cfg_col_size(16);ew_dsmul(e,e,s,EW_L2E);ew_dsmul(e+1,e+1,s+1,EW_L2E);xfence_unlock(EW);
+   xfence_lock(RS);rs_row_cfg_stride(1,2);rs_row_cfg_loop(1);rs_row_batch(&e[0][0],&e[0][0],16);rs_row_batch(&e[1][0],&e[1][0],16);xfence_unlock(RS);
+   auto out=gptr_f32(partial,(long long)g*n+tile*32);dma_out_l2r_1d(out,e,128,DMA_FP32);
+  }
+ }
+}

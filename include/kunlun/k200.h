@@ -36,7 +36,8 @@ private:
     void * ptr_;
 };
 
-enum class WeightType { f32 = 0, f16 = 1, q4_0 = 2, rowwise_i8 = 3 };
+// q6_k requires Q6KWeight + q6_k_matmul; legacy raw matmul does not accept it.
+enum class WeightType { f32 = 0, f16 = 1, q4_0 = 2, rowwise_i8 = 3, q6_k = 4 };
 enum class ElementwiseOp { add = 0, multiply = 1, silu = 2, rms_norm = 3, scale = 4 };
 
 struct SetRowsLayout {
@@ -125,6 +126,37 @@ size_t native_q4_size(int k, int n);
 bool pack_native_q4(void * destination, size_t bytes, const void * q4, int k, int n);
 void upload_native_q4(int device, void * weights, const void * q4, int k, int n);
 enum class InputType { f32, f16 };
+
+// Lossless Q6_K signed-W8 pack v1. K16 groups remain independent.
+struct Q6KInfo { uint32_t abi_version; int device,k,n; size_t scale_offset,payload_bytes; };
+struct Q6KStatistics { size_t calls,uploads,upload_bytes,workspace_bytes; double pack_ms,upload_ms; };
+bool q6_k_supported(int k,int n);
+size_t q6_k_size(int k,int n);
+class Q6KWeight {
+public:
+ Q6KWeight(int device,int k,int n,void*storage=nullptr,size_t bytes=0);
+ ~Q6KWeight();
+ Q6KWeight(const Q6KWeight&)=delete;Q6KWeight&operator=(const Q6KWeight&)=delete;
+ void upload(const void*q6,size_t bytes);
+ Q6KInfo info() const;Q6KStatistics statistics() const;void*data() const;
+ struct Impl;
+private:
+ Impl*impl_;friend void q6_k_matmul(class Q6KWorkspace&,int,void*,const Q6KWeight&,const void*,int,InputType);
+};
+class Q6KWorkspace {
+public:
+ Q6KWorkspace();~Q6KWorkspace();
+ Q6KWorkspace(const Q6KWorkspace&)=delete;Q6KWorkspace&operator=(const Q6KWorkspace&)=delete;
+ Q6KStatistics statistics() const;
+ struct Impl;
+private:
+ Impl*impl_;friend void q6_k_matmul(Q6KWorkspace&,int,void*,const Q6KWeight&,const void*,int,InputType);
+};
+// Contiguous X[M,K], Y[M,N]. M=1..512 uses sequential SDNN GEMV per row.
+// Chunk256 symmetric A8; no host activation readback. Completes under runtime_mutex.
+// Dedicated typed weight handle prevents interpreting Q4 or raw Q6 bytes as W8.
+void q6_k_matmul(Q6KWorkspace&,int device,void*y,const Q6KWeight&,const void*x,int m=1,InputType type=InputType::f32);
+
 // Byte strides describe a non-overlapping four-dimensional device view.
 struct Tensor4Layout { int ne[4],nb[4];InputType type; };
 // SDNN uses half inputs, symmetric INT16 DMA conversion and visible F32 accumulation/output.

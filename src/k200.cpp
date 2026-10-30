@@ -621,6 +621,7 @@ bool large_pp_enabled() {
 }
 }
 #include "q4-common.inc"
+#include "q6-k.inc"
 #include "attention.inc"
 #include "kv-max.inc"
 #include "flash.inc"

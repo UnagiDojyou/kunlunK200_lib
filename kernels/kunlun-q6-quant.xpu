@@ -1,0 +1,15 @@
+#include "fp16-device.h"
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/math.h"
+__global__ void q6_quant(int8_t*q,float*scales,const void*input,int k,int dtype){
+ __local__ __attribute__((aligned(64))) float x[256],s[16];
+ __local__ __attribute__((aligned(64))) unsigned short h[256];
+ __local__ __attribute__((aligned(64))) int8_t tile[1024];
+ int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+ for(int b=tid;b<k/256;b+=step){
+  if(!dtype)GM2LM((_global_ptr_ const float*)input+b*256,x,1024);else{GM2LM((_global_ptr_ const unsigned short*)input+b*256,h,512);for(int j=0;j<256;++j)x[j]=kunlun_from_half(h[j]);}
+  float mx=0;for(int j=0;j<256;++j){float v=x[j]<0?-x[j]:x[j];if(v>mx)mx=v;}
+  float scale=mx>0?mx/127.f:0.f,inv=mx>0?127.f/mx:0.f;for(int g=0;g<16;++g){s[g]=scale;for(int j=0;j<16;++j){float v=x[g*16+j]*inv;int z=(int)(v+(v>=0?.5f:-.5f));if(z>127)z=127;if(z<-127)z=-127;tile[j]=(int8_t)z;tile[16+j]=0;}for(int r=1;r<32;++r)for(int j=0;j<32;++j)tile[r*32+j]=tile[j];LM2GM(tile,q+(b*16+g)*1024,1024);}
+  LM2GM(s,scales+b*16,64);
+ }
+}

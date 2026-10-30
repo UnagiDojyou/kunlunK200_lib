@@ -137,3 +137,7 @@ See [selection, shape guards and disabling options](docs/optimization-defaults.m
 ## 0.7.12 quality assessment
 
 See [SwiGLU and Large PP quality results](docs/quality-20261030.md). Both remain opt-in. Standalone Large PP is promising on the two evaluated model configurations, while SwiGLU interaction and unverified profile coverage require caution. The existing four automatic Q4 optimizations are unchanged.
+
+## Experimental Q6_K SDNN output GEMV
+
+The opt-in typed Q6 API preserves signed-six-bit weights through a load-time W8 pack and K16 FP32 scales. It is not enabled by default; current end-to-end TG is slower than the CPU fallback. See [Q6 SDNN](docs/q6-k-sdnn/README.md).
