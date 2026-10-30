@@ -133,3 +133,7 @@ Optional PP512 offload: [large-query Flash/RoPE and tracked KV writes](docs/larg
 ## 0.7.12 optimization defaults
 
 See [selection, shape guards and disabling options](docs/optimization-defaults.md). Activation sharing, GEMV stream/N-major and M128 Owners are automatic only within the existing common-Q4 profile and validated shapes. Common-Q4/Attention profiles, Large PP and SwiGLU remain opt-in. Explicit 0 retains the preceding path.
+
+## 0.7.12 quality assessment
+
+See [SwiGLU and Large PP quality results](docs/quality-20261030.md). Both remain opt-in. Standalone Large PP is promising on the two evaluated model configurations, while SwiGLU interaction and unverified profile coverage require caution. The existing four automatic Q4 optimizations are unchanged.
