@@ -18,4 +18,4 @@ Q6_K出力層をCPUへ戻さず、load時のlossless signed-W8 packとSDNN W8A8 
 
 必要な新APIを含むlibrary commitと、このbackendを組み合わせること。同じ0.7.12というversion表示でも、変更前のDSOにはQ6 APIがない。通常のsubmodule buildか、対応するsystem-library installを使用する。
 
-詳細な数値・採否・再現方法はREPORT.ja.mdを参照。SDK、モデル、kernel binary、測定ログはcommitしない。
+詳細な数値・採否・再現方法は../../docs/q6-k-sdnn/REPORT.ja.mdを参照。SDK、モデル、kernel binary、測定ログはcommitしない。
