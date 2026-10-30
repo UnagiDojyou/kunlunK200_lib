@@ -122,8 +122,8 @@ bool common_stream_shape(const CommonQ4Info & a) {
 }
 bool common_stream_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
     const char * mode=std::getenv("KUNLUN_Q4_MAC_DMA");
-    if(!mode || !std::strcmp(mode,"0"))return false;
-    if(std::strcmp(mode,"1")) {
+    if(mode && !std::strcmp(mode,"0"))return false;
+    if(mode && std::strcmp(mode,"1")) {
         if(!s.mac_invalid_logged)std::fprintf(stderr,"Kunlun Q4 MAC/DMA: invalid KUNLUN_Q4_MAC_DMA=%s; using stable path\n",mode);
         s.mac_invalid_logged=true;return false;
     }
@@ -134,8 +134,8 @@ bool common_stream_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
 }
 bool common_nmajor_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
     const char * mode=std::getenv("KUNLUN_Q4_NMAJOR");
-    if(!mode || !std::strcmp(mode,"0"))return false;
-    if(!std::strcmp(mode,"1")) {
+    if(mode && !std::strcmp(mode,"0"))return false;
+    if(!mode || !std::strcmp(mode,"1")) {
         if((a.kp==4096 && (a.np==4096 || a.np==11008)) || (a.kp==11008 && a.np==4096))return true;
         if(!s.nmajor_shape_logged)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: unvalidated shape K=%d Np=%d; using 0.7.8 stream order\n",s.id,a.kp,a.np);
         s.nmajor_shape_logged=true;return false;
@@ -195,7 +195,7 @@ bool common_gemv(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
     s.last_values=q;s.last_scales=params;float zero=0,one=1;
     bool stream=common_stream_enabled(s,a);
     bool nmajor=stream && common_nmajor_enabled(s,a);
-    if(nmajor && !s.programs[18].fn)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: opt-in, ABI=1, unchanged partial order\n",s.id);
+    if(nmajor && !s.programs[18].fn)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: shape-selected, ABI=1, unchanged partial order\n",s.id);
     if(stream && !nmajor && !s.programs[17].fn)std::fprintf(stderr,"Kunlun Q4 MAC/DMA stream PD%d: ABI=1 K=%d N=%d resident_L1D<=524288; original MAC order\n",s.id,a.k,a.n);
     native_launch(common_program(s,nmajor?18:stream?17:3,nmajor?"kunlun-common-gemv-nmajor":stream?"kunlun-common-gemv-stream":"kunlun-common-gemv",true),{native_arg(partial),native_arg(w),native_arg(q),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(components),native_arg(bits),native_arg(zero),native_arg(zero),native_arg(one),native_arg(pipelined),native_arg(scales),native_arg(fold),native_arg(params)},8);
     check(xpu_wait());
@@ -207,8 +207,8 @@ bool common_gemv(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
 }
 bool common_gemm_owners_enabled(CommonQ4Workspace::Impl & s,int m,int mt,int k,int n) {
     const char * mode=std::getenv("KUNLUN_Q4_GEMM_OWNERS");
-    if(!mode || !std::strcmp(mode,"0"))return false;
-    if(std::strcmp(mode,"1")) {
+    if(mode && !std::strcmp(mode,"0"))return false;
+    if(mode && std::strcmp(mode,"1")) {
         if(!s.gemm_owners_invalid_logged)std::fprintf(stderr,"Kunlun Q4 GEMM owners: invalid setting; existing GEMM selected\n");
         s.gemm_owners_invalid_logged=true;return false;
     }

@@ -129,3 +129,7 @@ Optional N-major GEMV (0.7.9, default off): [configuration and limits](docs/q4-g
 Optional PP optimization: [M128 Q4 GEMM controllers (0.7.10)](docs/q4-gemm-owners.md).
 
 Optional PP512 offload: [large-query Flash/RoPE and tracked KV writes](docs/large-pp.md).
+
+## 0.7.12 optimization defaults
+
+See [selection, shape guards and disabling options](docs/optimization-defaults.md). Activation sharing, GEMV stream/N-major and M128 Owners are automatic only within the existing common-Q4 profile and validated shapes. Common-Q4/Attention profiles, Large PP and SwiGLU remain opt-in. Explicit 0 retains the preceding path.

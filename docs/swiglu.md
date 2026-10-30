@@ -24,3 +24,7 @@ build/k200-swiglu-bench 1 257 33 2 0 1 32 0
 Run device commands under the existing thermal guard. The benchmark checks CPU-reference error, guard bytes and row padding, then times 15 completed calls after warmup. Its pass field is an explicit numerical assessment; a process return of zero alone is not a numerical pass. Alias tests check one update and omit destructive repeated timing.
 
 `cmake/compile-native.sh` checks the SwiGLU assembly stack frame before generating the image. The tested XTDK reports initial local SP=16256; the final kernel frame is3136. An early 18496-byte frame caused714 and is rejected by this build guard. This check applies only to the new CL kernel and does not change existing SD images.
+
+## 0.7.12 reevaluation
+
+The CPU default is retained. With current FlashAttention and other common-Q4 optimizations, XPU SwiGLU improves the measured PP/TG workloads, but scalar/SIMD rounding and A8 threshold sensitivity still prevent bitwise model equivalence. See the 2026-10-30 defaults report; this does not change the supported types/layouts or 0/1/pp semantics.
