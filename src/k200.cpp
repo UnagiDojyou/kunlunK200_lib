@@ -135,6 +135,7 @@ struct Kernel::Impl {
     size_t attention_host_trig=0,attention_pack_calls=0;
     std::vector<unsigned char> attention_config_cache;
     Impl * get_rows = nullptr;
+    Impl * get_rows_f32 = nullptr;
     Impl * copy_rows = nullptr;
     Impl * set_rows = nullptr;
     Impl * flash_set_rows = nullptr;
@@ -248,7 +249,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->swiglu,impl_->attention_pack_a,impl_->attention_pack_b,impl_->attention_range,impl_->attention_range_dma,impl_->attention_sd,impl_->attention_sm_fast,impl_->attention_sm_typed,impl_->attention_mm,impl_->attention_sm,impl_->attention_cp,impl_->attention_phase,impl_->attention_rope,impl_->get_rows,impl_->copy_rows,impl_->set_rows,impl_->flash_set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->swiglu,impl_->attention_pack_a,impl_->attention_pack_b,impl_->attention_range,impl_->attention_range_dma,impl_->attention_sd,impl_->attention_sm_fast,impl_->attention_sm_typed,impl_->attention_mm,impl_->attention_sm,impl_->attention_cp,impl_->attention_phase,impl_->attention_rope,impl_->get_rows,impl_->get_rows_f32,impl_->copy_rows,impl_->set_rows,impl_->flash_set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -623,6 +624,7 @@ bool large_pp_enabled() {
 }
 #include "q4-common.inc"
 #include "get-rows.inc"
+#include "get-rows-f32.inc"
 #include "q6-k.inc"
 #include "attention.inc"
 #include "kv-max.inc"

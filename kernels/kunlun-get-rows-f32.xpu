@@ -1,0 +1,20 @@
+#include "xpu/kernel/cluster_header.h"
+
+// Copy integer words so NaN payloads and signed zero are unchanged.
+__global__ void get_rows_f32(unsigned int *output,const unsigned int *input,const int *indices,int *status,int k,int n,int m,int chunk) {
+    __local__ __attribute__((aligned(64))) int ids[512],flag[16];
+    __local__ __attribute__((aligned(64))) unsigned int values[1024];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    GM2LM(indices,ids,m*4);
+    int invalid=0;
+    for(int i=0;i<m;++i)if(ids[i]<0 || ids[i]>=n)invalid=1;
+    flag[0]=invalid;LM2GM(flag,status+tid,4);
+    if(invalid)return;
+    int chunks=(k+chunk-1)/chunk;
+    for(long long task=tid;task<(long long)m*chunks;task+=step) {
+        int row=task/chunks,start=task%chunks*chunk;
+        int count=k-start<chunk?k-start:chunk;
+        GM2LM(input+(long long)ids[row]*k+start,values,count*4);
+        LM2GM(values,output+(long long)row*k+start,count*4);
+    }
+}

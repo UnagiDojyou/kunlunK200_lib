@@ -68,6 +68,7 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend bool get_rows_f32(Kernel &,int,void *,size_t,const void *,size_t,const int32_t *,size_t,int,int,int);
     friend bool common_q4_get_rows(Kernel &,int,void *,size_t,const CommonQ4Weight &,const int32_t *,size_t,int);
     friend FlashStatistics flash_statistics(const Kernel &);
     friend bool flash_attention(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
@@ -324,6 +325,10 @@ bool common_q4_prepare(CommonQ4Workspace &, int device, const void * input, int 
 // the ordinary API type/shape/non-overlap contract.
 bool common_q4_matmul_shared(CommonQ4Workspace &, int device, void * y, const CommonQ4Weight &,
                              const CommonQ4ActivationLease &, uint64_t generation);
+
+// Contiguous F32 matrix to contiguous F32 rows, I32 indices, no overlapping ranges.
+// K%16=0, K<=1048576, M=1..512. Completes before return; invalid IDs write no output.
+bool get_rows_f32(Kernel &,int device,void *output,size_t output_bytes,const void *input,size_t input_bytes,const int32_t *indices,size_t index_bytes,int k,int n,int rows);
 
 // Common ABI v1 only. Contiguous I32 indices and F32 output. M=1..512, K%64=0.
 // Completes before returning. Invalid IDs return false without writing output.
