@@ -141,3 +141,7 @@ See [SwiGLU and Large PP quality results](docs/quality-20261030.md). Both remain
 ## Experimental Q6_K SDNN output GEMV
 
 The opt-in typed Q6 API preserves signed-six-bit weights through a load-time W8 pack and K16 FP32 scales. It remains opt-in. EW/L1E aggregation removes HBM partials and the CL join; the tested 7B GEMV is faster than CPU, while Tiny host-output latency is approximately equal. See [Q6 SDNN](docs/q6-k-sdnn/README.md) and [on-chip results](docs/q6-onchip/REPORT.ja.md).
+
+## Q4 embedding GET_ROWS
+
+The typed common-Q4 row-gather API decodes directly on XPU without another weight layout. GGML integration remains opt-in and preserves CPU fallback. See [contracts](docs/get-rows/GET_ROWS.md) and [evaluation](docs/get-rows/REPORT.ja.md).
