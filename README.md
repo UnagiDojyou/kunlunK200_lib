@@ -145,3 +145,7 @@ The opt-in typed Q6 API preserves signed-six-bit weights through a load-time W8 
 ## Q4 embedding GET_ROWS
 
 The typed common-Q4 row-gather API decodes directly on XPU without another weight layout. GGML integration remains opt-in and preserves CPU fallback. See [contracts](docs/get-rows/GET_ROWS.md) and [evaluation](docs/get-rows/REPORT.ja.md).
+
+## F32 activation GET_ROWS
+
+The validated F32 row-gather API copies selected rows directly on XPU. GGML integration is independently opt-in. See [contracts](docs/get-rows-f32/GET_ROWS_F32.md) and [evaluation](docs/get-rows-f32/REPORT.ja.md).
