@@ -149,3 +149,7 @@ The typed common-Q4 row-gather API decodes directly on XPU without another weigh
 ## F32 activation GET_ROWS
 
 The validated F32 row-gather API copies selected rows directly on XPU. GGML integration is independently opt-in. See [contracts](docs/get-rows-f32/GET_ROWS_F32.md) and [evaluation](docs/get-rows-f32/REPORT.ja.md).
+
+## Current recommended defaults
+
+See [DEFAULTS.md](DEFAULTS.md). Common Q4, new SDNN Q6, Q4/F32 GET_ROWS and pure-token graph specialization are enabled when unset. Large PP remains disabled. Explicit 0 preserves rollback. This table supersedes dated opt-in reports.
