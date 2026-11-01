@@ -113,7 +113,7 @@ Embeddingの大きな出力H2Dが消えた。PP128で削減する出力本体は
 
 **graph分割そのものは減らず、4→5となった。** 非選択分岐のsplit計画・同期は残す保守的実装である。データcopyは省いたが、splitやwaitを無検証で削除していない。CPU F32 GET_ROWSはPP2回/TG6回残り、7Bではattn_out-31/l_out-30の各2 MiB（このPP128診断）を読戻す。これとKV index取得等が残るCPU処理である。
 
-HBM増分はEmbedding圧縮payload＋kernel/statusの3,584 B。新しい恒常的なF16/F32 weight展開はない。CPU pack/uploadは7B約200/11 ms、Tiny約100/5.6 msの一度だけ。モデル全体load時間のcold-cache変動と混同しない。HBM値はSDK allocation hookのpeakで、CPU RAMや全driver内部領域を含む値ではない。
+HBM増分はEmbedding圧縮payloadに加え、code/status等の割当差が7Bで3,584 B、Tinyで3,072 Bだった。新しい恒常的なF16/F32 weight展開はない。CPU pack/uploadは7B約200/11 ms、Tiny約100/5.6 msの一度だけ。モデル全体load時間のcold-cache変動と混同しない。HBM値はSDK allocation hookのpeakで、CPU RAMや全driver内部領域を含む値ではない。
 
 ## 採否・残る候補・安全性
 
