@@ -1,0 +1,34 @@
+#include "xpu/kernel/cluster_header.h"
+#include "fp16-device.h"
+
+__global__ void common_q4_get_rows(float *output,const unsigned char *weights,const unsigned short *scales,const int *indices,int *status,int k,int kp,int np,int n,int m,int chunk) {
+    __local__ __attribute__((aligned(64))) int ids[512],flag[16];
+    __local__ __attribute__((aligned(64))) unsigned char packed[64];
+    __local__ __attribute__((aligned(64))) unsigned short half[32];
+    __local__ __attribute__((aligned(64))) float values[256];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    GM2LM(indices,ids,m*4);
+    int invalid=0;
+    for(int i=0;i<m;++i)if(ids[i]<0 || ids[i]>=n)invalid=1;
+    flag[0]=invalid;LM2GM(flag,status+tid,4);
+    if(invalid)return;
+    int chunks=k/chunk;
+    for(int task=tid;task<m*chunks;task+=step) {
+        int row=ids[task/chunks],start=task%chunks*chunk;
+        for(int offset=0;offset<chunk;offset+=32) {
+            int block=(start+offset)/32;
+            long long tile=(long long)(row/32)*(kp/32)+block;
+            // Two adjacent banks fit one aligned 64-byte read.
+            GM2LM(weights+tile*512+(row%16/2)*64,packed,64);
+            GM2LM(scales+(long long)block*np+(row/32)*32,half,64);
+            float scale=kunlun_from_half(half[row%32]);
+            int base=(row%2)*32+(row%32/16)*16;
+            for(int j=0;j<32;++j) {
+                int q=(packed[base+j/2]>>(j%2*4))&15;
+                if(q>=8)q-=16;
+                values[offset+j]=(float)q*scale;
+            }
+        }
+        LM2GM(values,output+(long long)(task/chunks)*k+start,chunk*4);
+    }
+}

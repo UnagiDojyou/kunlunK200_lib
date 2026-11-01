@@ -57,6 +57,8 @@ struct Flash4Layout;struct FlashStatistics;
 struct SwiGLULayout;
 struct Matmul4Layout;struct Softmax4Layout;struct Tensor4Layout;struct Rope4Layout;struct AttentionStatistics;
 
+class CommonQ4Weight;
+
 class Kernel {
 public:
     Kernel();
@@ -66,6 +68,7 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend bool common_q4_get_rows(Kernel &,int,void *,size_t,const CommonQ4Weight &,const int32_t *,size_t,int);
     friend FlashStatistics flash_statistics(const Kernel &);
     friend bool flash_attention(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
     friend bool attention_matmul(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const Matmul4Layout &);
@@ -257,6 +260,7 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend bool common_q4_get_rows(Kernel &,int,void *,size_t,const CommonQ4Weight &,const int32_t *,size_t,int);
     friend void common_q4_matmul(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const void *, int, InputType);
     friend bool common_q4_matmul_shared(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
 
@@ -320,6 +324,10 @@ bool common_q4_prepare(CommonQ4Workspace &, int device, const void * input, int 
 // the ordinary API type/shape/non-overlap contract.
 bool common_q4_matmul_shared(CommonQ4Workspace &, int device, void * y, const CommonQ4Weight &,
                              const CommonQ4ActivationLease &, uint64_t generation);
+
+// Common ABI v1 only. Contiguous I32 indices and F32 output. M=1..512, K%64=0.
+// Completes before returning. Invalid IDs return false without writing output.
+bool common_q4_get_rows(Kernel &,int device,void *output,size_t output_bytes,const CommonQ4Weight &,const int32_t *indices,size_t index_bytes,int rows);
 
 struct Statistics {
     size_t matmuls[2];
