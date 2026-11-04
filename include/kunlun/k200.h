@@ -244,6 +244,7 @@ struct CommonQ4ActivationChunk {
     size_t values_bytes, scales_bytes;
 };
 class CommonQ4ActivationLease;
+class CommonQ4Workspace;
 
 struct CommonQ4WeightStatistics { size_t uploads, upload_bytes; double pack_ms, upload_ms; };
 class CommonQ4Weight {
@@ -261,6 +262,7 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend bool common_q4_matmul_pair(CommonQ4Workspace &, int, void *, void *, const CommonQ4Weight &, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
     friend bool common_q4_get_rows(Kernel &,int,void *,size_t,const CommonQ4Weight &,const int32_t *,size_t,int);
     friend void common_q4_matmul(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const void *, int, InputType);
     friend bool common_q4_matmul_shared(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
@@ -275,6 +277,8 @@ struct CommonQ4MacStatistics {
     size_t baseline_sd_calls, stream_sd_calls, shape_fallbacks, resident_l1d_bytes;
 };
 struct CommonQ4Quantization { const void * values; const void * scales; int rows, kp, components; };
+struct CommonQ4PairStatistics { size_t calls, declined, l3_partial_bytes; };
+enum class CommonQ4PairStatus { NotAttempted, Success, Disabled, InvalidInput, Configuration, WeightAbi, Lease, Alias, Workspace };
 class CommonQ4Workspace {
 public:
     CommonQ4Workspace();
@@ -289,6 +293,9 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend CommonQ4PairStatistics common_q4_pair_statistics(const CommonQ4Workspace &);
+    friend CommonQ4PairStatus common_q4_pair_last_status(const CommonQ4Workspace &);
+    friend bool common_q4_matmul_pair(CommonQ4Workspace &, int, void *, void *, const CommonQ4Weight &, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
     friend void common_q4_matmul(CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const void *, int, InputType);
     friend bool common_q4_prepare(CommonQ4Workspace &, int, const void *, int, int, InputType, uint64_t, CommonQ4ActivationLease &);
     friend bool common_q4_matmul_shared(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
@@ -315,6 +322,7 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend bool common_q4_matmul_pair(CommonQ4Workspace &, int, void *, void *, const CommonQ4Weight &, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
     friend bool common_q4_prepare(CommonQ4Workspace &, int, const void *, int, int, InputType, uint64_t, CommonQ4ActivationLease &);
     friend bool common_q4_matmul_shared(CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
 };
@@ -368,6 +376,11 @@ struct KVMaxStatistics {
 };
 KVMaxStatistics kv_max_statistics(int device);
 void kv_max_log_statistics();
+
+// Synchronous pair (default Auto); false writes no output. Prepared F32 M1 only.
+bool common_q4_matmul_pair(CommonQ4Workspace &, int, void *, void *, const CommonQ4Weight &, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
+CommonQ4PairStatistics common_q4_pair_statistics(const CommonQ4Workspace &);
+CommonQ4PairStatus common_q4_pair_last_status(const CommonQ4Workspace &);
 
 } // namespace kunlun
 

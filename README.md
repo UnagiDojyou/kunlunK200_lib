@@ -149,3 +149,5 @@ The typed common-Q4 row-gather API decodes directly on XPU without another weigh
 ## F32 activation GET_ROWS
 
 The validated F32 row-gather API copies selected rows directly on XPU. GGML integration is independently opt-in. See [contracts](docs/get-rows-f32/GET_ROWS_F32.md) and [evaluation](docs/get-rows-f32/REPORT.ja.md).
+
+Runtime defaults updated 2026-11-04: see docs/RUNTIME_DEFAULTS.md.

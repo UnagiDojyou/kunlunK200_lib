@@ -1,0 +1,36 @@
+#include "native-q4/quant-exact.h"
+__global__ void quant_residual_compact_64(int8_t *quant,float *parameters,const float *residual,
+                              const unsigned int *peaks0,const unsigned int *peaks1,int k){
+ if(!(k==2048 || k==4096 || k==5632 || k==11008))return;
+ __local__ __attribute__((aligned(64))) float x[NEXT_CHUNK],scaled[NEXT_CHUNK],params[16];
+ __local__ __attribute__((aligned(64))) unsigned int maxima0[NEXT_PEAKS],maxima1[NEXT_PEAKS];
+ __local__ __attribute__((aligned(64))) unsigned int qwords[NEXT_CHUNK/2];
+ unsigned char *qout=(unsigned char*)qwords;
+ int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),chunks=(k+NEXT_CHUNK-1)/NEXT_CHUNK;
+ // The same workspace is reused for different K values. Clear the moving zero tail on XPU.
+ if(tid<16){for(int j=0;j<16;++j)qwords[j]=0;LM2GM(qout,quant+(long long)k*4+tid*64,64);}
+ GM2LM(peaks0,maxima0,((chunks+15)/16)*64);GM2LM(peaks1,maxima1,((chunks+15)/16)*64);
+ float maximum0=next_max(maxima0,chunks),maximum1=next_max(maxima1,chunks),inverse=127.f/maximum1;
+ if(tid==0){for(int j=0;j<16;++j)params[j]=0;params[0]=maximum0/127.f;params[1]=maximum1/127.f;params[2]=maximum0;params[3]=maximum1;LM2GM(params,parameters,64);}
+ for(int c=tid;c<chunks;c+=step){
+  for(int j=8;j<16;++j){qwords[j]=0;qwords[j+16]=0;}
+  int start=c*NEXT_CHUNK;const int count=NEXT_CHUNK;
+  GM2LM(residual+start,x,count*4);
+  for(int j=0;j<count;j+=8)_x256_svmul_ls(inverse,x+j,scaled+j);
+  for(int j=0;j<count;j+=8){
+ unsigned int word0=0;
+ unsigned int word1=0;
+ int q0=next_round(scaled[j+0]);word0|=((unsigned int)(unsigned char)(int8_t)q0)<<0;
+ int q1=next_round(scaled[j+1]);word0|=((unsigned int)(unsigned char)(int8_t)q1)<<8;
+ int q2=next_round(scaled[j+2]);word0|=((unsigned int)(unsigned char)(int8_t)q2)<<16;
+ int q3=next_round(scaled[j+3]);word0|=((unsigned int)(unsigned char)(int8_t)q3)<<24;
+ int q4=next_round(scaled[j+4]);word1|=((unsigned int)(unsigned char)(int8_t)q4)<<0;
+ int q5=next_round(scaled[j+5]);word1|=((unsigned int)(unsigned char)(int8_t)q5)<<8;
+ int q6=next_round(scaled[j+6]);word1|=((unsigned int)(unsigned char)(int8_t)q6)<<16;
+ int q7=next_round(scaled[j+7]);word1|=((unsigned int)(unsigned char)(int8_t)q7)<<24;
+ qwords[(j/32)*16+(j%32)/4+0]=word0;
+ qwords[(j/32)*16+(j%32)/4+1]=word1;
+}
+  LM2GM(qout,quant+(long long)k*2+(long long)start*2,count*2);
+ }
+}

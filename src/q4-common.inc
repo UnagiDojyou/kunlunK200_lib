@@ -72,7 +72,9 @@ struct CommonQ4ActivationLease::Impl {
 
 struct CommonQ4Workspace::Impl {
     int id=-1;
-    Kernel::Impl programs[21];
+    Kernel::Impl programs[39];
+    CommonQ4PairStatistics pair_stats{};
+    CommonQ4PairStatus pair_status=CommonQ4PairStatus::NotAttempted;
     std::unique_ptr<Buffer> input, output, peaks, rest, peak1, slice, ticks;
     std::shared_ptr<CommonActivationStorage> activation=std::make_shared<CommonActivationStorage>();
     const void * last_values=nullptr, * last_scales=nullptr;
@@ -132,6 +134,21 @@ bool common_stream_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
     if(!s.mac_shape_logged)std::fprintf(stderr,"Kunlun Q4 MAC/DMA PD%d: unvalidated shape K=%d N=%d Kp=%d Np=%d; using stable GEMV\n",a.device,a.k,a.n,a.kp,a.np);
     s.mac_shape_logged=true;return false;
 }
+bool common_addr32_enabled(const CommonQ4Info & a) {
+    const char * mode=std::getenv("KUNLUN_Q4_DMA_ADDR32");
+    if(!mode || std::strcmp(mode,"1"))return false;
+    if(a.k!=a.kp || a.n!=a.np)return false;
+    return (a.k==4096 && (a.n==4096 || a.n==11008)) ||
+           (a.k==11008 && a.n==4096) ||
+           (a.k==2048 && (a.n==256 || a.n==2048 || a.n==5632)) ||
+           (a.k==5632 && a.n==2048);
+}
+bool common_fast_sum_enabled(const CommonQ4Info & a) {
+    const char * mode=std::getenv("KUNLUN_Q4_GEMV_SUM_FAST");
+    if((mode && std::strcmp(mode,"1")) || a.k!=a.kp || a.n!=a.np)return false;
+    return (a.k==4096 && (a.n==4096 || a.n==11008)) || (a.k==11008 && a.n==4096) ||
+           (a.k==2048 && (a.n==256 || a.n==2048 || a.n==5632)) || (a.k==5632 && a.n==2048);
+}
 bool common_nmajor_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
     const char * mode=std::getenv("KUNLUN_Q4_NMAJOR");
     if(mode && !std::strcmp(mode,"0"))return false;
@@ -155,9 +172,17 @@ void common_quant_gemv(CommonQ4Workspace::Impl & s, const void * x, int k, int d
     uint64_t begin=common_tick(s.activation->profile);
     native_reserve(s.rest,s.id,(size_t)k*4);native_reserve(s.peaks,s.id,2048);native_reserve(s.peak1,s.id,2048);
     void * r=s.rest->data(), * p0=s.peaks->data(), * p1=s.peak1->data();
-    native_launch(common_program(s,0,"kunlun-common-max"),{native_arg(p0),native_arg(x),native_arg(k),native_arg(dtype)},16);
-    native_launch(common_program(s,1,"kunlun-common-main"),{native_arg(q),native_arg(r),native_arg(p1),native_arg(x),native_arg(p0),native_arg(k),native_arg(dtype)},16);
-    native_launch(common_program(s,2,"kunlun-common-residual"),{native_arg(q),native_arg(params),native_arg(r),native_arg(p0),native_arg(p1),native_arg(k)},16);
+    const char *exact_mode=std::getenv("KUNLUN_Q4_QUANT_EXACT");
+    const bool exact=(!exact_mode || !std::strcmp(exact_mode,"1")) && dtype==0 &&
+        (k==2048 || k==4096 || k==5632 || k==11008);
+    const char *pack_mode=std::getenv("KUNLUN_Q4_QUANT_PACK");
+    const char *ext_mode=std::getenv("KUNLUN_Q4_QUANT_PACK_EXT");
+    const bool extended=!ext_mode || ((k==5632 && (!std::strcmp(ext_mode,"1") || !std::strcmp(ext_mode,"5632"))) ||
+                                    (k==11008 && (!std::strcmp(ext_mode,"1") || !std::strcmp(ext_mode,"11008"))));
+    const bool pack=exact && (k==2048 || extended) && (!pack_mode || !std::strcmp(pack_mode,"1"));
+    native_launch(common_program(s,exact?34:0,exact?"kunlun-common-max-exact":"kunlun-common-max"),{native_arg(p0),native_arg(x),native_arg(k),native_arg(dtype)},16);
+    native_launch(common_program(s,pack?37:(exact?35:1),pack?"kunlun-common-main-pack":(exact?"kunlun-common-main-exact":"kunlun-common-main")),{native_arg(q),native_arg(r),native_arg(p1),native_arg(x),native_arg(p0),native_arg(k),native_arg(dtype)},16);
+    native_launch(common_program(s,pack?38:(exact?36:2),pack?"kunlun-common-residual-pack":(exact?"kunlun-common-residual-exact":"kunlun-common-residual")),{native_arg(q),native_arg(params),native_arg(r),native_arg(p0),native_arg(p1),native_arg(k)},16);
     check(xpu_wait());
     ++s.activation->stats.quantized_chunks; s.activation->stats.quant_kernel_launches+=3;
     if (s.activation->profile) s.activation->stats.quantization_ns+=common_tick(true)-begin;
@@ -195,17 +220,23 @@ bool common_gemv(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
     s.last_values=q;s.last_scales=params;float zero=0,one=1;
     bool stream=common_stream_enabled(s,a);
     bool nmajor=stream && common_nmajor_enabled(s,a);
-    if(nmajor && !s.programs[18].fn)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: shape-selected, ABI=1, unchanged partial order\n",s.id);
-    if(stream && !nmajor && !s.programs[17].fn)std::fprintf(stderr,"Kunlun Q4 MAC/DMA stream PD%d: ABI=1 K=%d N=%d resident_L1D<=524288; original MAC order\n",s.id,a.k,a.n);
-    native_launch(common_program(s,nmajor?18:stream?17:3,nmajor?"kunlun-common-gemv-nmajor":stream?"kunlun-common-gemv-stream":"kunlun-common-gemv",true),{native_arg(partial),native_arg(w),native_arg(q),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(components),native_arg(bits),native_arg(zero),native_arg(zero),native_arg(one),native_arg(pipelined),native_arg(scales),native_arg(fold),native_arg(params)},8);
+    const bool addr32=stream && common_addr32_enabled(a);
+    const int gemv_program=addr32?(nmajor?22:21):nmajor?18:stream?17:3;
+    const char * gemv_name=addr32?(nmajor?"kunlun-common-gemv-addr32-nmajor":"kunlun-common-gemv-addr32-stream"):nmajor?"kunlun-common-gemv-nmajor":stream?"kunlun-common-gemv-stream":"kunlun-common-gemv";
+    if(addr32 && !s.programs[gemv_program].fn)std::fprintf(stderr,"Kunlun Q4 DMA address32 PD%d: %s K=%d N=%d ABI=1 fence/order unchanged\n",s.id,gemv_name,a.k,a.n);
+    if(nmajor && !s.programs[gemv_program].fn)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: shape-selected, ABI=1, unchanged partial order\n",s.id);
+    if(stream && !nmajor && !s.programs[gemv_program].fn)std::fprintf(stderr,"Kunlun Q4 MAC/DMA stream PD%d: ABI=1 K=%d N=%d resident_L1D<=524288; original MAC order\n",s.id,a.k,a.n);
+    native_launch(common_program(s,gemv_program,gemv_name,true),{native_arg(partial),native_arg(w),native_arg(q),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(components),native_arg(bits),native_arg(zero),native_arg(zero),native_arg(one),native_arg(pipelined),native_arg(scales),native_arg(fold),native_arg(params)},8);
     check(xpu_wait());
-    native_launch(common_program(s,4,"kunlun-common-sum"),{native_arg(y),native_arg(partial),native_arg(scales),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(mode)},16);
+    const bool fast_sum=stream && common_fast_sum_enabled(a);
+    if(fast_sum && !s.programs[23].fn)std::fprintf(stderr,"Kunlun Q4 GEMV fast sum PD%d: K=%d N=%d, CL16, ordered K32 FP32 sum\n",s.id,a.k,a.n);
+    native_launch(common_program(s,fast_sum?23:4,fast_sum?"kunlun-common-sum-fast":"kunlun-common-sum"),{native_arg(y),native_arg(partial),native_arg(scales),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(mode)},16);
     check(xpu_wait());s.last_components=2; ++s.stats.paths[0];
     if(stream){++s.mac_stats.stream_sd_calls;s.mac_stats.resident_l1d_bytes=std::max(s.mac_stats.resident_l1d_bytes,(size_t)std::min(k/32,128)*4096);}
     else ++s.mac_stats.baseline_sd_calls;
     return true;
 }
-bool common_gemm_owners_enabled(CommonQ4Workspace::Impl & s,int m,int mt,int k,int n) {
+bool common_gemm_owners_enabled(CommonQ4Workspace::Impl & s,int m,int mt,int k,int n,bool tiny_eligible) {
     const char * mode=std::getenv("KUNLUN_Q4_GEMM_OWNERS");
     if(mode && !std::strcmp(mode,"0"))return false;
     if(mode && std::strcmp(mode,"1")) {
@@ -213,10 +244,15 @@ bool common_gemm_owners_enabled(CommonQ4Workspace::Impl & s,int m,int mt,int k,i
         s.gemm_owners_invalid_logged=true;return false;
     }
     if(m==128 && mt==128 && ((k==4096 && (n==4096 || n==11008)) || (k==11008 && n==4096)))return true;
+    if(tiny_eligible && m==128 && mt==128) {
+        const char * tiny=std::getenv("KUNLUN_Q4_GEMM_TINY_OWNERS");
+        if(tiny && !std::strcmp(tiny,"1") &&
+           ((k==2048 && (n==256 || n==2048 || n==5632)) || (k==5632 && n==2048)))return true;
+    }
     if(!s.gemm_owners_shape_logged)std::fprintf(stderr,"Kunlun Q4 GEMM owners: M=%d tileM=%d Kp=%d Np=%d; existing GEMM selected\n",m,mt,k,n);
     s.gemm_owners_shape_logged=true;return false;
 }
-void common_gemm(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, const void * w, const void * x, int m, int dtype, const CommonQ4ActivationChunk * prepared=nullptr) {
+void common_gemm(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, const void * w, const void * x, int m, int dtype, const CommonQ4ActivationChunk * prepared=nullptr,bool tiny_eligible=false) {
     const int k=a.kp,n=a.np;
     int path,nt,kt,parts=1;
     const char * name;
@@ -238,7 +274,7 @@ void common_gemm(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
     if (parts>1) { native_reserve(s.slice,s.id,(size_t)parts*m*n*4); target=s.slice->data(); }
     const void * scales=(const char *)w+a.scale_offset;
     // One typed argument sequence for all SD families; ABI is validated at entry.
-    const bool owners=common_gemm_owners_enabled(s,m,mt,k,n);
+    const bool owners=common_gemm_owners_enabled(s,m,mt,k,n,tiny_eligible);
     const int program=owners?(parts==4?20:19):8+path-1;
     if(owners) {
         name=parts==4?"kunlun-common-combo4-owners":"kunlun-common-rows128-owners";
@@ -272,7 +308,7 @@ bool common_execute(CommonQ4Workspace::Impl & s, int id, void * y, const CommonQ
         if (crop) { native_reserve(s.output,id,(size_t)padded*a.np*4); out=s.output->data(); }
         const auto * chunk=prepared ? &prepared->chunks[chunk_index++] : nullptr;
         if (m == 1) { if (!common_gemv(s,out,a,w.storage,x,dtype,chunk)) return false; }
-        else common_gemm(s,out,a,w.storage,x,padded,dtype,chunk);
+        else common_gemm(s,out,a,w.storage,x,padded,dtype,chunk,m==128 && rows==128 && a.k==a.kp && a.n==a.np);
         if (crop) common_rows(s,(float *)y+(size_t)first*a.n,out,a.n,rows,a.np,a.n,rows,4);
         s.last_rows=rows;s.last_kp=a.kp;if(m!=1)s.last_components=1;
         first+=rows;++s.stats.chunks;
@@ -298,3 +334,5 @@ void common_q4_matmul(CommonQ4Workspace & workspace, int id, void * y, const Com
 }
 
 #include "q4-activation.inc"
+
+#include "q4-pair.inc"
