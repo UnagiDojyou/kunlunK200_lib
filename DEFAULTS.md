@@ -18,3 +18,5 @@ Large PP remains opt-in. Legacy Q6 remains explicitly selectable with KUNLUN_Q6_
 SwiGLU, common-Q4 activation quantization and SDNN Q6 can change numerical output relative to older CPU/CDNN configurations. The previous reports document these differences. GET_ROWS and graph pruning matched their prior paths bitwise in the tested models. Tiny TG measurements for graph pruning were variable and had a lower mean; this requested default policy is not a claim of universal speedup. Unsupported models/inputs retain existing fallback and mixed-input reconstruction. Kernel algorithms, weight ABI, leases, safety guards and existing explicit settings are unchanged.
 
 These defaults supersede historical opt-in/default-OFF descriptions in dated reports. See the source and latest configuration table for current behavior.
+
+The seven Q4 acceleration flags now default to ON; see docs/RUNTIME_DEFAULTS.md for scope and rollback.
