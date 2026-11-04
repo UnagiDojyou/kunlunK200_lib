@@ -177,8 +177,8 @@ void common_quant_gemv(CommonQ4Workspace::Impl & s, const void * x, int k, int d
         (k==2048 || k==4096 || k==5632 || k==11008);
     const char *pack_mode=std::getenv("KUNLUN_Q4_QUANT_PACK");
     const char *ext_mode=std::getenv("KUNLUN_Q4_QUANT_PACK_EXT");
-    const bool extended=!ext_mode || ((k==5632 && (!std::strcmp(ext_mode,"1") || !std::strcmp(ext_mode,"5632"))) ||
-                                    (k==11008 && (!std::strcmp(ext_mode,"1") || !std::strcmp(ext_mode,"11008"))));
+    const bool extended=(k==5632 || k==11008) && (!ext_mode || !std::strcmp(ext_mode,"1") ||
+        (k==5632 && !std::strcmp(ext_mode,"5632")) || (k==11008 && !std::strcmp(ext_mode,"11008")));
     const bool pack=exact && (k==2048 || extended) && (!pack_mode || !std::strcmp(pack_mode,"1"));
     native_launch(common_program(s,exact?34:0,exact?"kunlun-common-max-exact":"kunlun-common-max"),{native_arg(p0),native_arg(x),native_arg(k),native_arg(dtype)},16);
     native_launch(common_program(s,pack?37:(exact?35:1),pack?"kunlun-common-main-pack":(exact?"kunlun-common-main-exact":"kunlun-common-main")),{native_arg(q),native_arg(r),native_arg(p1),native_arg(x),native_arg(p0),native_arg(k),native_arg(dtype)},16);
