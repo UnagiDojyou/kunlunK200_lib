@@ -1,0 +1,13 @@
+#include "xpu/kernel/cluster_header.h"
+
+__global__ void kunlun_tp_sum_inplace(float * left, const float * right, int n) {
+    __local__ __attribute__((aligned(64))) float a[256], b[256];
+    const int thread=cluster_id()*core_num()+core_id();
+    const int base=thread*256;
+    if (base<n) {
+        GM2LM(left+base,a,1024);
+        GM2LM(right+base,b,1024);
+        for (int j=0;j<256;++j) a[j]=a[j]+b[j];
+        LM2GM(a,left+base,1024);
+    }
+}

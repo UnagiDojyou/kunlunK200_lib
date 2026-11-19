@@ -1,10 +1,21 @@
 #include "native-q4/quant-exact.h"
-__global__ void quant_max_64(unsigned int *peaks,const void *input,int k,int dtype){
+__global__ void quant_max_64(unsigned int *peaks,const void *input,int k,int dtype
+#ifdef K200_TP_QUANT_M1
+                             ,int logical_k
+#endif
+                            ){
+#ifndef K200_TP_QUANT_M1
+ const int logical_k=k;
+#endif
  __local__ __attribute__((aligned(64))) unsigned int words[NEXT_CHUNK];
  __local__ __attribute__((aligned(64))) unsigned short halves[NEXT_CHUNK];
  int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),chunks=(k+NEXT_CHUNK-1)/NEXT_CHUNK;
  for(int c=tid;c<chunks;c+=step){
   int start=c*NEXT_CHUNK,count=k-start;if(count>NEXT_CHUNK)count=NEXT_CHUNK;unsigned int m=0;
+  if(start>=logical_k){
+   words[0]=0;LM2GM(words,peaks+c,4);
+   continue;
+  }
   if(!dtype){
    GM2LM((_global_ptr_ const float *)input+start,words,count*4);
    for(int j=0;j<count;++j){unsigned int u=words[j]&0x7fffffff;m=(unsigned int)max((int)m,(int)u);}

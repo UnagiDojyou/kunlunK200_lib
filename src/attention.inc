@@ -264,8 +264,10 @@ const char * attention_rope_reason(const Rope4Layout &p) {
     if(!std::isfinite(p.freq_base) || p.freq_base<=1 || !std::isfinite(p.freq_scale) || p.freq_scale<=0 || !std::isfinite(p.attn_factor) || p.attn_factor<=0)return "rope parameters";
     return "";
 }
-bool attention_rope(Kernel &kernel,int id,void *y,size_t yb,const void *x,size_t xb,const int32_t *positions,size_t pb,const Rope4Layout &p) {
+bool attention_rope_impl(Kernel &kernel,int id,void *y,size_t yb,const void *x,size_t xb,const int32_t *positions,size_t pb,const Rope4Layout &p,bool defer) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(defer && (p.x.ne[0]!=128 || p.x.ne[1]!=16 || (p.x.ne[2]!=1 && p.x.ne[2]!=128) || p.mode!=0 || p.n_offs!=0 || p.n_dims!=128))return false;
+    if(kernel.impl_->tp_rope_pending)return false;
     if(*attention_rope_reason(p) || id<0 || id>1 || (kernel.impl_->id!=-1 && kernel.impl_->id!=id))return false;
     if(!tensor4_pointer(y,yb,p.y) || !tensor4_pointer(x,xb,p.x) || !positions || (uintptr_t)positions%4 || pb<(size_t)p.x.ne[2]*4 || (uintptr_t)positions+pb<(uintptr_t)positions)return false;
     if(tensor4_overlap(y,p.y,x,p.x) && !(y==x && tensor4_same(p.x,p.y)))return false;
@@ -284,11 +286,20 @@ bool attention_rope(Kernel &kernel,int id,void *y,size_t yb,const void *x,size_t
         for(int t=0;t<p.x.ne[2];++t){float theta=(float)pos[t];for(int j=0;j<p.n_dims/2;++j){float angle=theta*p.freq_scale;trig[(size_t)t*p.n_dims+2*j]=std::cos(angle)*p.attn_factor;trig[(size_t)t*p.n_dims+2*j+1]=std::sin(angle)*p.attn_factor;theta*=cfg.theta_scale;}}
         select(id);check(xpu_memcpy(phase.scratch,trig.data(),size,XPU_HOST_TO_DEVICE));check(xpu_wait());++kernel.impl_->attention_host_trig;
     } else attention_launch(phase,id,"kunlun-attention-rope-phase",cfg,{phase.scratch,positions});
-    attention_launch(rotate,id,"kunlun-attention-rope",cfg,{y,x,phase.scratch});check(xpu_wait());++kernel.impl_->attention_calls[3];return true;
+    attention_launch(rotate,id,"kunlun-attention-rope",cfg,{y,x,phase.scratch});if(defer)kernel.impl_->tp_rope_pending=true;else check(xpu_wait());++kernel.impl_->attention_calls[3];return true;
 }
 AttentionStatistics attention_statistics(const Kernel &kernel) {
     std::lock_guard<std::recursive_mutex> lock(mutex);auto *p=kernel.impl_;
     size_t bytes=p->attention_phase?p->attention_phase->scratch_size:0;
     for(auto *state:{p->attention_pack_a,p->attention_pack_b,p->attention_range,p->attention_range_dma,p->attention_sd,p->attention_mm,p->attention_sm_fast,p->attention_sm_typed,p->attention_sm,p->attention_cp,p->attention_phase,p->attention_rope})if(state)bytes+=state->alias_input_size+state->quant_size+state->correction_size+(state->input_max?1024:0)+((state==p->attention_pack_a || state==p->attention_pack_b)?state->scratch_size:0);
     return {p->attention_calls[0],p->attention_calls[1],p->attention_calls[2],p->attention_calls[3],bytes,0,p->attention_host_trig,p->attention_pack_calls};
+}
+
+bool attention_rope(Kernel &kernel,int id,void *y,size_t yb,const void *x,size_t xb,const int32_t *positions,size_t pb,const Rope4Layout &p) {return attention_rope_impl(kernel,id,y,yb,x,xb,positions,pb,p,false);}
+
+bool attention_rope_submit(Kernel &kernel,int id,void *y,size_t yb,const void *x,size_t xb,const int32_t *positions,size_t pb,const Rope4Layout &p) {return attention_rope_impl(kernel,id,y,yb,x,xb,positions,pb,p,true);}
+
+void attention_rope_complete(Kernel &kernel,int id) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);require(id>=0 && id<2 && kernel.impl_->id==id);
+    if(kernel.impl_->tp_rope_pending){select(id);check(xpu_wait());kernel.impl_->tp_rope_pending=false;}
 }

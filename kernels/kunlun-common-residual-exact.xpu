@@ -1,18 +1,50 @@
 #include "native-q4/quant-exact.h"
 __global__ void quant_residual_compact_64(int8_t *quant,float *parameters,const float *residual,
-                              const unsigned int *peaks0,const unsigned int *peaks1,int k){
+                              const unsigned int *peaks0,const unsigned int *peaks1,
+#ifdef K200_TP_QUANT_M1
+                              const unsigned int *peer_peaks,unsigned int *status,
+#endif
+                              int physical_k){
+#ifdef K200_TP_WO_INPUT_SHARE
+ const int k=2048;
+#else
+ const int k=physical_k;
+#endif
  __local__ __attribute__((aligned(64))) float x[NEXT_CHUNK],scaled[NEXT_CHUNK],params[16];
  __local__ __attribute__((aligned(64))) unsigned int maxima0[NEXT_PEAKS],maxima1[NEXT_PEAKS];
  __local__ __attribute__((aligned(64))) unsigned int qwords[NEXT_CHUNK/2];
  unsigned char *qout=(unsigned char*)qwords;
  int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),chunks=(k+NEXT_CHUNK-1)/NEXT_CHUNK;
+ GM2LM(peaks1,maxima1,((chunks+15)/16)*64);
+ float maximum0=0,maximum1;
+#ifdef K200_TP_QUANT_M1
+ if(peer_peaks){
+#ifdef K200_TP_WO_INPUT_SHARE
+  bool bad;maximum1=next_peer_max(maxima1,maxima1,chunks,bad);
+#else
+  GM2LM(peer_peaks,maxima0,((chunks+15)/16)*64);
+  bool bad;maximum1=next_peer_max(maxima1,maxima0,chunks,bad);
+#endif
+  if(tid==0 && status){maxima0[0]=bad;LM2GM(maxima0,status,4);}
+  if(bad)return;
+  if(tid==0){GM2LM(parameters,params,64);maximum0=params[2];}
+ }else
+#endif
+ {
+  GM2LM(peaks0,maxima0,((chunks+15)/16)*64);
+  maximum0=next_max(maxima0,chunks);maximum1=next_max(maxima1,chunks);
+ }
  // The same workspace is reused for different K values. Clear the moving zero tail on XPU.
  if(tid<16){for(int j=0;j<16;++j)qwords[j]=0;LM2GM(qout,quant+(long long)k*4+tid*64,64);}
- GM2LM(peaks0,maxima0,((chunks+15)/16)*64);GM2LM(peaks1,maxima1,((chunks+15)/16)*64);
- float maximum0=next_max(maxima0,chunks),maximum1=next_max(maxima1,chunks),inverse=127.f/maximum1;
+ float inverse=127.f/maximum1;
  if(tid==0){for(int j=0;j<16;++j)params[j]=0;params[0]=maximum0/127.f;params[1]=maximum1/127.f;params[2]=maximum0;params[3]=maximum1;LM2GM(params,parameters,64);}
  for(int c=tid;c<chunks;c+=step){
+#ifdef K200_TP_WO_INPUT_SHARE
+  // The two 32-byte gaps stay zero. Quantization overwrites all other bytes.
+  for(int j=8;j<16;++j){qwords[j]=0;qwords[j+16]=0;}
+#else
   for(int j=0;j<NEXT_CHUNK/2;++j)qwords[j]=0;
+#endif
   int start=c*NEXT_CHUNK,count=k-start;if(count>NEXT_CHUNK)count=NEXT_CHUNK;
   GM2LM(residual+start,x,count*4);
   for(int j=0;j<count;j+=8)_x256_svmul_ls(inverse,x+j,scaled+j);

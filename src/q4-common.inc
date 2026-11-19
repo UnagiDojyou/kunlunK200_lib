@@ -72,7 +72,14 @@ struct CommonQ4ActivationLease::Impl {
 
 struct CommonQ4Workspace::Impl {
     int id=-1;
-    Kernel::Impl programs[39];
+    bool tp_mode=false, tp_padded_output=false;
+    bool submit_only=false,prepare_only=false,preparing=false,post_only=false,post_pending=false;
+    std::function<void()> crop_pending;
+    bool crop_only=false,crop_running=false;
+    std::function<void()> pending;
+    Kernel::Impl programs[51];
+    CommonQ4TPStatistics tp_stats{};
+    std::unique_ptr<Buffer> tp_peer,tp_status;
     CommonQ4PairStatistics pair_stats{};
     CommonQ4PairStatus pair_status=CommonQ4PairStatus::NotAttempted;
     std::unique_ptr<Buffer> input, output, peaks, rest, peak1, slice, ticks;
@@ -89,6 +96,7 @@ struct CommonQ4Workspace::Impl {
 CommonQ4Workspace::CommonQ4Workspace(): impl_(new Impl{}) {}
 CommonQ4Workspace::~CommonQ4Workspace() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
+    common_q4_complete(*this);
     common_invalidate(*impl_->activation);
     if (impl_->id >= 0) {
         select(impl_->id); check(xpu_wait());
@@ -103,7 +111,7 @@ CommonQ4Quantization CommonQ4Workspace::quantization() const {
 CommonQ4Statistics CommonQ4Workspace::statistics() const {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     auto & s=*impl_; auto a=s.stats; a.hbm_workspace_bytes=0;
-    for (auto * b : {s.input.get(),s.output.get(),s.activation->quant.get(),s.activation->scale.get(),s.peaks.get(),s.rest.get(),s.peak1.get(),s.slice.get(),s.ticks.get()})
+    for (auto * b : {s.input.get(),s.output.get(),s.activation->quant.get(),s.activation->scale.get(),s.peaks.get(),s.rest.get(),s.peak1.get(),s.slice.get(),s.ticks.get(),s.tp_peer.get(),s.tp_status.get()})
         if (b) a.hbm_workspace_bytes+=std::max<size_t>(b->size(),256);
     a.l3_workspace_bytes=s.l3 ? s.l3->bytes : 0; a.slice_bytes=s.slice ? s.slice->size() : 0; return a;
 }
@@ -112,6 +120,32 @@ CommonQ4MacStatistics CommonQ4Workspace::mac_statistics() const {
     return impl_->mac_stats;
 }
 namespace {
+// This shape is the M=1 attention output projection in the TP backend.
+bool common_tp_wo_m1(const CommonQ4Workspace::Impl & s, const CommonQ4Info & a) {
+    return s.tp_mode && s.submit_only && a.k==2048 && a.kp==2048 && a.n==4096 && a.np==4096;
+}
+bool common_wo_option(const char * name, bool default_value=false) {
+    const char * value=std::getenv(name);
+    return value ? !std::strcmp(value,"1") : default_value;
+}
+bool common_tp_wo_gemv_enabled() {
+    return common_wo_option("GGML_KUNLUN_TP_WO_GEMV",true) &&
+        common_wo_option("KUNLUN_Q4_MAC_DMA",true) &&
+        common_wo_option("KUNLUN_Q4_NMAJOR",true) &&
+        common_wo_option("KUNLUN_Q4_DMA_ADDR32",true);
+}
+bool common_tp_fast(const CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
+    const char * mode=kunlun_default_on("GGML_KUNLUN_TP_FAST");
+    return s.tp_mode && mode && !std::strcmp(mode,"1") && a.k==5504 && a.kp==5632 && a.n==4096 && a.np==4096;
+}
+bool common_row_dispatch(const CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
+    if(s.submit_only && common_tp_fast(s,a))return true;
+    const char * mode=kunlun_default_on("GGML_KUNLUN_ROW_DISPATCH");
+    if(!s.submit_only || (!s.tp_mode && (!mode || std::strcmp(mode,"1"))) || a.k!=a.kp)return false;
+    return (a.k==2048 && (a.np==256 || a.np==1024 || a.np==2816)) ||
+           (a.k==4096 && (a.np==2048 || a.np==5632)) ||
+           (a.k==5632 && a.np==1024) || (a.k==11008 && a.np==2048);
+}
 bool common_stream_shape(const CommonQ4Info & a) {
     if(a.k!=a.kp)return false;
     static const int shapes[][2]={
@@ -129,23 +163,26 @@ bool common_stream_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
         if(!s.mac_invalid_logged)std::fprintf(stderr,"Kunlun Q4 MAC/DMA: invalid KUNLUN_Q4_MAC_DMA=%s; using stable path\n",mode);
         s.mac_invalid_logged=true;return false;
     }
-    if(common_stream_shape(a))return true;
+    if(common_stream_shape(a) || common_row_dispatch(s,a))return true;
     ++s.mac_stats.shape_fallbacks;
     if(!s.mac_shape_logged)std::fprintf(stderr,"Kunlun Q4 MAC/DMA PD%d: unvalidated shape K=%d N=%d Kp=%d Np=%d; using stable GEMV\n",a.device,a.k,a.n,a.kp,a.np);
     s.mac_shape_logged=true;return false;
 }
-bool common_addr32_enabled(const CommonQ4Info & a) {
-    const char * mode=std::getenv("KUNLUN_Q4_DMA_ADDR32");
+bool common_addr32_enabled(const CommonQ4Info & a, bool row=false) {
+    const char * mode=kunlun_default_on("KUNLUN_Q4_DMA_ADDR32");
     if(!mode || std::strcmp(mode,"1"))return false;
+    if(row)return true;
     if(a.k!=a.kp || a.n!=a.np)return false;
     return (a.k==4096 && (a.n==4096 || a.n==11008)) ||
            (a.k==11008 && a.n==4096) ||
            (a.k==2048 && (a.n==256 || a.n==2048 || a.n==5632)) ||
            (a.k==5632 && a.n==2048);
 }
-bool common_fast_sum_enabled(const CommonQ4Info & a) {
+bool common_fast_sum_enabled(const CommonQ4Info & a, bool row=false) {
     const char * mode=std::getenv("KUNLUN_Q4_GEMV_SUM_FAST");
-    if((mode && std::strcmp(mode,"1")) || a.k!=a.kp || a.n!=a.np)return false;
+    if(mode && std::strcmp(mode,"1"))return false;
+    if(row)return true;
+    if(a.k!=a.kp || a.n!=a.np)return false;
     return (a.k==4096 && (a.n==4096 || a.n==11008)) || (a.k==11008 && a.n==4096) ||
            (a.k==2048 && (a.n==256 || a.n==2048 || a.n==5632)) || (a.k==5632 && a.n==2048);
 }
@@ -153,6 +190,7 @@ bool common_nmajor_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
     const char * mode=std::getenv("KUNLUN_Q4_NMAJOR");
     if(mode && !std::strcmp(mode,"0"))return false;
     if(!mode || !std::strcmp(mode,"1")) {
+        if(common_tp_fast(s,a) || (common_row_dispatch(s,a) && (a.k==4096 || a.k==11008)))return true;
         if((a.kp==4096 && (a.np==4096 || a.np==11008)) || (a.kp==11008 && a.np==4096))return true;
         if(!s.nmajor_shape_logged)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: unvalidated shape K=%d Np=%d; using 0.7.8 stream order\n",s.id,a.kp,a.np);
         s.nmajor_shape_logged=true;return false;
@@ -163,10 +201,10 @@ bool common_nmajor_enabled(CommonQ4Workspace::Impl & s,const CommonQ4Info & a) {
 Kernel::Impl & common_program(CommonQ4Workspace::Impl & s, int index, const char * name, bool sd=false) {
     auto & p=s.programs[index]; load_kernel(p,name,s.id,sd); return p;
 }
-void common_rows(CommonQ4Workspace::Impl & s, void * dst, const void * src, int width, int rows, int src_stride, int dst_stride, int dst_rows, int bytes) {
+void common_rows(CommonQ4Workspace::Impl & s, void * dst, const void * src, int width, int rows, int src_stride, int dst_stride, int dst_rows, int bytes, bool enqueue=false) {
     auto & p=common_program(s,15,"kunlun-common-io");
     native_launch(p,{native_arg(dst),native_arg(src),native_arg(width),native_arg(rows),native_arg(src_stride),native_arg(dst_stride),native_arg(dst_rows),native_arg(bytes)},16);
-    check(xpu_wait());
+    if(!enqueue)check(xpu_wait());
 }
 void common_quant_gemv(CommonQ4Workspace::Impl & s, const void * x, int k, int dtype, void * q, void * params) {
     uint64_t begin=common_tick(s.activation->profile);
@@ -183,7 +221,7 @@ void common_quant_gemv(CommonQ4Workspace::Impl & s, const void * x, int k, int d
     native_launch(common_program(s,exact?34:0,exact?"kunlun-common-max-exact":"kunlun-common-max"),{native_arg(p0),native_arg(x),native_arg(k),native_arg(dtype)},16);
     native_launch(common_program(s,pack?37:(exact?35:1),pack?"kunlun-common-main-pack":(exact?"kunlun-common-main-exact":"kunlun-common-main")),{native_arg(q),native_arg(r),native_arg(p1),native_arg(x),native_arg(p0),native_arg(k),native_arg(dtype)},16);
     native_launch(common_program(s,pack?38:(exact?36:2),pack?"kunlun-common-residual-pack":(exact?"kunlun-common-residual-exact":"kunlun-common-residual")),{native_arg(q),native_arg(params),native_arg(r),native_arg(p0),native_arg(p1),native_arg(k)},16);
-    check(xpu_wait());
+    if(!s.prepare_only)check(xpu_wait());
     ++s.activation->stats.quantized_chunks; s.activation->stats.quant_kernel_launches+=3;
     if (s.activation->profile) s.activation->stats.quantization_ns+=common_tick(true)-begin;
 }
@@ -196,7 +234,7 @@ void common_quant_gemm(CommonQ4Workspace::Impl & s, const void * x, int m, int k
         native_launch(common_program(s,5,"kunlun-common-quant-partial"),{native_arg(peaks),native_arg(x),native_arg(m),native_arg(k),native_arg(dtype)},16);
         native_launch(common_program(s,6,"kunlun-common-quant-row-fused"),{native_arg(q),native_arg(scale),native_arg(x),native_arg(peaks),native_arg(m),native_arg(k),native_arg(dtype),native_arg(mode)},16);
     }
-    check(xpu_wait());
+    if(!s.prepare_only)check(xpu_wait());
     ++s.activation->stats.quantized_chunks; s.activation->stats.quant_kernel_launches+=m>=64 ? 1 : 2;
     if (s.activation->profile) s.activation->stats.quantization_ns+=common_tick(true)-begin;
 }
@@ -218,20 +256,32 @@ bool common_gemv(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
     void * params=prepared ? const_cast<void *>(prepared->scales) : s.activation->scale->data(), * partial=s.l3->pointer;
     if (!prepared) common_quant_gemv(s,x,k,dtype,q,params);
     s.last_values=q;s.last_scales=params;float zero=0,one=1;
-    bool stream=common_stream_enabled(s,a);
-    bool nmajor=stream && common_nmajor_enabled(s,a);
-    const bool addr32=stream && common_addr32_enabled(a);
-    const int gemv_program=addr32?(nmajor?22:21):nmajor?18:stream?17:3;
+    const bool wo=common_tp_wo_m1(s,a);
+    const bool wo_gemv=wo && common_tp_wo_gemv_enabled();
+    const bool stream=wo_gemv || common_stream_enabled(s,a);
+    const bool nmajor=wo_gemv || (stream && common_nmajor_enabled(s,a));
+    const bool addr32=wo_gemv || (stream && common_addr32_enabled(a,common_row_dispatch(s,a)));
+    int gemv_program=addr32?(nmajor?22:21):nmajor?18:stream?17:3;
     const char * gemv_name=addr32?(nmajor?"kunlun-common-gemv-addr32-nmajor":"kunlun-common-gemv-addr32-stream"):nmajor?"kunlun-common-gemv-nmajor":stream?"kunlun-common-gemv-stream":"kunlun-common-gemv";
+    if(wo_gemv) {
+        gemv_program=47;
+        gemv_name="kunlun-tp-wo-gemv";
+    }
     if(addr32 && !s.programs[gemv_program].fn)std::fprintf(stderr,"Kunlun Q4 DMA address32 PD%d: %s K=%d N=%d ABI=1 fence/order unchanged\n",s.id,gemv_name,a.k,a.n);
     if(nmajor && !s.programs[gemv_program].fn)std::fprintf(stderr,"Kunlun Q4 N-major PD%d: shape-selected, ABI=1, unchanged partial order\n",s.id);
     if(stream && !nmajor && !s.programs[gemv_program].fn)std::fprintf(stderr,"Kunlun Q4 MAC/DMA stream PD%d: ABI=1 K=%d N=%d resident_L1D<=524288; original MAC order\n",s.id,a.k,a.n);
+    const bool wo_fast_sum=wo && common_wo_option("GGML_KUNLUN_TP_WO_SUM_FAST",true) &&
+        common_wo_option("KUNLUN_Q4_GEMV_SUM_FAST",true);
+    const bool fast_sum=wo_fast_sum || (stream && common_fast_sum_enabled(a,common_row_dispatch(s,a)));
+    auto & sum=common_program(s,fast_sum?23:4,fast_sum?"kunlun-common-sum-fast":"kunlun-common-sum");
+    auto finish=[&,y,partial,scales,k,n,batch,first,mode]() {
+        select(s.id);check(xpu_wait());
+        native_launch(sum,{native_arg(y),native_arg(partial),native_arg(scales),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(mode)},16);
+        if(s.post_only)s.post_pending=true;else check(xpu_wait());
+    };
     native_launch(common_program(s,gemv_program,gemv_name,true),{native_arg(partial),native_arg(w),native_arg(q),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(components),native_arg(bits),native_arg(zero),native_arg(zero),native_arg(one),native_arg(pipelined),native_arg(scales),native_arg(fold),native_arg(params)},8);
-    check(xpu_wait());
-    const bool fast_sum=stream && common_fast_sum_enabled(a);
-    if(fast_sum && !s.programs[23].fn)std::fprintf(stderr,"Kunlun Q4 GEMV fast sum PD%d: K=%d N=%d, CL16, ordered K32 FP32 sum\n",s.id,a.k,a.n);
-    native_launch(common_program(s,fast_sum?23:4,fast_sum?"kunlun-common-sum-fast":"kunlun-common-sum"),{native_arg(y),native_arg(partial),native_arg(scales),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(mode)},16);
-    check(xpu_wait());s.last_components=2; ++s.stats.paths[0];
+    if(s.submit_only)s.pending=finish;else finish();
+    s.last_components=2; ++s.stats.paths[0];
     if(stream){++s.mac_stats.stream_sd_calls;s.mac_stats.resident_l1d_bytes=std::max(s.mac_stats.resident_l1d_bytes,(size_t)std::min(k/32,128)*4096);}
     else ++s.mac_stats.baseline_sd_calls;
     return true;
@@ -243,9 +293,15 @@ bool common_gemm_owners_enabled(CommonQ4Workspace::Impl & s,int m,int mt,int k,i
         if(!s.gemm_owners_invalid_logged)std::fprintf(stderr,"Kunlun Q4 GEMM owners: invalid setting; existing GEMM selected\n");
         s.gemm_owners_invalid_logged=true;return false;
     }
+    const char * row=kunlun_default_on("GGML_KUNLUN_ROW_DISPATCH");
+    const char * fast=kunlun_default_on("GGML_KUNLUN_TP_FAST");
+    if(s.tp_mode && fast && !std::strcmp(fast,"1") && m==128 && mt==128 && k==5632 && n==4096)return true;
+    if(s.submit_only && (s.tp_mode || (row && !std::strcmp(row,"1"))) && m==128 && mt==128 &&
+       ((k==2048 && (n==256 || n==1024 || n==2816)) || (k==4096 && (n==2048 || n==5632)) ||
+        (k==5632 && n==1024) || (k==11008 && n==2048)))return true;
     if(m==128 && mt==128 && ((k==4096 && (n==4096 || n==11008)) || (k==11008 && n==4096)))return true;
     if(tiny_eligible && m==128 && mt==128) {
-        const char * tiny=std::getenv("KUNLUN_Q4_GEMM_TINY_OWNERS");
+        const char * tiny=kunlun_default_on("KUNLUN_Q4_GEMM_TINY_OWNERS");
         if(tiny && !std::strcmp(tiny,"1") &&
            ((k==2048 && (n==256 || n==2048 || n==5632)) || (k==5632 && n==2048)))return true;
     }
@@ -280,13 +336,16 @@ void common_gemm(CommonQ4Workspace::Impl & s, void * y, const CommonQ4Info & a, 
         name=parts==4?"kunlun-common-combo4-owners":"kunlun-common-rows128-owners";
         if(!s.programs[program].fn)std::fprintf(stderr,"Kunlun Q4 GEMM owners PD%d: %s, M128, original FP32 order\n",s.id,name);
     }
+    if(parts>1)common_program(s,14,"kunlun-common-join-slices");
+    auto finish=[&,y,target,scale,m,n,parts,ticks]() {
+        select(s.id);check(xpu_wait());
+        if(parts>1) {
+            native_launch(s.programs[14],{native_arg(y),native_arg(target),native_arg(scale),native_arg(m),native_arg(n),native_arg(parts),native_arg(ticks)},16);
+            if(s.post_only)s.post_pending=true;else check(xpu_wait());
+        }
+    };
     native_launch(common_program(s,program,name,true),{native_arg(target),native_arg(q),native_arg(w),native_arg(scales),native_arg(scale),native_arg(m),native_arg(n),native_arg(k),native_arg(nt),native_arg(kt),native_arg(ticks)},8);
-    check(xpu_wait());
-    if (parts>1) {
-        // The seventh stats argument is mandatory in the non-profile join too.
-        native_launch(common_program(s,14,"kunlun-common-join-slices"),{native_arg(y),native_arg(target),native_arg(scale),native_arg(m),native_arg(n),native_arg(parts),native_arg(ticks)},16);
-        check(xpu_wait());
-    }
+    if(s.submit_only)s.pending=finish;else finish();
     ++s.stats.paths[path];
 }
 }
@@ -304,21 +363,30 @@ bool common_execute(CommonQ4Workspace::Impl & s, int id, void * y, const CommonQ
             native_reserve(s.input,id,(size_t)padded*a.kp*bytes);
             common_rows(s,s.input->data(),x,a.k,rows,a.k,a.kp,padded,bytes); x=s.input->data();
         }
-        bool crop=a.n!=a.np || rows!=padded || (uintptr_t)out%64;
+        bool crop=!s.tp_padded_output && (a.n!=a.np || rows!=padded || (uintptr_t)out%64);
         if (crop) { native_reserve(s.output,id,(size_t)padded*a.np*4); out=s.output->data(); }
         const auto * chunk=prepared ? &prepared->chunks[chunk_index++] : nullptr;
         if (m == 1) { if (!common_gemv(s,out,a,w.storage,x,dtype,chunk)) return false; }
         else common_gemm(s,out,a,w.storage,x,padded,dtype,chunk,m==128 && rows==128 && a.k==a.kp && a.n==a.np);
-        if (crop) common_rows(s,(float *)y+(size_t)first*a.n,out,a.n,rows,a.np,a.n,rows,4);
+        if(crop && s.submit_only) {
+            auto finish=s.pending;
+            s.pending=[&,finish,y,first,a,out,rows]() {
+                finish();
+                auto crop=[&,y,first,a,out,rows]() { common_rows(s,(float *)y+(size_t)first*a.n,out,a.n,rows,a.np,a.n,rows,4,s.crop_only);if(s.crop_only)s.crop_running=true; };
+                if(s.post_only)s.crop_pending=crop;else crop();
+            };
+        } else if(crop)common_rows(s,(float *)y+(size_t)first*a.n,out,a.n,rows,a.np,a.n,rows,4);
         s.last_rows=rows;s.last_kp=a.kp;if(m!=1)s.last_components=1;
         first+=rows;++s.stats.chunks;
     }
-    check(xpu_wait());++s.stats.calls;++matmuls[id];return true;
+    if(!s.submit_only)check(xpu_wait());
+    ++s.stats.calls;++matmuls[id];return true;
 }
 }
 void common_q4_matmul(CommonQ4Workspace & workspace, int id, void * y, const CommonQ4Weight & weight, const void * input, int m, InputType type) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     auto & w=*weight.impl_; auto a=w.info;auto & s=*workspace.impl_;
+    require(!s.pending && !s.preparing && !s.post_pending && !s.crop_pending && !s.crop_running);
     require(w.ready && id == a.device && common_q4_supported(a.k,a.n));
     auto expected=common_q4::describe(a.k,a.n,common_q4::Layout::Micro32Bank,common_q4::ScaleOrder::KMajor);
     require(a.abi_version==1 && a.quant_type==2 && a.layout==1 && a.scale_order==1 && a.kp==expected.kp && a.np==expected.np && a.scale_offset==expected.scale_offset && a.payload_bytes==expected.payload_bytes);
@@ -336,3 +404,82 @@ void common_q4_matmul(CommonQ4Workspace & workspace, int id, void * y, const Com
 #include "q4-activation.inc"
 
 #include "q4-pair.inc"
+
+bool common_q4_submit_shared(CommonQ4Workspace & work,int id,void * y,const CommonQ4Weight & weight,
+                             const CommonQ4ActivationLease & lease,uint64_t generation) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto & s=*work.impl_;auto a=weight.info();
+    if(s.pending || s.preparing || s.post_pending || s.crop_pending || s.crop_running || lease.chunks()!=1 || (a.k!=a.kp && !(s.tp_mode && a.k==5504 && a.kp==5632 && a.n==4096)))return false;
+    auto c=lease.chunk(0);
+    if(c.rows!=c.padded_rows || (c.rows!=1 && c.rows!=8 && c.rows!=32 && c.rows!=64 && c.rows!=128))return false;
+    s.submit_only=true;
+    bool ok=common_q4_matmul_shared(work,id,y,weight,lease,generation);
+    s.submit_only=false;
+    require(!ok || bool(s.pending));return ok;
+}
+void common_q4_complete(CommonQ4Workspace & work) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto & s=*work.impl_;
+    if(s.preparing) { select(s.id);check(xpu_wait());s.preparing=false; }
+    if(s.post_pending) { select(s.id);check(xpu_wait());s.post_pending=false; }
+    if(s.crop_running) { select(s.id);check(xpu_wait());s.crop_running=false; }
+    if(s.crop_pending) { select(s.id);auto crop=s.crop_pending;s.crop_pending={};crop(); }
+    if(s.pending) { s.pending();s.pending={}; }
+}
+
+bool common_q4_prepare_submit(CommonQ4Workspace & work,int id,const void * input,int k,int m,
+                              uint64_t generation,CommonQ4ActivationLease & lease) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);auto & s=*work.impl_;
+    if(s.pending || s.preparing || s.post_pending || s.crop_pending || s.crop_running || s.activation->profile ||
+       (m!=1 && m!=8 && m!=32 && m!=64 && m!=128) || !common_q4_supported(k,1) || k%256 ||
+       (uintptr_t)input%64)return false;
+    s.prepare_only=true;bool ok=common_q4_prepare(work,id,input,k,m,InputType::f32,generation,lease);s.prepare_only=false;
+    s.preparing=ok;return ok;
+}
+void common_q4_prepare_complete(CommonQ4Workspace & work) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);auto & s=*work.impl_;
+    if(s.preparing) { select(s.id);check(xpu_wait());s.preparing=false; }
+}
+void common_q4_finish_submit(CommonQ4Workspace & work) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);auto & s=*work.impl_;
+    require(!s.preparing && !s.post_pending && !s.crop_pending && !s.crop_running);
+    if(!s.pending)return;
+    s.post_only=true;s.pending();s.pending={};s.post_only=false;
+}
+
+void common_q4_crop_submit(CommonQ4Workspace & work) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);auto & s=*work.impl_;
+    require(!s.pending && !s.preparing && !s.crop_running);
+    if(s.post_pending) { select(s.id);check(xpu_wait());s.post_pending=false; }
+    if(s.crop_pending) {
+        select(s.id);auto crop=s.crop_pending;s.crop_pending={};s.crop_only=true;crop();s.crop_only=false;
+    }
+}
+
+bool common_q4_tp_submit(CommonQ4Workspace & work,int id,void * y,const CommonQ4Weight & weight,
+                         const CommonQ4ActivationLease & lease,uint64_t generation) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto & s=*work.impl_;auto a=weight.info();
+    const char * attn=kunlun_default_on("GGML_KUNLUN_TP_ATTENTION");
+    bool attention=attn && !std::strcmp(attn,"1") && ((a.k==4096 && a.n==2048) || (a.k==2048 && a.n==4096));
+    if (!attention && !((a.k==4096 && a.n==5504) || (a.k==5504 && a.n==4096))) return false;
+    s.tp_mode=true;bool ok=common_q4_submit_shared(work,id,y,weight,lease,generation);s.tp_mode=false;return ok;
+}
+
+bool common_q4_tp_submit_padded(CommonQ4Workspace & work,int id,void * y,const CommonQ4Weight & weight,
+        const CommonQ4ActivationLease & lease,uint64_t generation) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto & s=*work.impl_;
+    const auto a=weight.info();
+    const auto chunk=lease.chunk(0);
+    if (a.k!=4096 || a.n!=5504 || a.np!=5632 || !y || (uintptr_t)y%64 ||
+        lease.chunks()!=1 || (chunk.rows!=1 && chunk.rows!=128)) return false;
+    s.tp_padded_output=true;
+    const bool ok=common_q4_tp_submit(work,id,y,weight,lease,generation);
+    s.tp_padded_output=false;
+    return ok;
+}
+
+#include "q4-tp.inc"
+
+#include "q4-tp-pair.inc"

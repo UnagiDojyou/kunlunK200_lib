@@ -18,6 +18,8 @@ int wait();
 enum CopyKind { host_to_device, device_to_host, device_to_device };
 int copy(void * dst, const void * src, size_t bytes, CopyKind kind);
 void peer(int dst_device, void * dst, int src_device, const void * src, size_t bytes);
+// The caller has completed all writes to src. Destination completion is retained.
+void peer_completed(int dst_device, void * dst, int src_device, const void * src, size_t bytes);
 void * allocate(int device, size_t bytes);
 void release(int device, void * ptr, size_t bytes);
 size_t allocated_bytes(int device);
@@ -40,6 +42,11 @@ private:
 enum class WeightType { f32 = 0, f16 = 1, q4_0 = 2, rowwise_i8 = 3, q6_k = 4 };
 enum class ElementwiseOp { add = 0, multiply = 1, silu = 2, rms_norm = 3, scale = 4 };
 
+struct ElementwiseSubmitOptions {
+    bool exact_alias = false;
+    bool ordered_rms = false;
+};
+
 struct SetRowsLayout {
     int width, rows, dim2, dim3;
     int source_stride[4];
@@ -53,7 +60,7 @@ struct SetRowsLayout {
     int cache_features, cache_tokens, cache_stride;
 };
 
-struct Flash4Layout;struct FlashStatistics;
+struct Flash4Layout;struct FlashStatistics;struct FlashInspection;
 struct SwiGLULayout;
 struct Matmul4Layout;struct Softmax4Layout;struct Tensor4Layout;struct Rope4Layout;struct AttentionStatistics;
 
@@ -71,6 +78,15 @@ private:
     friend bool get_rows_f32(Kernel &,int,void *,size_t,const void *,size_t,const int32_t *,size_t,int,int,int);
     friend bool common_q4_get_rows(Kernel &,int,void *,size_t,const CommonQ4Weight &,const int32_t *,size_t,int);
     friend FlashStatistics flash_statistics(const Kernel &);
+    friend FlashInspection flash_inspection(const Kernel &);
+    friend bool flash_attention_impl(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_t qb,const void *k,size_t kb,const void *v,size_t vb,const void *mask,size_t mb,const Flash4Layout &p,bool,int);
+    friend bool attention_rope_impl(Kernel &kernel,int id,void *y,size_t yb,const void *x,size_t xb,const int32_t *positions,size_t pb,const Rope4Layout &p,bool);
+    friend void flash_attention_complete(Kernel &,int);
+    friend bool flash_attention_resume(Kernel &,int);
+    friend bool flash_attention_prepare(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
+    friend bool flash_attention_share_maxima(Kernel &,Kernel &,int);
+
+    friend void attention_rope_complete(Kernel &,int);
     friend bool flash_attention(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
     friend bool attention_matmul(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const Matmul4Layout &);
     friend bool attention_softmax(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const Softmax4Layout &);
@@ -82,9 +98,16 @@ private:
     friend void elementwise(Kernel &, int, void *, const void *, const void *, int, int,
                             int, ElementwiseOp, float);
     friend void copy_rows(Kernel &, int, void *, const void *, int, int, int, int);
+    friend void row_pair_join(Kernel &,int,void *,void *,const void *,const void *,int,int,int,int,int);
     friend bool set_rows_f16(Kernel &, int, void *, size_t, const void *, size_t, const void *, size_t, const SetRowsLayout &);
-    friend void rms_norm(Kernel &, int, void *, const void *, int, int, float);
+    friend int elementwise_impl(Kernel &, int, void *, const void *, const void *, int, int, int, ElementwiseOp, float, bool, ElementwiseSubmitOptions);
+    friend void tp_sum_inplace(Kernel &, int, void *, const void *, int, int);
+    friend int tp_wo_sum_submit(Kernel &, void *, const void *);
+    friend bool set_rows_f16_impl(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,
+                                  const SetRowsLayout &,struct KVRowsPending *);
+    friend int rms_norm_impl(Kernel &, int, void *, const void *, int, int, float, bool, ElementwiseSubmitOptions);
     friend bool swiglu(Kernel &, int, void *, size_t, const void *, size_t, const void *, size_t, const SwiGLULayout &);
+    friend bool swiglu_submit(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const SwiGLULayout &);
 };
 
 size_t aligned(size_t bytes);
@@ -122,6 +145,22 @@ bool set_rows_f16(Kernel &, int device, void * dst, size_t dst_bytes,
 // FP32 two-stage reduction, width 256..16384 in multiples of 32, up to 32 rows.
 // Requires finite positive epsilon. Identical input/output pointers are supported.
 // Completes before returning.
+// Add a disjoint contiguous F32 peer partial to a contiguous F32 destination.
+// This exact-alias ADD completes before returning.
+void tp_sum_inplace(Kernel &, int device, void * dst, const void * peer_partial, int elements, int width);
+// Submit the fixed 4096-element WO SUM on PD0. The caller must wait.
+int tp_wo_sum_submit(Kernel &, void * dst, const void * peer_partial);
+bool tp_wo_sum_sync_available();
+void tp_wo_sum_sync_peer(int dst, void * dp, int src, const void * sp, size_t bytes);
+
+// Wait on the selected device before reusing its kernel workspace or consuming the result.
+int elementwise_submit(Kernel &, int device, void * y, const void * a, const void * b,
+                       int elements, int width, int broadcast_elements, ElementwiseOp, float parameter);
+// The ordered path uses the device's default CL stream. The caller drains it on error.
+// Partial overlaps and broadcast aliases are unsupported by the direct alias path.
+int elementwise_submit_ex(Kernel &, int device, void * y, const void * a, const void * b,
+                          int elements, int width, int broadcast_elements, ElementwiseOp, float parameter,
+                          ElementwiseSubmitOptions);
 void rms_norm(Kernel &, int device, void * y, const void * x, int width, int rows, float epsilon);
 
 // Native layout keeps the original Q4_0 values and FP16 block scales. N is padded to 32.
@@ -276,6 +315,7 @@ struct CommonQ4Statistics {
 struct CommonQ4MacStatistics {
     size_t baseline_sd_calls, stream_sd_calls, shape_fallbacks, resident_l1d_bytes;
 };
+struct CommonQ4TPStatistics { uint64_t prepares=0,prepare_ns=0,max_collectives=0,max_ns=0,wait_ns=0,peer_copies=0,peer_bytes=0; };
 struct CommonQ4Quantization { const void * values; const void * scales; int rows, kp, components; };
 struct CommonQ4PairStatistics { size_t calls, declined, l3_partial_bytes; };
 enum class CommonQ4PairStatus { NotAttempted, Success, Disabled, InvalidInput, Configuration, WeightAbi, Lease, Alias, Workspace };
@@ -285,6 +325,7 @@ public:
     ~CommonQ4Workspace();
     CommonQ4Workspace(const CommonQ4Workspace &) = delete;
     CommonQ4Workspace & operator=(const CommonQ4Workspace &) = delete;
+    CommonQ4TPStatistics tp_statistics() const;
     CommonQ4Statistics statistics() const;
     CommonQ4ActivationStatistics activation_statistics() const;
     CommonQ4MacStatistics mac_statistics() const;
@@ -293,6 +334,8 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend bool common_q4_tp_submit_pair(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+    friend bool common_q4_tp_prepare_global(CommonQ4Workspace &,CommonQ4Workspace &,const void *,const void *,int,int,uint64_t,CommonQ4ActivationLease &,CommonQ4ActivationLease &,bool);
     friend CommonQ4PairStatistics common_q4_pair_statistics(const CommonQ4Workspace &);
     friend CommonQ4PairStatus common_q4_pair_last_status(const CommonQ4Workspace &);
     friend bool common_q4_matmul_pair(CommonQ4Workspace &, int, void *, void *, const CommonQ4Weight &, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
@@ -300,6 +343,17 @@ private:
     friend bool common_q4_prepare(CommonQ4Workspace &, int, const void *, int, int, InputType, uint64_t, CommonQ4ActivationLease &);
     friend bool common_q4_matmul_shared(class CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
 
+    friend bool common_q4_submit_shared(CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
+    friend bool common_q4_tp_submit(CommonQ4Workspace &,int,void *,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+    friend bool common_q4_tp_submit_padded(CommonQ4Workspace &,int,void *,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+    friend bool common_q4_tp_submit_pair_padded(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+
+    friend void common_q4_complete(CommonQ4Workspace &);
+    friend bool common_q4_prepare_submit(CommonQ4Workspace &,int,const void *,int,int,uint64_t,CommonQ4ActivationLease &);
+    friend void common_q4_prepare_complete(CommonQ4Workspace &);
+    friend void common_q4_finish_submit(CommonQ4Workspace &);
+    friend void common_q4_crop_submit(CommonQ4Workspace &);
+    friend bool common_q4_submit_pair_shared(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
 };
 // Contiguous X[M,K], Y[M,N]. Synchronous under runtime_mutex, one workspace/PD.
 // M>1 uses Row A8, M=1 uses two-component A8. Original weight scales are exact.
@@ -322,6 +376,8 @@ public:
     struct Impl;
 private:
     Impl * impl_;
+    friend bool common_q4_tp_submit_pair(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+    friend bool common_q4_tp_prepare_global(CommonQ4Workspace &,CommonQ4Workspace &,const void *,const void *,int,int,uint64_t,CommonQ4ActivationLease &,CommonQ4ActivationLease &,bool);
     friend bool common_q4_matmul_pair(CommonQ4Workspace &, int, void *, void *, const CommonQ4Weight &, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
     friend bool common_q4_prepare(CommonQ4Workspace &, int, const void *, int, int, InputType, uint64_t, CommonQ4ActivationLease &);
     friend bool common_q4_matmul_shared(CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
@@ -369,6 +425,19 @@ void kv_max_mark_rows(int device,void *data,const int64_t *rows,size_t count);
 // been copied/validated by the backend. The host target set must match the device
 // indices exactly and contain no duplicates; the kernel independently checks bounds.
 bool kv_max_set_rows(Kernel &,int device,void *dst,size_t dst_bytes,const void *src,size_t src_bytes,const void *indices,size_t index_bytes,const SetRowsLayout &,const int64_t *targets,size_t count);
+struct KVRowUpdate {
+    Kernel * kernel;
+    void * dst;
+    size_t dst_bytes;
+    const void * src;
+    size_t src_bytes;
+    const void * indices;
+    size_t index_bytes;
+    SetRowsLayout layout;
+};
+// Jobs are PD0 and PD1. Device indices must mirror the same immutable logical input.
+// targets is the sorted set of those indices. Both PDs are complete on success.
+bool kv_set_rows_pair(const KVRowUpdate (&jobs)[2],const int64_t * targets,size_t count);
 struct KVMaxStatistics {
  size_t seeds=0,fallback_unverified=0;
  size_t lookups=0,hits=0,full_calls=0,verify_calls=0,rebuilds=0,rebuild_rows=0,writer_calls=0,writer_rows=0,invalidations=0,retired=0,metadata_bytes=0,zero_bytes=0,scan_bytes=0,meta_read_bytes=0,verify_mismatches=0;
@@ -391,4 +460,78 @@ FlashStatistics flash_statistics(const Kernel &);
 struct Flash4Layout { Tensor4Layout q,k,v,y,mask; bool has_mask=false; float scale=1,max_bias=0; };
 const char *flash_attention_reason(const Flash4Layout &);
 bool flash_attention(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
+}
+
+namespace kunlun {
+// Submit one K-aligned M=1/8/32/64/128 chunk. Output cropping is retained.
+// False means no work is pending.
+// Hold the runtime mutex and retain input, output, weight and lease until complete.
+// SDK calls stay on one host thread; each workspace belongs to one PD.
+// Do not reuse a submitted PD or its shared L3 until complete is called.
+bool common_q4_submit_shared(CommonQ4Workspace &, int, void *, const CommonQ4Weight &, const CommonQ4ActivationLease &, uint64_t);
+void common_q4_complete(CommonQ4Workspace &);
+}
+
+namespace kunlun {
+bool common_q4_submit_pair_shared(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+void row_pair_join(Kernel &,int,void *,void *,const void *,const void *,int,int,int,int,int);
+}
+
+namespace kunlun {
+// Retain input and lease until prepare_complete; the lease is not ready before it.
+// Retain all PD resources and the runtime mutex across all submitted phases.
+bool common_q4_prepare_submit(CommonQ4Workspace &,int,const void *,int,int,uint64_t,CommonQ4ActivationLease &);
+void common_q4_prepare_complete(CommonQ4Workspace &);
+// Wait for this PD's SD, enqueue its sum/join, then use complete to drain and crop.
+void common_q4_finish_submit(CommonQ4Workspace &);
+}
+
+namespace kunlun {
+// Same math and pointer contract as swiglu. Retain buffers until select(id)+wait.
+bool swiglu_submit(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const SwiGLULayout &);
+}
+
+namespace kunlun {
+// Complete this PD's sum/join and enqueue its crop. Complete before reuse.
+void common_q4_crop_submit(CommonQ4Workspace &);
+}
+
+namespace kunlun {
+// TP-only logical K/padded K adapter. Existing submit contract stays unchanged.
+bool common_q4_tp_submit(CommonQ4Workspace &,int,void *,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+}
+
+namespace kunlun {
+// GLOBAL scale for equal 5504-element shards; completes and rejects nonfinite maxima.
+bool common_q4_tp_prepare_global(CommonQ4Workspace &,CommonQ4Workspace &,const void *,const void *,int,int,uint64_t,CommonQ4ActivationLease &,CommonQ4ActivationLease &,bool parallel=true);
+}
+
+namespace kunlun {
+bool common_q4_tp_submit_pair(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+// TP Gate/Up only. Outputs must be disjoint, aligned, PD-local F32 buffers of 5632 * rows elements each.
+// Retain them through common_q4_complete() and any following SwiGLU. No logical output or crop is produced.
+bool common_q4_tp_submit_padded(CommonQ4Workspace &,int,void *,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+bool common_q4_tp_submit_pair_padded(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+}
+
+namespace kunlun {
+// TP only. Keep source, output, kernel, L3 and runtime mutex until complete.
+bool flash_attention_submit(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
+void flash_attention_complete(Kernel &,int);
+bool attention_rope_submit(Kernel &,int,void *,size_t,const void *,size_t,const int32_t *,size_t,const Rope4Layout &);
+void attention_rope_complete(Kernel &,int);
+}
+
+namespace kunlun {
+struct FlashInspection { const void *peaks=nullptr,*ranges=nullptr; };
+FlashInspection flash_inspection(const Kernel &);
+}
+
+namespace kunlun {
+// Prepare completes cast/local maxima; resume submits the existing FA kernels.
+// Retain buffers, both kernels and the runtime mutex through complete/cancel.
+bool flash_attention_prepare(Kernel &,int,void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const void *,size_t,const Flash4Layout &);
+bool flash_attention_resume(Kernel &,int);
+// components: 3=K+V, 1/2 are diagnostic ablations. No tensor payload is gathered.
+bool flash_attention_share_maxima(Kernel &,Kernel &,int components=3);
 }

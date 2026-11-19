@@ -20,3 +20,22 @@ SwiGLU, common-Q4 activation quantization and SDNN Q6 can change numerical outpu
 These defaults supersede historical opt-in/default-OFF descriptions in dated reports. See the source and latest configuration table for current behavior.
 
 The seven Q4 acceleration flags now default to ON; see docs/RUNTIME_DEFAULTS.md for scope and rollback.
+
+## Two-PD runtime additions in 0.7.13
+
+The validated Row and Tensor dispatches are selected when called through their
+corresponding backend modes and guards. The library recognizes explicit `0`
+for the newly enabled boolean switches. Tensor H=16 group4 uses the existing
+M=1, F16, stride, and KV-length restrictions. Tensor KV row metadata, overwrite
+handling, writer descriptor reuse and the M=128 Prefill writer maintain the
+existing revision and completion checks.
+
+GLOBAL Q4 projection preparation, the tuned WO GEMV and direct Down staging
+are selected for the existing eligible Tensor shapes. The library also
+exports the fixed 4096-element FP32 SUM kernel and the guarded synchronous
+P2P helper. The backend selects them for the matching WO or Down collective.
+WO quantization argument packing and its synchronous-copy shortcut are optional
+through `GGML_KUNLUN_TP_WO_PACK_ARGS=1` and `GGML_KUNLUN_TP_WO_SYNC_COPY=1`.
+
+All installed kernel entries may be compiled with XTDK or supplied through
+`KUNLUN_PREBUILT_KERNELS`. The latter must come from a matching library build.

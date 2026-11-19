@@ -32,6 +32,7 @@ bool common_q4_prepare(CommonQ4Workspace & work, int id, const void * input, int
                        InputType type, uint64_t generation, CommonQ4ActivationLease & lease) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     auto & s=*work.impl_;auto & a=*s.activation;
+    require(!s.pending && !s.preparing && !s.post_pending && !s.crop_pending && !s.crop_running);
     auto reject=[&]() { ++a.stats.rejected_calls;return false; };
     if (id<0 || id>1 || !input || !generation || !common_q4_supported(k,1) || m<=0 ||
         (size_t)m*k>INT_MAX/4 || (type!=InputType::f32 && type!=InputType::f16) || (s.id!=-1 && s.id!=id)) return reject();
@@ -80,12 +81,13 @@ bool common_q4_matmul_shared(CommonQ4Workspace & work, int id, void * y, const C
                              const CommonQ4ActivationLease & lease, uint64_t generation) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     auto & s=*work.impl_;const auto & l=*lease.impl_;const auto & w=*weight.impl_;auto a=w.info;
+    require(!s.pending && !s.preparing && !s.post_pending && !s.crop_pending && !s.crop_running);
     auto reject=[&]() { ++s.activation->stats.rejected_calls;return false; };
     if (l.storage!=s.activation || !lease.matches(id,a.k,l.m,l.type,generation) || !w.ready || id!=a.device || s.id!=id || !y) return reject();
     auto e=common_q4::describe(a.k,a.n,common_q4::Layout::Micro32Bank,common_q4::ScaleOrder::KMajor);
     if (a.abi_version!=1 || a.quant_type!=2 || a.layout!=1 || a.scale_order!=1 || a.kp!=e.kp || a.np!=e.np ||
         a.scale_offset!=e.scale_offset || a.payload_bytes!=e.payload_bytes || (size_t)l.m*a.n>INT_MAX/4) return reject();
-    uintptr_t yp=(uintptr_t)y,wp=(uintptr_t)w.storage;size_t ys=(size_t)l.m*a.n*4;
+    uintptr_t yp=(uintptr_t)y,wp=(uintptr_t)w.storage;size_t ys=(size_t)l.m*(s.tp_padded_output?a.np:a.n)*4;
     auto overlap=[&](const void * p,size_t n) { uintptr_t v=(uintptr_t)p;return yp<v+n && v<yp+ys; };
     if (yp%4 || yp+ys<yp || wp%256 || wp+a.payload_bytes<wp || overlap(l.input,l.input_bytes) ||
         overlap(w.storage,a.payload_bytes) ||

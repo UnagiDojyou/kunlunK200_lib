@@ -8,4 +8,12 @@ static inline __device__ unsigned int next_bits(float f){union{unsigned int u;fl
 static inline __device__ float next_max(const unsigned int *v,int count){
  int m=0;for(int i=0;i<count;++i)m=max(m,(int)v[i]);return m?next_float((unsigned int)m):1.f;
 }
+#ifdef K200_TP_QUANT_M1
+static inline __device__ float next_peer_max(const unsigned int *local, const unsigned int *peer, int count, bool &bad) {
+    int maximum=0;
+    for (int c=0;c<count;++c) maximum=max(maximum,max((int)local[c],(int)peer[c]));
+    bad=(unsigned int)maximum>=0x7f800000u;
+    return maximum?next_float((unsigned int)maximum):1.f;
+}
+#endif
 static inline __device__ int next_round(float v){int q=(int)(v+(v>=0?.5f:-.5f));if(q>127)q=127;if(q<-127)q=-127;return q;}

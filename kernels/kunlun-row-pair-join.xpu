@@ -1,0 +1,15 @@
+#include "xpu/kernel/cluster_header.h"
+__global__ void row_pair_join(float * y0,float * y1,const float * local,const float * remote,
+                             int nl,int nr,int pl,int pr,int main) {
+    __local__ float tile[256];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num();
+    for(int projection=0;projection<2;++projection)for(int side=0;side<2;++side) {
+        int width=side?nr:nl,offset=side?(main?0:nl):(main?nr:0);
+        auto src=side?remote+projection*pr:local+projection*pl;
+        auto dst=(projection?y1:y0)+offset;
+        for(int base=tid*256;base<width;base+=step*256) {
+            int count=width-base;if(count>256)count=256;
+            GM2LM(src+base,tile,count*4);LM2GM(tile,dst+base,count*4);
+        }
+    }
+}

@@ -1,0 +1,15 @@
+#include "xpu/kernel/cluster_header.h"
+#include "xpu/kernel/simd.h"
+
+__global__ void kunlun_tp_wo_sum(float * pd0, const float * pd1) {
+    constexpr int tile = 64;
+    // The fixed 4 x 16 launch covers 4096 elements with disjoint tiles.
+    const int base = (cluster_id()*core_num()+core_id())*tile;
+    __local__ __attribute__((aligned(64))) float a[tile], b[tile];
+    GM2LM(pd0+base, a, sizeof(a));
+    GM2LM(pd1+base, b, sizeof(b));
+    for (int i = 0; i < tile; i += 8) {
+        _x256_vvadd_ls(a+i, b+i, a+i);
+    }
+    LM2GM(a, pd0+base, sizeof(a));
+}

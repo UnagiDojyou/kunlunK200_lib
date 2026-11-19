@@ -1,5 +1,11 @@
 #include "../kernels/flash-config.h"
 namespace {
+struct FlashPrepared {
+    void *y=nullptr;const void *q=nullptr,*k=nullptr,*v=nullptr,*mask=nullptr;
+    size_t yb=0,qb=0,kb=0,vb=0,mb=0;
+    Flash4Layout layout{};Tensor4Layout pq{},pk{},pv{};
+    const void *half_q=nullptr,*half_k=nullptr,*half_v=nullptr;
+};
 struct FlashState {
     int id;
     Kernel::Impl kv_dma_kq,kv_dma_pv,kv_dma_decode_kq,kv_dma_decode_pv,kv_dma_decode_pv_head,pipeline_profile_kq,pipeline_profile_online,pipeline_profile_pv,kq,kq1024,pv,pv_wide,online,online_ordered,online_unroll16,online_simd8,decode_online_simd8,decode_online_head_simd8,decode_kq,decode_kq_head,decode_pv,decode_online,decode_reduce,decode_pv_head,decode_pv_head_affinity,decode_online_head,decode_reduce_head,profile_kq,profile_pv,profile_online,profile_decode_kq,profile_decode_kq_head,profile_decode_pv,profile_decode_pv_head,profile_decode_online,profile_decode_reduce,qpack,kpack,vpack,range;
@@ -10,6 +16,11 @@ struct FlashState {
     xdnn::Context *vendor=nullptr;
     size_t workspace=0,calls=0,decode_calls=0,pipeline_calls=0,pipeline_blocks=0;
     size_t query_batches=0,query_chunks=0;
+    bool tp_prepared=false,tp_pending=false;
+    FlashPrepared prepared;
+    Kernel::Impl tp_max;
+    std::unique_ptr<Buffer> tp_receive,tp_status;
+
     bool last_l3=false;
     int last_block=0,last_qt=0;
     explicit FlashState(int pd):id(pd){}
@@ -20,7 +31,7 @@ struct FlashState {
         if(std::getenv("KUNLUN_FLASH_PIPELINE_STATS")&&calls)std::fprintf(stderr,"FLASH_PIPELINE_STATS pd=%d calls=%zu pipeline_calls=%zu blocks=%zu\n",id,calls,pipeline_calls,pipeline_blocks);
         if(query_batches && std::getenv("KUNLUN_LARGE_PP_STATS"))std::fprintf(stderr,"LARGE_PP pd=%d flash_batches=%zu query_chunks=%zu\n",id,query_batches,query_chunks);
         if(vendor)xdnn::destroy_context(vendor);
-        for(auto *s:{&kv_dma_kq,&kv_dma_pv,&kv_dma_decode_kq,&kv_dma_decode_pv,&kv_dma_decode_pv_head,&pipeline_profile_kq,&pipeline_profile_online,&pipeline_profile_pv,&kq,&kq1024,&pv,&pv_wide,&online,&online_ordered,&online_unroll16,&online_simd8,&decode_online_simd8,&decode_online_head_simd8,&decode_kq,&decode_kq_head,&decode_pv,&decode_online,&decode_reduce,&decode_pv_head,&decode_pv_head_affinity,&decode_online_head,&decode_reduce_head,&profile_kq,&profile_pv,&profile_online,&profile_decode_kq,&profile_decode_kq_head,&profile_decode_pv,&profile_decode_pv_head,&profile_decode_online,&profile_decode_reduce,&qpack,&kpack,&vpack,&range}){
+        for(auto *s:{&tp_max,&kv_dma_kq,&kv_dma_pv,&kv_dma_decode_kq,&kv_dma_decode_pv,&kv_dma_decode_pv_head,&pipeline_profile_kq,&pipeline_profile_online,&pipeline_profile_pv,&kq,&kq1024,&pv,&pv_wide,&online,&online_ordered,&online_unroll16,&online_simd8,&decode_online_simd8,&decode_online_head_simd8,&decode_kq,&decode_kq_head,&decode_pv,&decode_online,&decode_reduce,&decode_pv_head,&decode_pv_head_affinity,&decode_online_head,&decode_reduce_head,&profile_kq,&profile_pv,&profile_online,&profile_decode_kq,&profile_decode_kq_head,&profile_decode_pv,&profile_decode_pv_head,&profile_decode_online,&profile_decode_reduce,&qpack,&kpack,&vpack,&range}){
             if(s->vendor)xdnn::destroy_context(s->vendor);
             release(id,s->quant,s->quant_size);release(id,s->scratch,s->scratch_size);release(id,s->alias_input,s->alias_input_size);
             if(s->code)check(xpu_free(s->code));
@@ -40,11 +51,21 @@ void flash_kv_launch(Kernel::Impl &program,std::initializer_list<NativeArgument>
  if(!group){native_launch_stream(program,args,8,stream,timeline,slot);return;}
  require(!timeline);size_t off=0;for(auto a:args){check(xpu_launch_argument_set(a.value,a.size,off));off+=a.size;}check(xpu_launch_argument_set(&group,sizeof(group),off));check(xpu_launch_config(4,8,stream));check(xpu_launch_async(program.fn));
 }
-int flash_kv_group(const KunlunFlashConfig &p,const int *stride,int chunks=1,bool decoding=false){
+int flash_kv_group(const KunlunFlashConfig &p,const int *stride,int chunks=1,bool decoding=false,bool tensor_parallel=false){
  const char *mode=std::getenv("KUNLUN_FLASH_KV_DMA");int g=0;
  if(stride[0]!=2||stride[2]!=p.d*2||stride[1]!=p.d*p.hk*2)return 0;
  bool automatic=!mode||!std::strcmp(mode,"auto");
  if(automatic){
+  // Four groups keep all four SDNNs active on each 16-head shard.
+  const char *tp_group=std::getenv("GGML_KUNLUN_TP_FA_H16_KV_GROUP");
+  const bool tp_shape=tensor_parallel&&(!tp_group||!std::strcmp(tp_group,"1"))&&
+      !decoding&&chunks==1&&p.d==128&&p.m==1&&p.h==16&&p.hk==16&&
+      p.b==1&&p.bk==1&&p.bv==1&&p.qt==128&&
+      p.s>=512&&p.s<=1024&&p.s%256==0&&p.block==p.s&&
+      p.has_mask&&p.mask_type&&p.max_bias==0&&
+      p.k[0]==2&&p.k[1]==4096&&p.k[2]==256&&
+      p.v[0]==2&&p.v[1]==4096&&p.v[2]==256;
+  if(tp_shape)g=4;
   // Real 7B TG only. PP and the small-KV-head experiments remain opt-in.
   bool measured=!decoding&&p.m==1&&p.d==128&&p.hk==32&&p.h==32&&p.b==1&&p.qt==128&&chunks==1&&p.s>=512&&p.s<=4352&&p.s%256==0&&p.block==std::min(1024,p.s)&&p.has_mask&&p.mask_type&&p.max_bias==0&&p.k[0]==2&&p.k[1]==p.d*p.hk*2&&p.k[2]==p.d*2&&p.v[0]==2&&p.v[1]==p.d*p.hk*2&&p.v[2]==p.d*2;
   if(measured)g=8;
@@ -90,8 +111,11 @@ const char *flash_attention_reason(const Flash4Layout &p){
     if(bytes>16*1024*1024)return "flash workspace";
     return "";
 }
-bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_t qb,const void *k,size_t kb,const void *v,size_t vb,const void *mask,size_t mb,const Flash4Layout &p){
+bool flash_attention_impl(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_t qb,const void *k,size_t kb,const void *v,size_t vb,const void *mask,size_t mb,const Flash4Layout &p,bool defer,int phase_mode){
     std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(defer && (p.q.ne[0]!=128 || p.q.ne[2]!=16 || p.k.ne[2]!=16 || p.q.ne[3]!=1 ||
+       p.k.ne[3]!=1 || p.v.ne[3]!=1 || (p.q.ne[1]!=1 && p.q.ne[1]!=128) ||
+       p.k.ne[1]>1024 || p.max_bias!=0 || !p.has_mask))return false;
     if(*flash_attention_reason(p) || id<0 || id>1 || (kernel.impl_->id!=-1 && kernel.impl_->id!=id))return false;
     if(!tensor4_pointer(y,yb,p.y)||!tensor4_pointer(q,qb,p.q)||!tensor4_pointer(k,kb,p.k)||!tensor4_pointer(v,vb,p.v)||(p.has_mask&&!tensor4_pointer(mask,mb,p.mask)))return false;
     if((((uintptr_t)q|(uintptr_t)k|(uintptr_t)v)&31)!=0)return false;
@@ -100,6 +124,7 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     kernel.impl_->id=id;select(id);
     if(!kernel.impl_->flash)kernel.impl_->flash=std::make_shared<FlashState>(id);
     auto &s=*std::static_pointer_cast<FlashState>(kernel.impl_->flash);
+    if(s.tp_pending || (s.tp_prepared && phase_mode!=2) || (phase_mode==2 && !s.tp_prepared))return false;
     if(p.q.ne[1]>128 && large_pp_enabled()) {
         if(!s.query_batches++)std::fprintf(stderr,"KUNLUN large PP PD%d: Flash M=%d query_chunk=128 shared_KV=1\n",id,p.q.ne[1]);
         // Slice the query axes only. Mask rows already encode absolute positions.
@@ -115,8 +140,8 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
         }
         return true;
     }
-    bool profile=std::getenv("KUNLUN_FLASH_DECODING_PROFILE")&&p.q.ne[1]==1&&p.q.ne[2]*p.q.ne[3]>=32;
-    bool trace=std::getenv("KUNLUN_FLASH_TRACE")!=nullptr||profile;auto start=std::chrono::steady_clock::now(),tick=start;
+    bool profile=!defer && std::getenv("KUNLUN_FLASH_DECODING_PROFILE")&&p.q.ne[1]==1&&p.q.ne[2]*p.q.ne[3]>=32;
+    bool trace=!defer && (std::getenv("KUNLUN_FLASH_TRACE")!=nullptr||profile);auto start=std::chrono::steady_clock::now(),tick=start;
     auto stage=[&](const char *name){if(trace){check(xpu_wait());auto now=std::chrono::steady_clock::now();std::fprintf(stderr,"FLASH_STAGE stage=%s ms=%.6f kv_max=%s phase=%s\n",name,std::chrono::duration<double,std::milli>(now-tick).count(),std::getenv("KUNLUN_FLASH_KV_MAX")?std::getenv("KUNLUN_FLASH_KV_MAX"):"default",std::getenv("K200_PROFILE_PHASE")?std::getenv("K200_PROFILE_PHASE"):"none");tick=now;if(profile){flash_profile_report(name,s);tick=std::chrono::steady_clock::now();}}};
     auto pq=p.q,pk=p.k,pv=p.v;
     // Each owner survives all enqueued blocks. Recompute on every call for KV updates.
@@ -134,22 +159,42 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
         }
         layout.type=InputType::f16;stride=2;for(int d=0;d<4;++d){layout.nb[d]=stride;stride*=layout.ne[d];}return input;
     };
+    void *vmax=nullptr;
+    if(phase_mode==2){
+        q=s.prepared.half_q;k=s.prepared.half_k;v=s.prepared.half_v;
+        pq=s.prepared.pq;pk=s.prepared.pk;pv=s.prepared.pv;
+        vmax=(char*)s.peaks->data()+256;
+    }else{
     q=half(s.qpack,q,pq);k=half(s.kpack,k,pk);v=half(s.vpack,v,pv);stage("pack_cast");
     if(!s.vendor){s.vendor=xdnn::create_context();require(s.vendor);s.vendor->set_ncluster(4);}
     native_reserve(s.peaks,id,1024);native_reserve(s.ranges,id,(size_t)((p.q.ne[1]+flash_query_tile()-1)/flash_query_tile())*p.q.ne[2]*p.q.ne[3]*32);
-    void *vmax=(char*)s.peaks->data()+256;
-    bool max_cached=kv_max_prepare(id,k,pk,v,pv,p.q.ne[1],s.peaks->data(),s.vendor);stage("kv_max_metadata");
+    vmax=(char*)s.peaks->data()+256;
+    bool max_cached=kv_max_prepare(id,k,pk,v,pv,p.q.ne[1],s.peaks->data(),s.vendor,defer);stage("kv_max_metadata");
     if(!max_cached){
-        check(xdnn::findmax<float16>(s.vendor,(const float16*)k,(float*)s.peaks->data(),(int)tensor4_count(pk)));stage("k_findmax");
-        check(xdnn::findmax<float16>(s.vendor,(const float16*)v,(float*)vmax,(int)tensor4_count(pv)));stage("v_findmax");
+        {
+            KVDiag diag{"full-k",id,tensor4_count(pk)*2};
+            check(xdnn::findmax<float16>(s.vendor,(const float16*)k,(float*)s.peaks->data(),(int)tensor4_count(pk)));
+        }stage("k_findmax");
+        {
+            KVDiag diag{"full-v",id,tensor4_count(pv)*2};
+            check(xdnn::findmax<float16>(s.vendor,(const float16*)v,(float*)vmax,(int)tensor4_count(pv)));
+        }stage("v_findmax");
         kv_max_finish(id,k,pk,v,pv,s.peaks->data());stage("kv_max_seed");
+    }
+
+        if(phase_mode==1){
+            check(xpu_wait());
+            s.prepared.y=y;s.prepared.mask=mask;s.prepared.yb=yb;s.prepared.qb=qb;s.prepared.kb=kb;s.prepared.vb=vb;s.prepared.mb=mb;s.prepared.layout=p;
+            s.prepared.pq=pq;s.prepared.pk=pk;s.prepared.pv=pv;s.prepared.half_q=q;s.prepared.half_k=k;s.prepared.half_v=v;
+            s.tp_prepared=true;return true;
+        }
     }
     auto flat=pq;auto rcfg=attention_config(flat,pq);rcfg.k=flash_query_tile();
     attention_launch(s.range,id,"kunlun-flash-range",rcfg,{s.ranges->data(),q},true);stage("ranges");
     KunlunFlashConfig cfg{};cfg.d=pq.ne[0];cfg.s=pk.ne[1];cfg.m=pq.ne[1];cfg.h=pq.ne[2];cfg.hk=pk.ne[2];cfg.b=pq.ne[3];cfg.bk=pk.ne[3];cfg.bv=pv.ne[3];cfg.block=std::min(flash_block(cfg.m,cfg.h/cfg.hk),cfg.s);cfg.qt=flash_query_tile();
     std::copy(pq.nb,pq.nb+4,cfg.q);std::copy(pk.nb,pk.nb+4,cfg.k);std::copy(pv.nb,pv.nb+4,cfg.v);std::copy(p.y.nb,p.y.nb+4,cfg.y);
     if(p.has_mask){std::copy(p.mask.nb,p.mask.nb+4,cfg.mask);std::copy(p.mask.ne,p.mask.ne+4,cfg.mask_ne);cfg.mask_type=p.mask.type==InputType::f16;}else for(int d=0;d<4;++d)cfg.mask_ne[d]=1;cfg.tg_group=!std::getenv("KUNLUN_FLASH_TG_GROUP")||std::strcmp(std::getenv("KUNLUN_FLASH_TG_GROUP"),"0");cfg.has_mask=p.has_mask;cfg.scale=p.scale;cfg.max_bias=p.max_bias;
-    if(flash_decode(s,id,y,q,k,v,p.has_mask?mask:nullptr,cfg))return true;
+    if(!defer && flash_decode(s,id,y,q,k,v,p.has_mask?mask:nullptr,cfg))return true;
     const char *pipeline_mode=std::getenv("KUNLUN_FLASH_PIPELINE");
     const char *pipeline_buffer=std::getenv("KUNLUN_FLASH_PIPELINE_BUFFER");
     const char *pipeline_kq=std::getenv("KUNLUN_FLASH_KQ"),*pipeline_online=std::getenv("KUNLUN_FLASH_ONLINE"),*pipeline_pv=std::getenv("KUNLUN_FLASH_PV");
@@ -157,7 +202,7 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     bool pipeline_defaults=(!pipeline_kq||!std::strcmp(pipeline_kq,"auto")||!std::strcmp(pipeline_kq,"reuse1024"))&&(!pipeline_online||!std::strcmp(pipeline_online,"auto")||!std::strcmp(pipeline_online,"ordered")||!std::strcmp(pipeline_online,"unroll16")||!std::strcmp(pipeline_online,"simd8"))&&(!pipeline_pv||std::strcmp(pipeline_pv,"narrow"))&&(!pipeline_buffer||!std::strcmp(pipeline_buffer,"auto")||!std::strcmp(pipeline_buffer,"l3"));
     // Limit auto to the TG families with measured LLM benefits on both PDs.
     bool pipeline_shape=cfg.m==1&&cfg.h==32&&cfg.b==1&&cfg.block==1024&&cfg.qt==128&&((cfg.d==128&&cfg.hk==32&&cfg.s>1024&&cfg.s<=4352)||(cfg.d==64&&cfg.hk==4&&cfg.s>=8192&&cfg.s<=8448));
-    bool pipeline=((pipeline_auto&&pipeline_shape&&pipeline_defaults)||(pipeline_mode&&!std::strcmp(pipeline_mode,"on")))&&cfg.s>cfg.block&&!trace;
+    bool pipeline=!defer && ((pipeline_auto&&pipeline_shape&&pipeline_defaults)||(pipeline_mode&&!std::strcmp(pipeline_mode,"on")))&&cfg.s>cfg.block&&!trace;
     if(pipeline&&!s.pipeline_sd){
         int sd_rc=xpu_stream_create(&s.pipeline_sd),cl_rc=sd_rc?sd_rc:xpu_stream_create(&s.pipeline_cl);
         if(sd_rc||cl_rc){if(s.pipeline_sd)check(xpu_stream_destroy(s.pipeline_sd));s.pipeline_sd=nullptr;s.pipeline_cl=nullptr;pipeline=false;}
@@ -194,8 +239,8 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
     if(profile&&!kq_optimized)profile=false;
     auto *kq_program=profile?&s.profile_kq:(kq_optimized?&s.kq1024:&s.kq);
     load_kernel(*kq_program,profile?"kunlun-flash-profile-kq":(kq_optimized?"kunlun-flash-kq-reuse1024":"kunlun-flash-kq"),id,true);bool wide=!std::getenv("KUNLUN_FLASH_PV")||std::strcmp(std::getenv("KUNLUN_FLASH_PV"),"narrow");auto &pv_program=profile?s.profile_pv:(wide?s.pv_wide:s.pv);load_kernel(pv_program,profile?"kunlun-flash-profile-pv":(wide?"kunlun-flash-pv-wide":"kunlun-flash-pv"),id,true);const char *mode=std::getenv("KUNLUN_FLASH_ONLINE");
-    int kv_kg=!profile&&kq_optimized?flash_kv_group(cfg,cfg.k):0;
-    int kv_vg=!profile&&wide?flash_kv_group(cfg,cfg.v):0;
+    int kv_kg=!profile&&kq_optimized?flash_kv_group(cfg,cfg.k,1,false,defer):0;
+    int kv_vg=!profile&&wide?flash_kv_group(cfg,cfg.v,1,false,defer):0;
     if(kv_kg){if(flash_kv_load(s.kv_dma_kq,"kunlun-flash-kq-kv-group",id))kq_program=&s.kv_dma_kq;else kv_kg=0;}
     if(kv_vg&&!flash_kv_load(s.kv_dma_pv,"kunlun-flash-pv-kv-group",id))kv_vg=0;auto &selected_pv=kv_vg?s.kv_dma_pv:pv_program;
     if(std::getenv("KUNLUN_FLASH_KV_DMA_TRACE"))std::fprintf(stderr,"FLASH_KV_DMA pd=%d D=%d S=%d M=%d HK=%d Kstride=%d,%d,%d Vstride=%d,%d,%d kmod4096=%zu vmod4096=%zu kg=%d vg=%d\n",id,cfg.d,cfg.s,cfg.m,cfg.hk,cfg.k[0],cfg.k[1],cfg.k[2],cfg.v[0],cfg.v[1],cfg.v[2],(uintptr_t)k%4096,(uintptr_t)v%4096,kv_kg,kv_vg);
@@ -261,8 +306,9 @@ bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_
             flash_kv_launch(selected_pv,{native_arg(partial),native_arg(v),native_arg(prob),native_arg(vmax),native_arg(cp),native_arg(s0),native_arg(count)},kv_vg);stage("pv");
         }
         int s0=cfg.s,count=0;const void *mp=nullptr;
-        native_launch(online,{native_arg(y),native_arg(prob),native_arg(acc),native_arg(stats),native_arg(partial),native_arg(score),native_arg(mp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},16);check(xpu_wait());stage("final");
+        native_launch(online,{native_arg(y),native_arg(prob),native_arg(acc),native_arg(stats),native_arg(partial),native_arg(score),native_arg(mp),native_arg(qr),native_arg(cp),native_arg(s0),native_arg(count)},16);if(!defer)check(xpu_wait());stage("final");
     }
+    if(defer){s.tp_pending=true;s.tp_prepared=false;}
     if(!s.calls++||trace)std::fprintf(stderr,"KUNLUN Flash PD%d D=%d S=%d M=%d H=%d block=%d workspace=%zu storage=%s kq=%s pipeline=%d second_score=%s calls=%zu\n",id,cfg.d,cfg.s,cfg.m,cfg.h,cfg.block,total,hbm?"HBM":"L3",kq_optimized?"reuse1024":"legacy",pipeline,pipeline?(state_hbm?"state-HBM":(both_l3?"L3":"HBM")):"none",s.calls);
     return true;
 }
@@ -274,4 +320,46 @@ FlashStatistics flash_statistics(const Kernel &kernel){
     for(auto *p:{&s.qpack,&s.kpack,&s.vpack,&s.range})bytes+=p->scratch_size+p->quant_size+p->alias_input_size;
     for(auto *p:{s.config.get(),s.peaks.get(),s.ranges.get(),s.hbm.get(),s.pipeline_score.get(),s.pipeline_timeline.get()})if(p)bytes+=p->size();
     return {s.calls,bytes,s.last_l3?s.workspace:0,s.last_block,s.last_qt};
+}
+
+bool flash_attention(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_t qb,const void *k,size_t kb,const void *v,size_t vb,const void *mask,size_t mb,const Flash4Layout &p) {return flash_attention_impl(kernel,id,y,yb,q,qb,k,kb,v,vb,mask,mb,p,false,0);}
+
+bool flash_attention_submit(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_t qb,const void *k,size_t kb,const void *v,size_t vb,const void *mask,size_t mb,const Flash4Layout &p) {return flash_attention_impl(kernel,id,y,yb,q,qb,k,kb,v,vb,mask,mb,p,true,0);}
+
+void flash_attention_complete(Kernel &kernel,int id) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);require(id>=0 && id<2 && kernel.impl_->id==id);
+    if(!kernel.impl_->flash)return;
+    auto &s=*std::static_pointer_cast<FlashState>(kernel.impl_->flash);
+    if(s.tp_pending || s.tp_prepared){select(id);check(xpu_wait());s.tp_pending=false;s.tp_prepared=false;}
+}
+
+FlashInspection flash_inspection(const Kernel &kernel) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(!kernel.impl_->flash)return {};
+    const auto &s=*std::static_pointer_cast<FlashState>(kernel.impl_->flash);
+    return {s.peaks?s.peaks->data():nullptr,s.ranges?s.ranges->data():nullptr};
+}
+
+bool flash_attention_prepare(Kernel &kernel,int id,void *y,size_t yb,const void *q,size_t qb,const void *k,size_t kb,const void *v,size_t vb,const void *mask,size_t mb,const Flash4Layout &p) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(!flash_attention_impl(kernel,id,y,yb,q,qb,k,kb,v,vb,mask,mb,p,true,1))return false;
+    auto &s=*std::static_pointer_cast<FlashState>(kernel.impl_->flash);
+    s.prepared.q=q;s.prepared.k=k;s.prepared.v=v;return true;
+}
+bool flash_attention_resume(Kernel &kernel,int id) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(id<0 || id>1 || kernel.impl_->id!=id || !kernel.impl_->flash)return false;
+    auto &s=*std::static_pointer_cast<FlashState>(kernel.impl_->flash);
+    if(!s.tp_prepared || s.tp_pending)return false;
+    const auto p=s.prepared;
+    return flash_attention_impl(kernel,id,p.y,p.yb,p.q,p.qb,p.k,p.kb,p.v,p.vb,p.mask,p.mb,p.layout,true,2);
+}
+bool flash_attention_share_maxima(Kernel &kernel0,Kernel &kernel1,int components) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    if(&kernel0==&kernel1 || kernel0.impl_->id!=0 || kernel1.impl_->id!=1 || !kernel0.impl_->flash || !kernel1.impl_->flash || components<1 || components>3)return false;
+    auto &a=*std::static_pointer_cast<FlashState>(kernel0.impl_->flash),&b=*std::static_pointer_cast<FlashState>(kernel1.impl_->flash);
+    if(!a.tp_prepared || !b.tp_prepared || a.tp_pending || b.tp_pending || a.prepared.layout.k.ne[1]!=b.prepared.layout.k.ne[1] || a.prepared.layout.q.ne[1]!=b.prepared.layout.q.ne[1])return false;
+    select(0);load_kernel(a.tp_max,"kunlun-tp-absmax",0);
+    const int rows=components==3?2:1,offset=components==2?256:0;
+    return tp_merge_absmax(a.tp_max,a.tp_receive,a.tp_status,(char*)a.peaks->data()+offset,(char*)b.peaks->data()+offset,rows,4,64,[](){select(0);check(xpu_wait());});
 }

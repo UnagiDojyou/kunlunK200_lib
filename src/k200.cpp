@@ -18,6 +18,7 @@
 #include <map>
 #include <deque>
 #include <stdexcept>
+#include <functional>
 
 namespace kunlun {
 namespace xdnn = baidu::xpu::api;
@@ -93,6 +94,30 @@ void peer(int dst, void * dp, int src, const void * sp, size_t bytes) {
     check(xpu_memcpy_peer(dst, dp, src, const_cast<void *>(sp), bytes));
     check(xpu_wait()); ++peer_copies; peer_bytes += bytes;
 }
+void peer_completed(int dst,void * dp,int src,const void * sp,size_t bytes) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    select(dst);kv_max_invalidate(dst,dp,bytes);
+    check(xpu_memcpy_peer(dst,dp,src,const_cast<void *>(sp),bytes));
+    check(xpu_wait());++peer_copies;peer_bytes+=bytes;
+}
+bool tp_wo_sum_sync_available() {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    uint32_t rmajor=0,rminor=0,dmajor=0,dminor=0;
+    uint64_t models[2]{};
+    return xpu_get_runtime_version(&rmajor,&rminor)==0 && rmajor==4 && rminor==33 &&
+        xpu_get_driver_version(&dmajor,&dminor)==0 && dmajor==4 && dminor==33 &&
+        xpu_device_get_attr(&models[0],XPUATTR_MODEL,0)==0 && models[0]==K200 &&
+        xpu_device_get_attr(&models[1],XPUATTR_MODEL,1)==0 && models[1]==K200;
+}
+void tp_wo_sum_sync_peer(int dst,void * dp,int src,const void * sp,size_t bytes) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    select(dst);
+    kv_max_invalidate(dst,dp,bytes);
+    // XRE 4.33 on KL1 reports success after the P2P transfer has completed.
+    check(xpu_memcpy_peer(dst,dp,src,sp,bytes));
+    ++peer_copies;
+    peer_bytes+=bytes;
+}
 Buffer::Buffer(int id, size_t bytes): device_(id), bytes_(bytes), ptr_(allocate(id, bytes)) { require(ptr_); }
 Buffer::~Buffer() { release(device_, ptr_, bytes_); }
 size_t aligned(size_t n) { require(n <= SIZE_MAX - 255); return (n + 255) & ~size_t(255); }
@@ -122,8 +147,12 @@ void upload_i8_rows(int id, void * weights, int k, int n, int first, int count, 
     check(xpu_wait());
 }
 struct Kernel::Impl {
+    bool tp_rope_pending=false;
     std::shared_ptr<void> flash;
+    bool submit_glu=false;
     Impl * elementwise = nullptr;
+    Impl * tp_sum = nullptr;
+    Impl * tp_wo_sum = nullptr;
     Impl * broadcast = nullptr;
     Impl * swiglu = nullptr;
     Impl * attention_pack_a=nullptr,*attention_pack_b=nullptr;
@@ -137,6 +166,7 @@ struct Kernel::Impl {
     Impl * get_rows = nullptr;
     Impl * get_rows_f32 = nullptr;
     Impl * copy_rows = nullptr;
+    Impl * row_join = nullptr;
     Impl * set_rows = nullptr;
     Impl * flash_set_rows = nullptr;
     Impl * rms_partial = nullptr;
@@ -249,7 +279,7 @@ void launch_mv(Kernel::Impl & fn, int id, void * y, const void * w, const void *
 Kernel::Kernel(): impl_(new Impl{}) {}
 Kernel::~Kernel() {
     std::lock_guard<std::recursive_mutex> lock(mutex);
-    for (auto * state : {impl_->elementwise,impl_->broadcast,impl_->swiglu,impl_->attention_pack_a,impl_->attention_pack_b,impl_->attention_range,impl_->attention_range_dma,impl_->attention_sd,impl_->attention_sm_fast,impl_->attention_sm_typed,impl_->attention_mm,impl_->attention_sm,impl_->attention_cp,impl_->attention_phase,impl_->attention_rope,impl_->get_rows,impl_->get_rows_f32,impl_->copy_rows,impl_->set_rows,impl_->flash_set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
+    for (auto * state : {impl_->elementwise,impl_->tp_sum,impl_->tp_wo_sum,impl_->broadcast,impl_->swiglu,impl_->attention_pack_a,impl_->attention_pack_b,impl_->attention_range,impl_->attention_range_dma,impl_->attention_sd,impl_->attention_sm_fast,impl_->attention_sm_typed,impl_->attention_mm,impl_->attention_sm,impl_->attention_cp,impl_->attention_phase,impl_->attention_rope,impl_->get_rows,impl_->get_rows_f32,impl_->copy_rows,impl_->row_join,impl_->set_rows,impl_->flash_set_rows,impl_->rms_partial,impl_->rms_output,impl_->combine,impl_}) {
         if (!state) continue;
         auto & p=*state;
         if (p.id >= 0) {
@@ -277,8 +307,18 @@ void matmul(Kernel & kernel, int id, void * y, const void * w, const void * x,
     require(type != WeightType::rowwise_i8 || (scales && maximum));
     launch_mv(*kernel.impl_,id,y,w,x,k,n,batch,(int)type,scales,maximum,tile);
 }
-void elementwise(Kernel & kernel, int id, void * y, const void * a, const void * b,
-                 int n, int width, int bn, ElementwiseOp operation, float parameter) {
+int rms_norm_impl(Kernel &, int, void *, const void *, int, int, float, bool, ElementwiseSubmitOptions);
+
+namespace {
+bool ew_exact_or_disjoint(const void * y, size_t y_bytes, const void * x, size_t x_bytes) {
+    const uintptr_t dst = (uintptr_t)y, src = (uintptr_t)x;
+    if (dst == src) return y_bytes == x_bytes;
+    return dst < src ? y_bytes <= src - dst : x_bytes <= dst - src;
+}
+}
+
+int elementwise_impl(Kernel & kernel, int id, void * y, const void * a, const void * b,
+                     int n, int width, int bn, ElementwiseOp operation, float parameter, bool defer, ElementwiseSubmitOptions options) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     int op=(int)operation;
     require(y && a && b && n > 0 && n <= INT_MAX/4 && width > 0 && width <= 16384 && n%width == 0);
@@ -290,15 +330,21 @@ void elementwise(Kernel & kernel, int id, void * y, const void * a, const void *
     if (op == 3 && width >= 256 && width <= 16384 && width%32 == 0 && n%width == 0 && n/width <= 32 && std::isfinite(parameter) && parameter > 0 &&
         !(rms_mode && std::strcmp(rms_mode,"legacy") == 0) &&
         ((width >= 512 && n/width <= 16) || (rms_mode && std::strcmp(rms_mode,"parallel") == 0))) {
-        rms_norm(kernel,id,y,a,width,n/width,parameter); return;
+        return rms_norm_impl(kernel,id,y,a,width,n/width,parameter,defer,options);
     }
     const char * broadcast_mode=std::getenv("KUNLUN_BROADCAST_VECTOR");
-    bool vector_broadcast=(op == 0 || op == 1) && bn != n && bn%256 == 0 && broadcast_mode && std::strcmp(broadcast_mode,"1") == 0;
+    bool vector_broadcast=(op == 0 || op == 1) && bn != n && bn%256 == 0 && (!broadcast_mode || std::strcmp(broadcast_mode,"1") == 0);
     auto * & program=vector_broadcast ? kernel.impl_->broadcast : kernel.impl_->elementwise;
     if (!program) program=new Kernel::Impl{};
     auto & fn=*program;
     select(id); load_kernel(fn,vector_broadcast ? "kunlun-elementwise-broadcast" : "kunlun-elementwise",id);
-    if (y == a || y == b) {
+    // Each core reads both operands of its tile before writing that same tile.
+    const size_t bytes_a = (size_t)n*sizeof(float), bytes_b = (size_t)bn*sizeof(float);
+    const bool direct = options.exact_alias && (operation == ElementwiseOp::add || operation == ElementwiseOp::multiply) &&
+        width == 4096 && n == width &&
+        ((uintptr_t)y | (uintptr_t)a | (uintptr_t)b) % 64 == 0 &&
+        ew_exact_or_disjoint(y,bytes_a,a,bytes_a) && ew_exact_or_disjoint(y,bytes_a,b,bytes_b);
+    if (!direct && (y == a || y == b)) {
         size_t bytes=(size_t)(y == a ? n : bn)*4;
         if (fn.alias_input_size < bytes) {
             release(id,fn.alias_input,fn.alias_input_size);
@@ -319,8 +365,73 @@ void elementwise(Kernel & kernel, int id, void * y, const void * a, const void *
     for (const void * arg : {(const void *)&y,(const void *)&a,(const void *)&b}) { check(xpu_launch_argument_set(arg,8,offset)); offset+=8; }
     for (const int * arg : {&n,&width,&bn,&op}) { check(xpu_launch_argument_set(arg,4,offset)); offset+=4; }
     check(xpu_launch_argument_set(&parameter,4,offset));
-    check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn)); check(xpu_wait());
+    check(xpu_launch_config(4,8));
+    const int status = xpu_launch_async(fn.fn);
+    if (!defer) { check(status); check(xpu_wait()); }
+    return status;
 }
+
+void elementwise(Kernel & kernel, int id, void * y, const void * a, const void * b,
+                 int n, int width, int bn, ElementwiseOp operation, float parameter) {
+    elementwise_impl(kernel,id,y,a,b,n,width,bn,operation,parameter,false,{});
+}
+
+int elementwise_submit(Kernel & kernel, int id, void * y, const void * a, const void * b,
+                       int n, int width, int bn, ElementwiseOp operation, float parameter) {
+    return elementwise_impl(kernel,id,y,a,b,n,width,bn,operation,parameter,true,{});
+}
+
+int elementwise_submit_ex(Kernel & kernel, int id, void * y, const void * a, const void * b,
+                          int n, int width, int bn, ElementwiseOp operation, float parameter,
+                          ElementwiseSubmitOptions options) {
+    if (y != a && !ew_exact_or_disjoint(y,(size_t)n*sizeof(float),a,(size_t)n*sizeof(float))) return -1;
+    if (y != b && !ew_exact_or_disjoint(y,(size_t)n*sizeof(float),b,(size_t)bn*sizeof(float))) return -1;
+    return elementwise_impl(kernel,id,y,a,b,n,width,bn,operation,parameter,true,options);
+}
+
+void tp_sum_inplace(Kernel & kernel, int id, void * dst, const void * peer_partial, int n, int width) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    const uintptr_t a=(uintptr_t)dst,b=(uintptr_t)peer_partial;
+    const size_t bytes=(size_t)n*sizeof(float);
+    require(dst && peer_partial && width==4096 && n==4096 &&
+            a%64==0 && b%64==0 && a!=b && bytes<=(a<b?b-a:a-b));
+    require(kernel.impl_->id == -1 || kernel.impl_->id == id);
+    kernel.impl_->id=id;
+    auto * & program=kernel.impl_->tp_sum;
+    if (!program) program=new Kernel::Impl{};
+    select(id);
+    load_kernel(*program,"kunlun-tp-sum-inplace",id);
+    check(xpu_launch_argument_set(&dst,sizeof(dst),0));
+    check(xpu_launch_argument_set(&peer_partial,sizeof(peer_partial),sizeof(dst)));
+    check(xpu_launch_argument_set(&n,sizeof(n),sizeof(dst)+sizeof(peer_partial)));
+    check(xpu_launch_config(4,8));
+    check(xpu_launch_async(program->fn));
+    check(xpu_wait());
+}
+
+int tp_wo_sum_submit(Kernel & kernel, void * dst, const void * peer_partial) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    const uintptr_t a = (uintptr_t)dst, b = (uintptr_t)peer_partial;
+    constexpr size_t bytes = 4096*sizeof(float);
+    if (!a || !b || ((a | b) & 63) || bytes > (a < b ? b-a : a-b) ||
+        (kernel.impl_->id != -1 && kernel.impl_->id != 0)) {
+        return -XPUERR_INVALID_PARAM;
+    }
+    kernel.impl_->id = 0;
+    auto * & program = kernel.impl_->tp_wo_sum;
+    if (!program) program = new Kernel::Impl{};
+    select(0);
+    load_kernel(*program, "kunlun-tp-wo-sum", 0);
+    const void * const args[] = {dst, peer_partial};
+    if (const int rc = xpu_launch_argument_set(args, sizeof(args), 0)) {
+        return rc;
+    }
+    if (const int rc = xpu_launch_config(4, 16)) {
+        return rc;
+    }
+    return xpu_launch_async(program->fn);
+}
+
 const char * swiglu_reason(const SwiGLULayout &p) {
     if(p.type!=InputType::f32 && p.type!=InputType::f16)return "type";
     int bytes=p.type==InputType::f32?4:2;
@@ -364,7 +475,13 @@ bool swiglu(Kernel &kernel,int id,void *y,size_t y_bytes,const void *gate,size_t
     for(const int *arg:{&p.width,&p.rows,&p.gate_stride,&p.up_stride,&p.output_stride,&type,&tile}) {
         check(xpu_launch_argument_set(arg,4,offset));offset+=4;
     }
-    check(xpu_launch_config(4,16));check(xpu_launch_async(fn.fn));check(xpu_wait());return true;
+    check(xpu_launch_config(4,16));check(xpu_launch_async(fn.fn));
+    if(!kernel.impl_->submit_glu)check(xpu_wait());return true;
+}
+bool swiglu_submit(Kernel & kernel,int id,void * y,size_t y_bytes,const void * gate,size_t gate_bytes,
+                   const void * up,size_t up_bytes,const SwiGLULayout & p) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    kernel.impl_->submit_glu=true;bool ok=swiglu(kernel,id,y,y_bytes,gate,gate_bytes,up,up_bytes,p);kernel.impl_->submit_glu=false;return ok;
 }
 void copy_rows(Kernel & kernel, int id, void * dst, const void * src,
                int width, int rows, int stride, int column) {
@@ -388,9 +505,16 @@ void copy_rows(Kernel & kernel, int id, void * dst, const void * src,
     }
     check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn));
 }
-bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
-                  const void * src, size_t src_bytes, const void * indices, size_t index_bytes,
-                  const SetRowsLayout & p) {
+struct KVRowsPending {
+    void * status = nullptr;
+    size_t status_bytes = sizeof(int);
+    int launch_error = 0;
+    std::function<void(bool)> commit;
+};
+
+bool set_rows_f16_impl(Kernel & kernel, int id, void * dst, size_t dst_bytes,
+                       const void * src, size_t src_bytes, const void * indices, size_t index_bytes,
+                       const SetRowsLayout & p, KVRowsPending * pending) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     if(!kv_tracked_rows())kv_max_invalidate(id,dst,dst_bytes);
     require(dst && src && indices && dst != src && p.width > 0 && p.rows > 0 && p.dim2 > 0 && p.dim3 > 0);
@@ -423,7 +547,7 @@ bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
     } else require(p.cache_tokens == 0 && p.cache_stride == 0);
     require(kernel.impl_->id == -1 || kernel.impl_->id == id); kernel.impl_->id=id;
     const char *flash_kv=std::getenv("KUNLUN_FLASH_KV");
-    bool parallel=flash_kv&&!std::strcmp(flash_kv,"1")&&p.width>1&&p.rows>1&&p.rows<=256&&p.dim2==1&&p.dim3==1&&p.index_extent[0]==1&&p.index_extent[1]==1&&p.index_stride[0]==p.index_bytes&&!p.cache_features;
+    bool parallel=(!flash_kv||!std::strcmp(flash_kv,"1"))&&p.width>1&&p.rows>1&&p.rows<=256&&p.dim2==1&&p.dim3==1&&p.index_extent[0]==1&&p.index_extent[1]==1&&p.index_stride[0]==p.index_bytes&&!p.cache_features;
     auto &slot=parallel?kernel.impl_->flash_set_rows:kernel.impl_->set_rows;
     if(!slot)slot=new Kernel::Impl{};
     auto & fn=*slot;
@@ -439,13 +563,26 @@ bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
     for (const void * arg : {(const void *)&dst,(const void *)&src,(const void *)&indices,(const void *)&descriptor,(const void *)&status}) {
         check(xpu_launch_argument_set(arg,8,offset)); offset+=8;
     }
-    check(xpu_launch_config(4,8)); check(xpu_launch_async(fn.fn)); check(xpu_wait());
+    check(xpu_launch_config(4,8));
+    const int launch_error=xpu_launch_async(fn.fn);
+    if (pending) {
+        pending->status=status;
+        pending->launch_error=launch_error;
+        return true;
+    }
+    check(launch_error); check(xpu_wait());
     int invalid=0;
     check(xpu_memcpy(&invalid,status,4,XPU_DEVICE_TO_HOST)); check(xpu_wait());
     return invalid == 0;
 }
 
-void rms_norm(Kernel & kernel, int id, void * y, const void * input, int width, int rows, float epsilon) {
+bool set_rows_f16(Kernel & kernel, int id, void * dst, size_t dst_bytes,
+                  const void * src, size_t src_bytes, const void * indices, size_t index_bytes,
+                  const SetRowsLayout & p) {
+    return set_rows_f16_impl(kernel,id,dst,dst_bytes,src,src_bytes,indices,index_bytes,p,nullptr);
+}
+
+int rms_norm_impl(Kernel & kernel, int id, void * y, const void * input, int width, int rows, float epsilon, bool defer, ElementwiseSubmitOptions options) {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     require(y && input && width >= 256 && width <= 16384 && width%32 == 0 && rows > 0 && rows <= 32);
     require(std::isfinite(epsilon) && epsilon > 0);
@@ -457,8 +594,10 @@ void rms_norm(Kernel & kernel, int id, void * y, const void * input, int width, 
     size_t bytes=(size_t)width*rows*4, ps=(size_t)rows*32*4;
     if (first.scratch_size < ps) { release(id,first.scratch,first.scratch_size); first.scratch=allocate(id,ps); first.scratch_size=ps; }
     require(first.scratch);
+    const bool ordered = options.ordered_rms && width == 4096 && rows == 1 &&
+        ((uintptr_t)y | (uintptr_t)input) % 64 == 0;
     const void * x=input;
-    if (y == input) {
+    if (y == input && !(ordered && options.exact_alias)) {
         if (first.alias_input_size < bytes) { release(id,first.alias_input,first.alias_input_size); first.alias_input=allocate(id,bytes); first.alias_input_size=bytes; }
         require(first.alias_input);
         copy_rows(kernel,id,first.alias_input,input,width*rows,1,width*rows,0); check(xpu_wait()); x=first.alias_input;
@@ -467,12 +606,24 @@ void rms_norm(Kernel & kernel, int id, void * y, const void * input, int width, 
     size_t offset=0;
     for (const void * arg : {(const void *)&x,(const void *)&partials}) { check(xpu_launch_argument_set(arg,8,offset)); offset+=8; }
     for (const int * arg : {&width,&rows}) { check(xpu_launch_argument_set(arg,4,offset)); offset+=4; }
-    check(xpu_launch_config(4,8)); check(xpu_launch_async(first.fn)); check(xpu_wait());
+    check(xpu_launch_config(4,8));
+    int status = xpu_launch_async(first.fn);
+    // Both stages use the same ordered CL stream. Keep the final drain.
+    if (!status && !ordered) status = xpu_wait();
+    if (defer && status) return status;
+    check(status);
     offset=0;
     for (const void * arg : {(const void *)&y,(const void *)&x,(const void *)&partials}) { check(xpu_launch_argument_set(arg,8,offset)); offset+=8; }
     for (const int * arg : {&width,&rows}) { check(xpu_launch_argument_set(arg,4,offset)); offset+=4; }
     check(xpu_launch_argument_set(&epsilon,4,offset));
-    check(xpu_launch_config(4,8)); check(xpu_launch_async(second.fn)); check(xpu_wait());
+    check(xpu_launch_config(4,8));
+    status = xpu_launch_async(second.fn);
+    if (!defer) { check(status); check(xpu_wait()); }
+    return status;
+}
+
+void rms_norm(Kernel & kernel, int id, void * y, const void * input, int width, int rows, float epsilon) {
+    rms_norm_impl(kernel,id,y,input,width,rows,epsilon,false,{});
 }
 
 namespace {
@@ -501,10 +652,13 @@ struct NativeL3 {
 std::weak_ptr<NativeL3> native_l3[2];
 struct NativeArgument { const void * value; size_t size; };
 template<class T> NativeArgument native_arg(const T & value) { return {&value,sizeof(T)}; }
-void native_launch(Kernel::Impl & program, std::initializer_list<NativeArgument> args, int cores) {
+int native_launch_status(Kernel::Impl & program, std::initializer_list<NativeArgument> args, int cores) {
     size_t offset=0;
     for (auto arg : args) { check(xpu_launch_argument_set(arg.value,arg.size,offset)); offset+=arg.size; }
-    check(xpu_launch_config(4,cores)); check(xpu_launch_async(program.fn));
+    check(xpu_launch_config(4,cores)); return xpu_launch_async(program.fn);
+}
+void native_launch(Kernel::Impl & program, std::initializer_list<NativeArgument> args, int cores) {
+    check(native_launch_status(program,args,cores));
 }
 void native_launch_stream(Kernel::Impl & program, std::initializer_list<NativeArgument> args, int cores, XPUStream stream, const void *timeline=nullptr, int slot=0) {
     size_t offset=0;
@@ -622,6 +776,22 @@ bool large_pp_enabled() {
     return mode && !std::strcmp(mode,"1");
 }
 }
+void row_pair_join(Kernel & kernel,int id,void * y0,void * y1,const void * local,const void * remote,
+                   int nl,int nr,int pl,int pr,int main) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    require(y0 && y1 && y0!=y1 && local && remote && nl>0 && nr>0 && nl+nr<=32000 && pl>=nl && pr>=nr && (main==0 || main==1));
+    require(kernel.impl_->id==-1 || kernel.impl_->id==id);kernel.impl_->id=id;
+    select(id);if(!kernel.impl_->row_join)kernel.impl_->row_join=new Kernel::Impl{};
+    auto & fn=*kernel.impl_->row_join;load_kernel(fn,"kunlun-row-pair-join",id);
+    native_launch(fn,{native_arg(y0),native_arg(y1),native_arg(local),native_arg(remote),native_arg(nl),native_arg(nr),native_arg(pl),native_arg(pr),native_arg(main)},8);
+    check(xpu_wait());
+}
+// Keep explicit overrides, including 0, and apply the production default when unset.
+static const char * kunlun_default_on(const char * name) {
+    const char * setting = std::getenv(name);
+    return setting ? setting : "1";
+}
+
 #include "q4-common.inc"
 #include "get-rows.inc"
 #include "get-rows-f32.inc"

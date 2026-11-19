@@ -27,11 +27,19 @@
 #endif
 template<int cid> static __device__ __attribute__((noinline)) void stream_owner(
  _global_ptr_ float* partial,_global_ptr_ const int8_t* weights,_global_ptr_ const unsigned short* scales,
- int n,int cl,int nc,int blocks,int tiles,int cache_base,int resident,float a0,float a1,unsigned int* timing){
+ int columns,int cl,int nc,int k_blocks,int tiles,int cached_first,int cached_count,float a0,float a1,unsigned int* timing){
+#ifdef K200_TP_WO_FIXED
+    constexpr int n=4096,blocks=64,cache_base=0,resident=64;
+#else
+    const int n=columns,blocks=k_blocks,cache_base=cached_first,resident=cached_count;
+#endif
     const int batch=1,k=blocks*32;
     int engine=cid==0?DMAIN_0:cid==1?DMAIN_1:cid==2?MAC:cid==3?DS_0:cid==4?DS_1:cid==5?EW:cid==6?RS:DMAOUT;
     int delay=cid==3||cid==4?1:cid==2?2:cid==5?3:cid==6?4:cid==7?5:0;
-#if Q4_GEMV_NMAJOR
+#ifdef K200_TP_WO_FIXED
+        const int tasks=4*tiles;
+        int held=0;
+#elif Q4_GEMV_NMAJOR
         int tasks=((resident+15)/16)*tiles,held=0,pair=0,half=0,base=cache_base;
 #else
         int tasks=((resident+15)/16)*tiles,held=0,item=0,base=cache_base;
@@ -40,10 +48,14 @@ template<int cid> static __device__ __attribute__((noinline)) void stream_owner(
             if(held){STREAM_MEASURE(2,xfence_unlock(engine));held=0;}
             STREAM_MEASURE(3,sync());
             int t=step-delay;if(t<0 || t>=tasks)continue;
+#ifdef K200_TP_WO_FIXED
+            constexpr int count=16;
+            const int buf=t&1,base=((t>>1)&3)*16,tile=4*(cl+(t>>3)*nc)+2*buf;
+#elif Q4_GEMV_NMAJOR
             int count=blocks-base;if(count>16)count=16;
-    #if Q4_GEMV_NMAJOR
             int buf=t&1,tile=4*(cl+pair*nc)+2*half;
 #else
+            int count=blocks-base;if(count>16)count=16;
             int buf=t&1,tile=4*(cl+(item/2)*nc)+2*(item%2);
 #endif
             STREAM_MEASURE(1,{
@@ -72,10 +84,12 @@ template<int cid> static __device__ __attribute__((noinline)) void stream_owner(
                 if(cid==7)output_dma(gptr_f32(partial,((long long)tile*blocks+base)*32),buf,count,batch,blocks);
             });
             STREAM_COUNT(5);held=1;
-    #if Q4_GEMV_NMAJOR
+#if !defined(K200_TP_WO_FIXED)
+#if Q4_GEMV_NMAJOR
             if(++half==2){half=0;base+=16;if(base>=cache_base+resident){base=cache_base;++pair;}}
 #else
             if(++item==tiles){item=0;base+=16;}
+#endif
 #endif
         }
         if(held){STREAM_MEASURE(2,xfence_unlock(engine));}
@@ -85,6 +99,9 @@ __global__ void Q4_STREAM_ENTRY(float *partial,const int8_t *weights,const int8_
  int pipelined,const unsigned short *scales,int fold,const float *device_scales) {
     if(batch!=1 || fold || !pipelined || core_num()!=8 || components!=2 || bits!=8 ||
        n>11008 || n%256 || rows%256 || k<512 || k>16384 || k%256 || first!=0 || Q4_ACT_CACHE_BLOCKS>128)return;
+#ifdef K200_TP_WO_FIXED
+    if(k!=2048 || n!=4096 || rows!=4096)return;
+#endif
     __local__ __attribute__((aligned(64))) float act_parameters[16];
     int cid=core_id(),cl=cluster_id(),nc=cluster_num(),blocks=k/32;
     if(cid==2){GM2LM(device_scales,act_parameters,64);a0=act_parameters[0];a1=act_parameters[1];}

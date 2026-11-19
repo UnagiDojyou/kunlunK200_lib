@@ -1,0 +1,20 @@
+#include "native-q4/quant-exact.h"
+// Positive F32 absolute-value bit patterns; not a SUM or a signed-float MAX.
+__global__ void tp_absmax(unsigned int *a,const unsigned int *b,int *status,int rows,int chunks,int stride) {
+    __local__ __attribute__((aligned(64))) unsigned int x[16],y[16];
+    __local__ __attribute__((aligned(64))) int result[16];
+    int tid=cluster_id()*core_num()+core_id(),step=cluster_num()*core_num(),tiles=(chunks+15)/16,bad=0;
+    for(int tile=tid;tile<rows*tiles;tile+=step) {
+        int row=tile/tiles,base=(tile%tiles)*16;
+        GM2LM(a+(long long)row*stride+base,x,64);
+        GM2LM(b+(long long)row*stride+base,y,64);
+        for(int j=0;j<16;++j) {
+            if(base+j<chunks) {
+                if(x[j]>=0x7f800000u || y[j]>=0x7f800000u)bad=1;
+                x[j]=(unsigned int)max((int)x[j],(int)y[j]);
+            }else x[j]=0;
+        }
+        LM2GM(x,a+(long long)row*stride+base,64);
+    }
+    result[0]=bad;LM2GM(result,status+tid,4);
+}

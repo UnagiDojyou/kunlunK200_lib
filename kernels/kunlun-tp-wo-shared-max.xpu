@@ -1,0 +1,16 @@
+#include "native-q4/quant-exact.h"
+
+__global__ void quant_max_wo_input(unsigned int *peaks,const float *local,const float *remote){
+    __local__ __attribute__((aligned(64))) unsigned int words[NEXT_CHUNK], peer[NEXT_CHUNK];
+    const int tid=cluster_id()*core_num()+core_id(), step=cluster_num()*core_num();
+    for(int chunk=tid;chunk<32;chunk+=step){
+        const int first=chunk*NEXT_CHUNK;
+        GM2LM(local+first,words,sizeof(words));
+        GM2LM(remote+first,peer,sizeof(peer));
+        int peak=0;
+        for(int j=0;j<NEXT_CHUNK;++j)
+            peak=max(peak,max((int)(words[j]&0x7fffffff),(int)(peer[j]&0x7fffffff)));
+        words[0]=peak;
+        LM2GM(words,peaks+chunk,4);
+    }
+}

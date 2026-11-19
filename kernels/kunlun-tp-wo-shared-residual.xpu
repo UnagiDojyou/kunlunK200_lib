@@ -1,0 +1,3 @@
+#define K200_TP_WO_INPUT_SHARE
+#define K200_TP_QUANT_M1
+#include "kunlun-common-residual-exact.xpu"

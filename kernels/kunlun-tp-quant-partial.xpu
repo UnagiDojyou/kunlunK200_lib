@@ -1,0 +1,2 @@
+#define KUNLUN_TP_LOGICAL_K 5504
+#include "common-q4/source/adapt-gemm/previous/previous/frozen/frozen/frozen/previous/quant-partial.xpu"
