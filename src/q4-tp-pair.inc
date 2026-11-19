@@ -1,3 +1,19 @@
+bool common_q4_tp_submit_pair_glu(CommonQ4Workspace & work,int id,void * y,size_t y_bytes,bool swap,
+        const CommonQ4Weight & w0,const CommonQ4Weight & w1,const CommonQ4ActivationLease & lease,uint64_t generation) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    auto & s=*work.impl_;
+    const auto a=w0.info(), b=w1.info();
+    const char * sum_mode=std::getenv("KUNLUN_Q4_PAIR_SUM_FAST");
+    if ((sum_mode && std::strcmp(sum_mode,"1")) || y_bytes<5504*sizeof(float) ||
+        a.k!=4096 || a.n!=5504 || a.np!=5632 || b.k!=4096 || b.n!=5504 || b.np!=5632) return false;
+    s.tp_mode=true;
+    s.tp_pair_glu_gate=swap?1:0;
+    const bool ok=common_q4_submit_pair_shared(work,id,y,nullptr,w0,w1,lease,generation);
+    s.tp_pair_glu_gate=-1;
+    s.tp_mode=false;
+    return ok;
+}
+
 bool common_q4_tp_submit_pair_padded(CommonQ4Workspace & work,int id,void * y0,void * y1,
         const CommonQ4Weight & w0,const CommonQ4Weight & w1,const CommonQ4ActivationLease & lease,uint64_t generation) {
     std::lock_guard<std::recursive_mutex> lock(mutex);

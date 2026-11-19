@@ -318,7 +318,7 @@ struct CommonQ4MacStatistics {
 struct CommonQ4TPStatistics { uint64_t prepares=0,prepare_ns=0,max_collectives=0,max_ns=0,wait_ns=0,peer_copies=0,peer_bytes=0; };
 struct CommonQ4Quantization { const void * values; const void * scales; int rows, kp, components; };
 struct CommonQ4PairStatistics { size_t calls, declined, l3_partial_bytes; };
-enum class CommonQ4PairStatus { NotAttempted, Success, Disabled, InvalidInput, Configuration, WeightAbi, Lease, Alias, Workspace };
+enum class CommonQ4PairStatus { NotAttempted, Success, Disabled, InvalidInput, Configuration, WeightAbi, Lease, Alias, Workspace, PostFailed };
 class CommonQ4Workspace {
 public:
     CommonQ4Workspace();
@@ -347,6 +347,8 @@ private:
     friend bool common_q4_tp_submit(CommonQ4Workspace &,int,void *,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
     friend bool common_q4_tp_submit_padded(CommonQ4Workspace &,int,void *,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
     friend bool common_q4_tp_submit_pair_padded(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+    friend bool common_q4_tp_submit_pair_glu(CommonQ4Workspace &,int,void *,size_t,bool,
+        const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
 
     friend void common_q4_complete(CommonQ4Workspace &);
     friend bool common_q4_prepare_submit(CommonQ4Workspace &,int,const void *,int,int,uint64_t,CommonQ4ActivationLease &);
@@ -512,6 +514,10 @@ bool common_q4_tp_submit_pair(CommonQ4Workspace &,int,void *,void *,const Common
 // Retain them through common_q4_complete() and any following SwiGLU. No logical output or crop is produced.
 bool common_q4_tp_submit_padded(CommonQ4Workspace &,int,void *,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
 bool common_q4_tp_submit_pair_padded(CommonQ4Workspace &,int,void *,void *,const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
+// Submits the existing Pair SDNN, then writes the fused SUM and SwiGLU to a normal HBM F32 row.
+// Complete the workspace and check common_q4_pair_last_status before consuming the output.
+bool common_q4_tp_submit_pair_glu(CommonQ4Workspace &,int,void *,size_t,bool,
+        const CommonQ4Weight &,const CommonQ4Weight &,const CommonQ4ActivationLease &,uint64_t);
 }
 
 namespace kunlun {

@@ -1,0 +1,51 @@
+#include "q4-device.h"
+#include "xpu/kernel/math.h"
+#include "xpu/kernel/simd.h"
+
+static __device__ inline float swiglu_f32(float gate, float up) {
+    union Bits { float f; unsigned int u; };
+    const Bits g{gate}, u{up};
+    const unsigned int ga = g.u & 0x7fffffff, ua = u.u & 0x7fffffff;
+    if ((ga < 0x7f800000) & (ua < 0x7f800000)) {
+        return (gate / (1.0f + expf(-gate))) * up;
+    }
+    const unsigned int sign = (g.u ^ u.u) & 0x80000000;
+    Bits out;
+    if (ga > 0x7f800000 || ua > 0x7f800000 || g.u == 0xff800000) {
+        out.u = 0x7fc00000;
+    } else if (ga == 0x7f800000) {
+        out.u = ua == 0 ? 0x7fc00000 : sign | 0x7f800000;
+    } else {
+        const Bits act{gate / (1.0f + expf(-gate))};
+        out.u = (act.u & 0x7fffffff) == 0 ? 0x7fc00000 : sign | 0x7f800000;
+    }
+    return out.f;
+}
+
+static __device__ inline void reduce_tile(_global_ptr_ const float *source, float *scratch, float *sum) {
+    constexpr int chunk = 16, blocks = 4096 / 32;
+    for (int lane = 0; lane < 32; ++lane) sum[lane] = 0.0f;
+    for (int base = 0; base < blocks; base += chunk) {
+        GM2LM(source + base * 32, scratch, chunk * 128);
+        for (int block = 0; block < chunk; ++block) {
+            for (int lane = 0; lane < 32; lane += 8) {
+                _x256_vvadd_ls(sum + lane, scratch + block * 32 + lane, sum + lane);
+            }
+        }
+    }
+}
+
+__global__ void kunlun_tp_pair_sum_glu(float *output, const float *gate, const float *up) {
+    __local__ __attribute__((aligned(64))) float scratch[16 * 32], g[32], u[32];
+    const int tid = cluster_id() * core_num() + core_id();
+    const int threads = cluster_num() * core_num();
+    for (int tile = tid; tile < 5504 / 32; tile += threads) {
+        const int offset = tile * (4096 / 32) * 32;
+        reduce_tile(gate + offset, scratch, g);
+        reduce_tile(up + offset, scratch, u);
+        for (int lane = 0; lane < 32; ++lane) {
+            g[lane] = swiglu_f32(g[lane], u[lane]);
+        }
+        LM2GM(g, output + tile * 32, 128);
+    }
+}

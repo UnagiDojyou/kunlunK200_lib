@@ -77,7 +77,8 @@ struct CommonQ4Workspace::Impl {
     std::function<void()> crop_pending;
     bool crop_only=false,crop_running=false;
     std::function<void()> pending;
-    Kernel::Impl programs[51];
+    int tp_pair_glu_gate=-1;
+    Kernel::Impl programs[52];
     CommonQ4TPStatistics tp_stats{};
     std::unique_ptr<Buffer> tp_peer,tp_status;
     CommonQ4PairStatistics pair_stats{};

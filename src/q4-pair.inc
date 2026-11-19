@@ -18,7 +18,9 @@ bool common_q4_matmul_pair(CommonQ4Workspace & work,int id,void * y0,void * y1,
     auto reject=[&](CommonQ4PairStatus reason=CommonQ4PairStatus::InvalidInput){++s.pair_stats.declined;s.pair_status=reason;return false;};
     const char *flag=std::getenv("GGML_KUNLUN_Q4_GATE_UP_PAIR");
     if(flag && std::strcmp(flag,"auto") && std::strcmp(flag,"1"))return reject(CommonQ4PairStatus::Disabled);
-    if(id<0 || id>1 || s.id!=id || !y0 || !y1 ||
+    const int gate=s.tp_pair_glu_gate;
+    const bool glu=gate>=0;
+    if(id<0 || id>1 || s.id!=id || !y0 || (!glu && !y1) ||
        !w0.ready || !w1.ready || a.device!=id || b.device!=id || a.k!=b.k || a.n!=b.n ||
        !((!row && ((a.k==4096 && a.n==11008) || (a.k==2048 && a.n==5632))) ||
          (row && ((a.k==4096 && a.n==5504 && a.np==5632) || (a.k==2048 && a.n==2816)))))return reject();
@@ -33,11 +35,11 @@ bool common_q4_matmul_pair(CommonQ4Workspace & work,int id,void * y0,void * y1,
         v.k!=v.kp || (!row && v.n!=v.np) || v.kp!=expected.kp || v.np!=expected.np ||
         v.scale_offset!=expected.scale_offset || v.payload_bytes!=expected.payload_bytes)return reject(CommonQ4PairStatus::WeightAbi);
     struct Range{uintptr_t p;size_t bytes;};
-    Range outputs[]={{(uintptr_t)y0,(size_t)a.np*4},{(uintptr_t)y1,(size_t)a.np*4}};
+    Range outputs[]={{(uintptr_t)y0,(size_t)(glu?a.n:a.np)*4},{(uintptr_t)y1,glu?0:(size_t)a.np*4}};
     Range inputs[]={{(uintptr_t)w0.storage,a.payload_bytes},{(uintptr_t)w1.storage,b.payload_bytes},
         {(uintptr_t)l.input,l.input_bytes},{(uintptr_t)s.activation->quant->data(),s.activation->quant->size()},
         {(uintptr_t)s.activation->scale->data(),s.activation->scale->size()}};
-    auto overlap=[](const Range &x,const Range &y){return x.p<y.p+y.bytes && y.p<x.p+x.bytes;};
+    auto overlap=[](const Range &x,const Range &y){return x.bytes && y.bytes && x.p<y.p+y.bytes && y.p<x.p+x.bytes;};
     for(auto x:outputs)if(x.p%64 || x.bytes>UINTPTR_MAX-x.p)return reject(CommonQ4PairStatus::Alias);
     for(auto x:inputs)if(!x.p || x.bytes>UINTPTR_MAX-x.p)return reject(CommonQ4PairStatus::Alias);
     if(overlap(outputs[0],outputs[1]) || w0.storage==w1.storage || (uintptr_t)w0.storage%256 || (uintptr_t)w1.storage%256 ||
@@ -50,6 +52,10 @@ bool common_q4_matmul_pair(CommonQ4Workspace & work,int id,void * y0,void * y1,
     if(partial_bytes>8*1024*1024)return reject(CommonQ4PairStatus::Workspace);
     select(id);
     if(!s.l3){s.l3=native_l3[id].lock();if(!s.l3){s.l3=std::make_shared<NativeL3>(id);native_l3[id]=s.l3;}}
+    if (glu && (overlap(outputs[0],{(uintptr_t)s.l3->pointer,s.l3->bytes}) ||
+            (s.output && overlap(outputs[0],{(uintptr_t)s.output->data(),s.output->size()})) ||
+            (s.input && overlap(outputs[0],{(uintptr_t)s.input->data(),s.input->size()}))))
+        return reject(CommonQ4PairStatus::Alias);
     if(s.l3_unavailable || !s.l3->reserve(partial_bytes*2))return reject(CommonQ4PairStatus::Workspace);
     void *p0=s.l3->pointer,*p1=(char*)p0+partial_bytes;
     const void *q=chunk.values,*params=chunk.scales,*w=w0.storage,*u=w1.storage;
@@ -67,10 +73,19 @@ bool common_q4_matmul_pair(CommonQ4Workspace & work,int id,void * y0,void * y1,
                  (nmajor?"kunlun-common-gemv-pair-nmajor":"kunlun-common-gemv-pair-stream"));
     const char *sum_mode=std::getenv("KUNLUN_Q4_PAIR_SUM_FAST");
     const bool sum_fast=(!sum_mode || !std::strcmp(sum_mode,"1"));
-    auto & sum=common_program(s,sum_fast?33:26,sum_fast?"kunlun-common-sum-pair-fast":"kunlun-common-sum-pair");
-    auto finish=[&,y0,p0,scale0,k,n,batch,first,mode,y1,p1]() {
+    auto & sum=glu ? common_program(s,51,"kunlun-tp-pair-sum-glu") :
+            common_program(s,sum_fast?33:26,sum_fast?"kunlun-common-sum-pair-fast":"kunlun-common-sum-pair");
+    auto finish=[&,y0,p0,scale0,k,n,batch,first,mode,y1,p1,gate]() {
         select(s.id);check(xpu_wait());
-        native_launch(sum,{native_arg(y0),native_arg(p0),native_arg(scale0),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(mode),native_arg(y1),native_arg(p1)},16);
+        if (gate>=0) {
+            const void * g=gate==0?p0:p1, * u=gate==0?p1:p0;
+            if (native_launch_status(sum,{native_arg(y0),native_arg(g),native_arg(u)},16)!=0) {
+                s.pair_status=CommonQ4PairStatus::PostFailed;
+            }
+        } else {
+            native_launch(sum,{native_arg(y0),native_arg(p0),native_arg(scale0),native_arg(k),native_arg(n),native_arg(batch),native_arg(first),native_arg(n),native_arg(mode),native_arg(y1),native_arg(p1)},16);
+        }
+        // Drain even when the fused launch reports an error.
         if(s.post_only)s.post_pending=true;else check(xpu_wait());
     };
     native_launch(common_program(s,program,name,true),
