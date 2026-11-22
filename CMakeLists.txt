@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(KunlunK200 VERSION 0.7.14 LANGUAGES CXX)
+project(KunlunK200 VERSION 0.7.15 LANGUAGES CXX)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 find_package(Threads REQUIRED)

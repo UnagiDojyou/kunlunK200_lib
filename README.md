@@ -154,3 +154,10 @@ Runtime defaults updated 2026-11-04: see docs/RUNTIME_DEFAULTS.md.
 ## Current recommended defaults
 
 See [DEFAULTS.md](DEFAULTS.md). Common Q4, new SDNN Q6, Q4/F32 GET_ROWS and pure-token graph specialization are enabled when unset. Large PP remains disabled. Explicit 0 preserves rollback. This table supersedes dated opt-in reports.
+
+### 0.7.15
+
+Adds `q6_k_matmul_pair()` for a terminal, single-row 4096 x 32000
+Q6_K output on two PDs. The existing packed ABI and kernel binaries are
+unchanged. Both devices complete before PD1's logits are copied into
+the final PD0 buffer.

@@ -83,7 +83,7 @@ void Q6KWeight::upload(const void *raw, size_t bytes) {
 struct Q6KWorkspace::Impl {
     int id=-1;
     Kernel::Impl programs[4];
-    std::unique_ptr<Buffer> quant,scales,partial;
+    std::unique_ptr<Buffer> quant,scales,partial,shard_output;
     Q6KStatistics stats{};
     size_t legacy_calls=0;
 };
@@ -99,7 +99,7 @@ Q6KWorkspace::~Q6KWorkspace() {
 Q6KStatistics Q6KWorkspace::statistics() const {
     std::lock_guard<std::recursive_mutex> lock(mutex);
     auto stats=impl_->stats;
-    for(auto *b:{impl_->quant.get(),impl_->scales.get(),impl_->partial.get()})if(b)stats.workspace_bytes+=b->size();
+    for(auto *b:{impl_->quant.get(),impl_->scales.get(),impl_->partial.get(),impl_->shard_output.get()})if(b)stats.workspace_bytes+=b->size();
     return stats;
 }
 size_t Q6KWorkspace::legacy_calls() const {
@@ -139,4 +139,116 @@ void q6_k_matmul(Q6KWorkspace &workspace, int id, void *y, const Q6KWeight &weig
         // Default-stream order completes every consumer before buffer reuse/free.
         check(xpu_wait());++s.stats.calls;if(legacy)++s.legacy_calls;
     }
+}
+
+
+namespace {
+int q6_pair_launch(Kernel::Impl & program, std::initializer_list<NativeArgument> args, int cores) {
+    size_t offset = 0;
+    for (const auto & arg : args) {
+        const int status = xpu_launch_argument_set(arg.value, arg.size, offset);
+        if (status) return status;
+        offset += arg.size;
+    }
+    const int status = xpu_launch_config(4, cores);
+    return status ? status : xpu_launch_async(program.fn);
+}
+}
+
+int q6_k_matmul_pair(Q6KWorkspace & ws0, Q6KWorkspace & ws1, void * y,
+        const Q6KWeight & w0, const Q6KWeight & w1, const void * x0, const void * x1,
+        Q6KPairTiming * timing) {
+    std::lock_guard<std::recursive_mutex> lock(mutex);
+    constexpr int k = 4096;
+    constexpr int n = 32000;
+    constexpr int half = n/2;
+    constexpr int dtype = 0;
+    constexpr size_t bytes = half*sizeof(float);
+    constexpr size_t xb = k*sizeof(float);
+    const char * legacy = std::getenv("KUNLUN_Q6_K_LEGACY");
+    if (&ws0 == &ws1 || !y || !x0 || !x1 || (uintptr_t)y%256 ||
+            (uintptr_t)x0%4 || (uintptr_t)x1%4 || (legacy && std::strcmp(legacy,"1") == 0)) return 0;
+    Q6KWorkspace::Impl * work[2] = {ws0.impl_, ws1.impl_};
+    const Q6KWeight * weights[2] = {&w0, &w1};
+    const void * inputs[2] = {x0,x1};
+    for (int pd=0; pd<2; ++pd) {
+        const auto & w = *weights[pd];
+        const auto a = w.info();
+        if (!w.impl_->ready || a.abi_version != 1 || a.device != pd || a.k != k || a.n != n ||
+                (work[pd]->id >= 0 && work[pd]->id != pd) ||
+                q6_overlap(inputs[pd],xb,w.data(),a.payload_bytes)) return 0;
+    }
+    if (q6_overlap(y,2*bytes,w0.data(),w0.info().payload_bytes) || q6_overlap(y,2*bytes,x0,xb)) return 0;
+
+    const auto timestamp = [&]() -> uint64_t {
+        if (!timing) return 0;
+        return std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::steady_clock::now().time_since_epoch()).count();
+    };
+    if (timing) { *timing = {}; timing->begin_ns = timestamp(); }
+    for (int pd=0; pd<2; ++pd) {
+        auto & s = *work[pd];
+        s.id = pd;
+        select(pd);
+        native_reserve(s.quant,pd,(size_t)(k/16)*1024);
+        native_reserve(s.scales,pd,(k/16)*4);
+        if (pd == 1) native_reserve(s.shard_output,pd,bytes);
+        load_kernel(s.programs[0],"kunlun-q6-quant",pd,false);
+        load_kernel(s.programs[3],"kunlun-q6-onchip",pd,true);
+    }
+    if (timing) timing->prepared_ns = timestamp();
+    void * remote_output = work[1]->shard_output->data();
+    int error = 0;
+    for (int pd=0; pd<2; ++pd) {
+        auto & s = *work[pd];
+        const auto & w = *weights[pd];
+        const auto * weight = (const char *) w.data() + (size_t) pd*half*k;
+        const auto * scale = (const char *) w.data() + w.info().scale_offset + (size_t) pd*half*(k/16)*sizeof(float);
+        const void * x = inputs[pd];
+        void * out = pd == 0 ? y : remote_output;
+        void * q = s.quant->data();
+        void * as = s.scales->data();
+        select(pd);
+        const uint64_t quant_begin = timestamp();
+        error = q6_pair_launch(s.programs[0],{native_arg(q),native_arg(as),native_arg(x),native_arg(k),native_arg(dtype)},16);
+        if (timing) timing->quant_enqueue_ns[pd] = timestamp() - quant_begin;
+        if (error) break;
+        const uint64_t sdnn_begin = timestamp();
+        error = q6_pair_launch(s.programs[3],{native_arg(out),native_arg(weight),native_arg(q),native_arg(k),
+                                            native_arg(half),native_arg(scale),native_arg(as)},8);
+        if (timing) { timing->submit_ns[pd] = timestamp(); timing->sdnn_enqueue_ns[pd] = timing->submit_ns[pd] - sdnn_begin; }
+        if (error) break;
+    }
+    // Drain both devices even if one of the two launches returns an error.
+    int drain_error = 0;
+    for (int pd=0; pd<2; ++pd) {
+        select(pd);
+        const uint64_t begin = timestamp();
+        const int status = xpu_wait();
+        if (timing) { timing->complete_ns[pd] = timestamp(); timing->wait_ns[pd] = timing->complete_ns[pd] - begin; }
+        if (status) drain_error = status;
+    }
+    // A failed wait leaves ownership unknown. Use the existing fatal runtime contract.
+    check(drain_error);
+    if (error) return -1;
+
+    select(0);
+    void * target = (char *) y + bytes;
+    kv_max_invalidate(0,target,bytes);
+    if (timing) timing->peer_begin_ns = timestamp();
+    const int copy_status = xpu_memcpy_peer(0,target,1,remote_output,bytes);
+    const int wait_status = xpu_wait();
+    if (timing) timing->peer_end_ns = timestamp();
+    if (copy_status || wait_status) {
+        select(1);
+        const int source_wait = xpu_wait();
+        check(wait_status);
+        check(source_wait);
+        return -1;
+    }
+    ++peer_copies;
+    peer_bytes += bytes;
+    ++work[0]->stats.calls;
+    ++work[1]->stats.calls;
+    return 1;
 }

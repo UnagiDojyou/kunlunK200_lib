@@ -175,6 +175,18 @@ struct Q6KInfo { uint32_t abi_version; int device,k,n; size_t scale_offset,paylo
 struct Q6KStatistics { size_t calls,uploads,upload_bytes,workspace_bytes; double pack_ms,upload_ms; };
 bool q6_k_supported(int k,int n);
 size_t q6_k_size(int k,int n);
+struct Q6KPairTiming {
+ uint64_t prepared_ns, submit_ns[2], complete_ns[2], peer_begin_ns, peer_end_ns;
+ uint64_t begin_ns, quant_enqueue_ns[2], sdnn_enqueue_ns[2], wait_ns[2];
+};
+class Q6KWorkspace;
+class Q6KWeight;
+// 0: outside the supported contract, 1: complete, -1: SDK failure after draining.
+// Both weights are the full mirrored 4096x32000 Q6_K pack. Both inputs are local F32.
+// The complete 32000-element result belongs exclusively to PD0.
+int q6_k_matmul_pair(Q6KWorkspace & ws0, Q6KWorkspace & ws1, void * y,
+        const Q6KWeight & w0, const Q6KWeight & w1, const void * x0, const void * x1,
+        Q6KPairTiming * timing = nullptr);
 class Q6KWeight {
 public:
  Q6KWeight(int device,int k,int n,void*storage=nullptr,size_t bytes=0);
@@ -184,6 +196,8 @@ public:
  Q6KInfo info() const;Q6KStatistics statistics() const;void*data() const;
  struct Impl;
 private:
+ friend int q6_k_matmul_pair(Q6KWorkspace &,Q6KWorkspace &,void *,const Q6KWeight &,const Q6KWeight &,
+                             const void *,const void *,Q6KPairTiming *);
  Impl*impl_;friend void q6_k_matmul(class Q6KWorkspace&,int,void*,const Q6KWeight&,const void*,int,InputType);
 };
 class Q6KWorkspace {
@@ -195,6 +209,8 @@ public:
  size_t legacy_calls() const;
  struct Impl;
 private:
+ friend int q6_k_matmul_pair(Q6KWorkspace &,Q6KWorkspace &,void *,const Q6KWeight &,const Q6KWeight &,
+                             const void *,const void *,Q6KPairTiming *);
  Impl*impl_;friend void q6_k_matmul(Q6KWorkspace&,int,void*,const Q6KWeight&,const void*,int,InputType);
 };
 // Contiguous X[M,K], Y[M,N]. M=1..512 uses sequential SDNN GEMV per row.
